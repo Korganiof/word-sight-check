@@ -6,6 +6,8 @@ export interface Trial {
   rtMs: number;
 }
 
+
+
 export function computeAccuracy(trials: Trial[]): number {
   if (trials.length === 0) return 0;
   const correct = trials.filter(t => t.correct).length;
