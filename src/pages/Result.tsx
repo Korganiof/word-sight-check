@@ -17,6 +17,8 @@ export default function Result() {
     setLoading(false);
   }, []);
 
+
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -68,5 +70,21 @@ export default function Result() {
   const accuracy = computeAccuracy(trials);
   const avgRt = computeAvgRt(trials);
 
-  return <ResultCard accuracy={accuracy} avgRt={avgRt} />;
+
+  return (
+    <>
+		<ResultCard accuracy={accuracy} avgRt={avgRt} />
+
+      {process.env.NODE_ENV === "development" && (
+        <div className="max-w-2xl mx-auto px-4">
+          <details className="mt-4 text-sm">
+            <summary className="cursor-pointer">Debug: trials</summary>
+            <pre className="mt-2 overflow-auto max-h-64 bg-muted/30 p-2 rounded">
+              {JSON.stringify(trials, null, 2)}
+            </pre>
+          </details>
+        </div>
+      )}
+    </>
+  );
 }
