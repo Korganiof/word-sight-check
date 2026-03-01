@@ -1,6 +1,13 @@
+import { useMemo } from "react";
 import { PseudoWordTask } from "@/components/PseudoWordTask";
-import { wordList } from "@/lib/pseudowords";
+import { warmupList, mainList } from "@/lib/pseudowords";
+import { shuffleArray } from "@/lib/utils";
 
 export default function TaskPage() {
-  return <PseudoWordTask items={wordList} />;
+  const items = useMemo(() => {
+    const shuffledMain = shuffleArray(mainList);
+    return [...warmupList, ...shuffledMain];
+  }, []);
+
+  return <PseudoWordTask items={items} warmupCount={warmupList.length} />;
 }

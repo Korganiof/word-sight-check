@@ -23,38 +23,37 @@ export default function Consent() {
             <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <AlertCircle className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-3xl">Consent & Understanding</CardTitle>
+            <CardTitle className="text-3xl">Suostumus ja ymmärrys</CardTitle>
             <CardDescription className="text-base">
-              Please confirm you understand the following
+              Vahvista, että ymmärrät seuraavat asiat
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Key points */}
             <div className="space-y-4">
               <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">This is NOT a diagnosis</h3>
+                <h3 className="font-semibold text-foreground mb-2">Tämä EI ole diagnoosi</h3>
                 <p className="text-sm text-muted-foreground">
-                  This screening tool provides preliminary information only. It cannot diagnose 
-                  dyslexia or any other condition. Only a qualified professional can provide 
-                  a formal diagnosis through comprehensive assessment.
+                  Tämä seula antaa vain alustavaa tietoa. Se ei voi diagnosoida
+                  lukivaikeutta tai mitään muutakaan tilaa. Vain pätevä ammattilainen
+                  voi tehdä varsinaisen diagnoosin laajan tutkimuksen perusteella.
                 </p>
               </div>
 
               <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">Your session is anonymous</h3>
+                <h3 className="font-semibold text-foreground mb-2">Käyttö on anonyymia</h3>
                 <p className="text-sm text-muted-foreground">
-                  We do not collect any personal information. Your results are stored only 
-                  in your browser's session storage and will be automatically cleared when 
-                  you close your browser.
+                  Emme kerää henkilötietoja. Tulokset tallentuvat vain selaimesi
+                  istuntotietoihin ja poistuvat automaattisesti, kun suljet selaimen.
                 </p>
               </div>
 
               <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">Seek professional advice</h3>
+                <h3 className="font-semibold text-foreground mb-2">Hakeudu tarvittaessa tutkimuksiin</h3>
                 <p className="text-sm text-muted-foreground">
-                  If you have concerns about dyslexia or learning difficulties, please consult 
-                  with a qualified educational psychologist, special education professional, 
-                  or healthcare provider.
+                  Jos sinulla on huolia lukivaikeudesta tai oppimisvaikeuksista,
+                  ota yhteyttä esimerkiksi erityisopettajaan, oppimisvaikeuksiin
+                  perehtyneeseen psykologiin tai terveydenhuollon ammattilaiseen.
                 </p>
               </div>
             </div>
@@ -65,15 +64,15 @@ export default function Consent() {
                 id="consent"
                 checked={agreed}
                 onCheckedChange={(checked) => setAgreed(checked === true)}
-                aria-label="I understand and agree"
+                aria-label="Ymmärrän ja hyväksyn"
                 className="mt-1"
               />
               <label
                 htmlFor="consent"
                 className="text-sm font-medium text-foreground leading-relaxed cursor-pointer"
               >
-                I understand that this is <strong>not a diagnosis</strong> and that my session 
-                is <strong>anonymous</strong>. I agree to proceed with the screening.
+                Ymmärrän, että tämä ei ole <strong>diagnoosi</strong> ja että käyttökertani on
+                <strong> anonyymi</strong>. Hyväksyn nämä ehdot ja haluan jatkaa seulan tekemistä.
               </label>
             </div>
 
@@ -84,9 +83,9 @@ export default function Consent() {
                 onClick={handleContinue}
                 disabled={!agreed}
                 className="w-full text-lg h-12"
-                aria-label="Continue to task"
+                aria-label="Jatka tehtävään"
               >
-                Continue to Task
+                Jatka tehtävään
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               
@@ -94,15 +93,15 @@ export default function Consent() {
                 variant="outline"
                 onClick={() => navigate("/start")}
                 className="w-full"
-                aria-label="Go back"
+                aria-label="Palaa takaisin"
               >
-                Back
+                Takaisin
               </Button>
             </div>
 
             {agreed && (
               <p className="text-xs text-muted-foreground text-center">
-                Ready to begin? Click "Continue to Task" above
+                Valmis aloittamaan? Napsauta yläpuolella olevaa &quot;Jatka tehtävään&quot; -painiketta.
               </p>
             )}
           </CardContent>

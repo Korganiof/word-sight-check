@@ -5,8 +5,8 @@ import { PseudoWordTask } from '../PseudoWordTask';
 import { type WordItem } from '@/lib/pseudowords';
 
 const mockItems: WordItem[] = [
-  { text: 'brint', isWord: false },
-  { text: 'garden', isWord: true },
+  { text: 'mipu', isWord: false },
+  { text: 'talo', isWord: true },
 ];
 
 describe('PseudoWordTask', () => {
@@ -17,7 +17,7 @@ describe('PseudoWordTask', () => {
       </BrowserRouter>
     );
 
-    expect(getByText('brint')).toBeInTheDocument();
+    expect(getByText('mipu')).toBeInTheDocument();
   });
 
   it('displays progress information', () => {
@@ -27,20 +27,30 @@ describe('PseudoWordTask', () => {
       </BrowserRouter>
     );
 
-    expect(getByText(/Trial 1 of 2/i)).toBeInTheDocument();
+    expect(getByText(/Tehtävä 1 \/ 2/i)).toBeInTheDocument();
+  });
+
+  it('shows practice label when warmupCount is set', () => {
+    const { getByText } = render(
+      <BrowserRouter>
+        <PseudoWordTask items={mockItems} warmupCount={1} />
+      </BrowserRouter>
+    );
+
+    expect(getByText(/Harjoituskierros 1 \/ 1/i)).toBeInTheDocument();
   });
 
   it('renders answer buttons with keyboard shortcuts', () => {
-    const { getByText } = render(
+    const { getByText, getByRole } = render(
       <BrowserRouter>
         <PseudoWordTask items={mockItems} />
       </BrowserRouter>
     );
 
-    expect(getByText(/Real word/i)).toBeInTheDocument();
-    expect(getByText(/Not a word/i)).toBeInTheDocument();
-    expect(getByText(/Press A/i)).toBeInTheDocument();
-    expect(getByText(/Press L/i)).toBeInTheDocument();
+    expect(getByRole('button', { name: /Oikea sana/i })).toBeInTheDocument();
+    expect(getByRole('button', { name: /Ei sana/i })).toBeInTheDocument();
+    expect(getByText(/\(A\)/i)).toBeInTheDocument();
+    expect(getByText(/\(L\)/i)).toBeInTheDocument();
   });
 
   it('displays task instruction', () => {
@@ -50,6 +60,6 @@ describe('PseudoWordTask', () => {
       </BrowserRouter>
     );
 
-    expect(getByText(/Is this a real word?/i)).toBeInTheDocument();
+    expect(getByText(/Onko tämä oikea sana\?/i)).toBeInTheDocument();
   });
 });

@@ -11,9 +11,9 @@ export default function Start() {
       <div className="container mx-auto px-4 py-12 flex-1 flex items-center justify-center">
         <Card className="w-full max-w-2xl shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl">Before We Begin</CardTitle>
+            <CardTitle className="text-3xl">Ennen kuin aloitat</CardTitle>
             <CardDescription className="text-base">
-              Please read these instructions carefully
+              Lue nämä ohjeet huolellisesti
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -25,10 +25,10 @@ export default function Start() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Task Overview</h3>
+                  <h3 className="font-semibold text-foreground mb-1">Tehtävän kuvaus</h3>
                   <p className="text-sm text-muted-foreground">
-                    You will be shown 10 words, one at a time. Your job is to decide whether 
-                    each word is a <strong>real English word</strong> or <strong>not a word</strong>.
+                    Näet sanoja yksi kerrallaan. Tehtäväsi on päättää, onko kukin sana
+                    <strong>oikea suomen sana</strong> vai <strong>ei sana</strong>.
                   </p>
                 </div>
               </div>
@@ -40,18 +40,18 @@ export default function Start() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">How to Respond</h3>
+                  <h3 className="font-semibold text-foreground mb-1">Näin vastaat</h3>
                   <p className="text-sm text-muted-foreground mb-2">
-                    You can use either the buttons on screen or keyboard shortcuts:
+                    Voit käyttää joko näytön painikkeita tai näppäimistöä:
                   </p>
                   <ul className="text-sm text-muted-foreground space-y-1">
                     <li className="flex items-center gap-2">
                       <kbd className="px-2 py-1 text-xs font-semibold bg-background border rounded">A</kbd>
-                      <span>for <strong>Real word</strong></span>
+                      <span>= <strong>Oikea sana</strong></span>
                     </li>
                     <li className="flex items-center gap-2">
                       <kbd className="px-2 py-1 text-xs font-semibold bg-background border rounded">L</kbd>
-                      <span>for <strong>Not a word</strong></span>
+                      <span>= <strong>Ei sana</strong></span>
                     </li>
                   </ul>
                 </div>
@@ -64,10 +64,11 @@ export default function Start() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Take Your Time</h3>
+                  <h3 className="font-semibold text-foreground mb-1">Vastaa rauhassa</h3>
                   <p className="text-sm text-muted-foreground">
-                    There's no time limit, but try to respond as <strong>quickly and accurately</strong> as 
-                    you can. Trust your first instinct.
+                    Tehtävällä ei ole aikarajaa, mutta pyri vastaamaan
+                    <strong>mahdollisimman nopeasti ja tarkasti</strong>. Usein ensimmäinen
+                    tuntuma on oikea.
                   </p>
                 </div>
               </div>
@@ -78,9 +79,9 @@ export default function Start() {
                 size="lg"
                 onClick={() => navigate("/consent")}
                 className="w-full text-lg h-12"
-                aria-label="Continue to consent page"
+                aria-label="Jatka suostumussivulle"
               >
-                Continue
+                Jatka
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               
@@ -88,9 +89,9 @@ export default function Start() {
                 variant="outline"
                 onClick={() => navigate("/")}
                 className="w-full"
-                aria-label="Go back to home page"
+                aria-label="Palaa etusivulle"
               >
-                Back
+                Takaisin
               </Button>
             </div>
           </CardContent>

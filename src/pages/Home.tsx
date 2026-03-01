@@ -12,10 +12,10 @@ export default function Home() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Dyslexia Screener
+            Lukivaikeuden seulonta
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A quick screening tool to assess reading-related skills
+            Lyhyt, anonyymi seulontatehtävä lukemiseen liittyvien taitojen arviointiin.
           </p>
         </div>
 
@@ -23,19 +23,19 @@ export default function Home() {
         <div className="max-w-3xl mx-auto">
           <Card className="shadow-lg mb-8">
             <CardHeader>
-              <CardTitle className="text-2xl">About This Screener</CardTitle>
-              <CardDescription>Understanding what this tool does and doesn't do</CardDescription>
+              <CardTitle className="text-2xl">Tietoa seulasta</CardTitle>
+              <CardDescription>Mitä tämä työkalu tekee – ja mitä ei</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose prose-sm max-w-none">
                 <p className="text-foreground">
-                  This screening tool uses a <strong>pseudoword reading task</strong> to assess 
-                  skills associated with dyslexia. You'll be shown a series of words and asked 
-                  to decide whether each is a real English word or not.
+                  Tämä seula käyttää <strong>pseudosanatehtävää</strong> lukivaikeuteen
+                  liittyvien taitojen arviointiin. Näet joukon sanoja ja päätät,
+                  onko kukin niistä oikea suomen sana vai ei.
                 </p>
                 <p className="text-foreground">
-                  The task measures your accuracy and response time, which can provide insights 
-                  into reading-related cognitive processes.
+                  Tehtävä mittaa sekä tarkkuutta että reaktioaikaa. Näiden avulla saadaan
+                  viitteitä lukemiseen liittyvistä prosesseista.
                 </p>
               </div>
 
@@ -45,35 +45,35 @@ export default function Home() {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Clock className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="font-semibold text-sm">Quick</h3>
-                  <p className="text-xs text-muted-foreground">Takes about 2-3 minutes</p>
+                  <h3 className="font-semibold text-sm">Nopea</h3>
+                  <p className="text-xs text-muted-foreground">Kestää noin 2–3 minuuttia</p>
                 </div>
 
                 <div className="flex flex-col items-center text-center space-y-2 p-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Shield className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="font-semibold text-sm">Anonymous</h3>
-                  <p className="text-xs text-muted-foreground">No personal data collected</p>
+                  <h3 className="font-semibold text-sm">Anonyymi</h3>
+                  <p className="text-xs text-muted-foreground">Henkilötietoja ei kerätä</p>
                 </div>
 
                 <div className="flex flex-col items-center text-center space-y-2 p-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="font-semibold text-sm">Evidence-based</h3>
-                  <p className="text-xs text-muted-foreground">Uses validated approach</p>
+                  <h3 className="font-semibold text-sm">Tutkimukseen perustuva</h3>
+                  <p className="text-xs text-muted-foreground">Perustuu tutkittuihin menetelmiin</p>
                 </div>
               </div>
 
               {/* Important notice */}
               <div className="bg-muted rounded-lg p-4 border-l-4 border-primary">
                 <p className="text-sm font-semibold text-foreground mb-1">
-                  Important: This is NOT a diagnosis
+                  Huomio: Tämä ei ole diagnoosi
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  This screening tool provides preliminary information only. A formal diagnosis 
-                  of dyslexia requires comprehensive assessment by a qualified professional.
+                  Tämä seula antaa vain alustavaa tietoa. Varsinainen diagnoosi
+                  edellyttää laajaa tutkimusta ja ammattilaisen arviota.
                 </p>
               </div>
 
@@ -81,22 +81,31 @@ export default function Home() {
               <div className="text-center pt-2">
                 <p className="text-sm text-muted-foreground">
                   <Shield className="w-4 h-4 inline mr-1" />
-                  Your session is completely anonymous. Results are stored locally on your device only.
+                  Käyttö on täysin anonyymia. Tulokset tallentuvat vain omalle laitteellesi.
                 </p>
               </div>
             </CardContent>
           </Card>
 
           {/* CTA */}
-          <div className="text-center">
+          <div className="text-center space-y-3">
             <Button
               size="lg"
               onClick={() => navigate("/start")}
               className="px-8 text-lg h-14"
-              aria-label="Start the screening"
+              aria-label="Aloita seulonta"
             >
-              Start Screening
+              Aloita seulonta
             </Button>
+            <div>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/exercises")}
+                aria-label="View all exercises"
+              >
+                Harjoitukset
+              </Button>
+            </div>
           </div>
         </div>
       </div>

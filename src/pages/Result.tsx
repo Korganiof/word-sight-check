@@ -35,31 +35,31 @@ export default function Result() {
             <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
               <AlertCircle className="w-8 h-8 text-destructive" />
             </div>
-            <CardTitle>No Results Found</CardTitle>
+            <CardTitle>Ei tuloksia</CardTitle>
             <CardDescription>
-              We couldn't find any screening data for your session
+              Emme löytäneet seulontatietoja tältä istunnolta.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              This can happen if you navigate directly to this page without completing 
-              the screening, or if your session data has been cleared.
+              Tämä voi johtua siitä, että tulit tälle sivulle ilman että teit
+              tehtävän loppuun, tai että tiedot on tyhjennetty.
             </p>
             <Button
               onClick={() => navigate("/start")}
               className="w-full"
               size="lg"
-              aria-label="Start a new screening"
+              aria-label="Aloita uusi seulonta"
             >
-              Start New Screening
+              Aloita uusi seulonta
             </Button>
             <Button
               onClick={() => navigate("/")}
               variant="outline"
               className="w-full"
-              aria-label="Go to home page"
+              aria-label="Palaa etusivulle"
             >
-              Back to Home
+              Takaisin etusivulle
             </Button>
           </CardContent>
         </Card>
@@ -73,7 +73,26 @@ export default function Result() {
 
   return (
     <>
-		<ResultCard accuracy={accuracy} avgRt={avgRt} />
+      <ResultCard accuracy={accuracy} avgRt={avgRt} />
+
+      <div className="max-w-2xl mx-auto px-4 mt-6 flex flex-col sm:flex-row gap-2">
+        <Button
+          className="flex-1"
+          size="lg"
+          onClick={() => navigate("/task/word-search")}
+          aria-label="Siirry seuraavaan tehtävään (sanahaku tekstistä)"
+        >
+          Seuraava harjoitus: sanahaku tekstistä
+        </Button>
+        <Button
+          variant="outline"
+          className="flex-1"
+          onClick={() => navigate("/exercises")}
+          aria-label="Palaa harjoituslistaan"
+        >
+          Takaisin harjoituslistaan
+        </Button>
+      </div>
 
       {process.env.NODE_ENV === "development" && (
         <div className="max-w-2xl mx-auto px-4">
