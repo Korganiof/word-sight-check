@@ -12,6 +12,7 @@ import WordSearchTaskPage from "./pages/WordSearchTaskPage";
 import WordSearchResult from "./pages/WordSearchResult";
 import ExerciseList from "./pages/ExerciseList";
 import SyllableExercisePage from "./pages/SyllableExercisePage";
+import MinimalPairExercisePage from "./pages/MinimalPairExercisePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/result" element={<Result />} />
           <Route path="/exercises" element={<ExerciseList />} />
           <Route path="/exercise/syllables" element={<SyllableExercisePage />} />
+          <Route path="/exercise/minimal-pairs" element={<MinimalPairExercisePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

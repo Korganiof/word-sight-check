@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Search, Layers } from "lucide-react";
+import { BookOpen, Search, Layers, AudioLines } from "lucide-react";
 
 export default function ExerciseList() {
   return (
@@ -63,6 +63,23 @@ export default function ExerciseList() {
             <CardContent>
               <Button asChild className="w-full">
                 <Link to="/exercise/syllables">Aloita</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <AudioLines className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Sanojen pituuden erottaminen</CardTitle>
+              <CardDescription>
+                Valitse lauseeseen sopiva sana. Testaa vokaali- ja konsonanttipituuden erottamista.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <Link to="/exercise/minimal-pairs">Aloita</Link>
               </Button>
             </CardContent>
           </Card>
