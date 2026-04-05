@@ -15,15 +15,20 @@ interface PseudoWordTaskProps {
   warmupCount?: number;
 }
 
+const ITEM_TIMEOUT_MS = 3000;
+
 export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trials, setTrials] = useState<Trial[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(ITEM_TIMEOUT_MS);
 
   // refs for immediate, race-proof state
   const startRef = useRef<number>(0);
   const processingRef = useRef<boolean>(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // button focus refs for a11y / fast keyboard flow
   const realBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -34,21 +39,20 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   const isWarmup = currentIndex < warmupTotal;
   const mainTotal = Math.max(0, items.length - warmupTotal);
 
-  // Start timing when item is shown
-  useEffect(() => {
-    if (currentItem) {
-      startRef.current = performance.now();
-      // move focus to the first button each trial for fast enter/space users
-      realBtnRef.current?.focus();
-    }
-  }, [currentIndex, currentItem]);
+  const clearTimers = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    timeoutRef.current = null;
+    intervalRef.current = null;
+  }, []);
 
   const handleAnswer = useCallback(
-    (answer: boolean) => {
+    (answer: boolean | null, timedOut = false) => {
       if (!currentItem) return;
       if (processingRef.current) return; // hard guard against double-submits
       processingRef.current = true;
       setIsProcessing(true);
+      clearTimers();
 
       const endTime = performance.now();
       const rtMs = Math.round(endTime - startRef.current);
@@ -59,6 +63,7 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
         answer,
         correct: answer === currentItem.isWord,
         rtMs,
+        ...(timedOut && { timedOut: true }),
       };
 
       setTrials(prev => {
@@ -78,15 +83,34 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
             warmupCount > 0 ? newTrials.slice(Math.min(warmupCount, newTrials.length)) : newTrials;
           saveSession(scoredTrials);
           setTimeout(() => {
-            navigate("/result");
+            navigate("/task/word-search");
           }, 200);
         }
 
         return newTrials;
       });
     },
-    [currentItem, currentIndex, items.length, warmupCount, navigate]
+    [currentItem, currentIndex, items.length, warmupCount, navigate, clearTimers]
   );
+
+  // Start timing and countdown when item is shown
+  useEffect(() => {
+    if (!currentItem) return;
+    clearTimers();
+    startRef.current = performance.now();
+    setTimeLeft(ITEM_TIMEOUT_MS);
+    realBtnRef.current?.focus();
+
+    intervalRef.current = setInterval(() => {
+      setTimeLeft(prev => Math.max(0, prev - 50));
+    }, 50);
+
+    timeoutRef.current = setTimeout(() => {
+      handleAnswer(null, true);
+    }, ITEM_TIMEOUT_MS);
+
+    return clearTimers;
+  }, [currentIndex, currentItem, clearTimers, handleAnswer]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -98,10 +122,10 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
       const k = e.key.toLowerCase();
       if (k === "a") {
         e.preventDefault();
-        handleAnswer(true);
+        handleAnswer(true, false);
       } else if (k === "l") {
         e.preventDefault();
-        handleAnswer(false);
+        handleAnswer(false, false);
       }
     };
 
@@ -146,6 +170,16 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
                 <p className="text-5xl font-bold text-foreground tracking-wide">{currentItem.text}</p>
               </div>
 
+              <div className="w-full bg-secondary rounded-full h-1.5">
+                <div
+                  className="h-1.5 rounded-full transition-none"
+                  style={{
+                    width: `${(timeLeft / ITEM_TIMEOUT_MS) * 100}%`,
+                    backgroundColor: timeLeft < 1000 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))',
+                  }}
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   ref={realBtnRef}
@@ -153,7 +187,7 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
                   className="h-16 text-lg px-8"
                   disabled={isProcessing}
                   aria-label="Oikea sana (A)"
-                  onClick={() => handleAnswer(true)}
+                  onClick={() => handleAnswer(true, false)}
                 >
                   <span className="flex flex-col items-center gap-1">
                     <span>Oikea sana</span>
@@ -165,7 +199,7 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
                   className="h-16 text-lg px-8"
                   disabled={isProcessing}
                   aria-label="Ei sana (L)"
-                  onClick={() => handleAnswer(false)}
+                  onClick={() => handleAnswer(false, false)}
                 >
                   <span className="flex flex-col items-center gap-1">
                     <span>Ei sana</span>

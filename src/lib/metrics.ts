@@ -4,6 +4,7 @@ export interface Trial {
   answer: boolean | null;
   correct: boolean;
   rtMs: number;
+  timedOut?: boolean;
 }
 
 export function computeAccuracy(trials: Trial[]): number {

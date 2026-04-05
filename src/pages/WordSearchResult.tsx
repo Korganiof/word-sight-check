@@ -19,7 +19,7 @@ export default function WordSearchResult() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading word search results...</p>
+        <p className="text-muted-foreground">Ladataan tuloksia...</p>
       </div>
     );
   }
@@ -32,29 +32,29 @@ export default function WordSearchResult() {
             <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
               <AlertCircle className="w-8 h-8 text-destructive" />
             </div>
-            <CardTitle>No word search results</CardTitle>
+            <CardTitle>Ei tuloksia</CardTitle>
             <CardDescription>
-              We couldn&apos;t find any word search data for your session.
+              Tehtävän tuloksia ei löydy tältä istunnolta.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              This can happen if you navigate directly to this page without
-              completing the word search task, or if your session data has been cleared.
+              Tämä voi johtua siitä, että siirryit suoraan tälle sivulle ilman
+              tehtävän suorittamista, tai istunnon tiedot on tyhjennetty.
             </p>
             <Button
               onClick={() => navigate("/task/word-search")}
               className="w-full"
               size="lg"
             >
-              Retry Word Search
+              Yritä uudelleen
             </Button>
             <Button
               onClick={() => navigate("/")}
               variant="outline"
               className="w-full"
             >
-              Back to Home
+              Takaisin etusivulle
             </Button>
           </CardContent>
         </Card>
@@ -78,16 +78,16 @@ export default function WordSearchResult() {
           <div className="mx-auto w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
           </div>
-          <CardTitle>Word Search Results</CardTitle>
+          <CardTitle>Sanojen etsiminen – tulokset</CardTitle>
           <CardDescription>
-            Summary of your performance on the word-in-text task.
+            Yhteenveto suorituksestasi tekstistä etsiminen -tehtävässä.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Correct hits
+                Oikeat löydöt
               </p>
               <p className="text-lg font-semibold">
                 {result.foundCorrect} / {result.totalTargets}
@@ -95,19 +95,19 @@ export default function WordSearchResult() {
             </div>
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Missed targets
+                Löytämättä jääneet
               </p>
               <p className="text-lg font-semibold">{result.missedTargets}</p>
             </div>
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Incorrect clicks
+                Väärät klikkaukset
               </p>
               <p className="text-lg font-semibold">{result.incorrectClicks}</p>
             </div>
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                Accuracy
+                Tarkkuus
               </p>
               <p className="text-lg font-semibold">{accuracy}%</p>
             </div>
@@ -115,21 +115,21 @@ export default function WordSearchResult() {
 
           <div className="p-3 rounded-lg bg-muted/50 text-sm">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">
-              Time used
+              Käytetty aika
             </p>
             <p className="text-lg font-semibold">{formattedTime}</p>
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row gap-2">
             <Button className="flex-1" onClick={() => navigate("/task/word-search")}>
-              Try Again
+              Yritä uudelleen
             </Button>
             <Button
               variant="outline"
               className="flex-1"
               onClick={() => navigate("/result")}
             >
-              View Pseudoword Results
+              Näytä pseudosanatehtävän tulokset
             </Button>
           </div>
 

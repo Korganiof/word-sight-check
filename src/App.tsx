@@ -7,12 +7,12 @@ import Home from "./pages/Home";
 import Start from "./pages/Start";
 import Consent from "./pages/Consent";
 import TaskPage from "./pages/TaskPage";
-import Result from "./pages/Result";
 import WordSearchTaskPage from "./pages/WordSearchTaskPage";
-import WordSearchResult from "./pages/WordSearchResult";
 import ExerciseList from "./pages/ExerciseList";
 import SyllableExercisePage from "./pages/SyllableExercisePage";
 import MinimalPairExercisePage from "./pages/MinimalPairExercisePage";
+import WordChainExercisePage from "./pages/WordChainExercisePage";
+import FinalResults from "./pages/FinalResults";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,11 +30,11 @@ const App = () => (
           <Route path="/consent" element={<Consent />} />
           <Route path="/task/pseudowords" element={<TaskPage />} />
           <Route path="/task/word-search" element={<WordSearchTaskPage />} />
-          <Route path="/result/word-search" element={<WordSearchResult />} />
-          <Route path="/result" element={<Result />} />
           <Route path="/exercises" element={<ExerciseList />} />
           <Route path="/exercise/syllables" element={<SyllableExercisePage />} />
           <Route path="/exercise/minimal-pairs" element={<MinimalPairExercisePage />} />
+          <Route path="/exercise/word-chains" element={<WordChainExercisePage />} />
+          <Route path="/results" element={<FinalResults />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

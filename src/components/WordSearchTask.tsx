@@ -127,7 +127,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
       durationMs: Math.round(Math.min(durationMs, elapsed)),
     });
 
-    navigate("/result/word-search");
+    navigate("/exercise/syllables");
   };
 
   const handleWordClick = (index: number) => {
@@ -150,6 +150,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
           }
         }
         if (correctCount >= totalTargets && !finishedRef.current) {
+          finishedRef.current = true;
           finishTask();
         }
       }

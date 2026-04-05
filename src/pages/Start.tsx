@@ -27,8 +27,8 @@ export default function Start() {
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Tehtävän kuvaus</h3>
                   <p className="text-sm text-muted-foreground">
-                    Näet sanoja yksi kerrallaan. Tehtäväsi on päättää, onko kukin sana
-                    <strong>oikea suomen sana</strong> vai <strong>ei sana</strong>.
+                    Näet sanoja yksi kerrallaan. Tehtäväsi on päättää,{" "}
+                    onko kukin sana <strong>oikeaa suomea</strong> vai ei.
                   </p>
                 </div>
               </div>
@@ -66,7 +66,7 @@ export default function Start() {
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Vastaa rauhassa</h3>
                   <p className="text-sm text-muted-foreground">
-                    Tehtävällä ei ole aikarajaa, mutta pyri vastaamaan
+                    Tehtävällä ei ole aikarajaa, mutta pyri vastaamaan{" "}
                     <strong>mahdollisimman nopeasti ja tarkasti</strong>. Usein ensimmäinen
                     tuntuma on oikea.
                   </p>

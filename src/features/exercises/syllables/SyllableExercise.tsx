@@ -1,343 +1,165 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { syllableItems } from "./syllableItems.fi";
-import { useSyllableLogger } from "./useSyllableLogger";
-import { seededShuffle } from "./seededShuffle";
-import type { SyllableItem, SyllableTile } from "./types";
+import { syllableItems as allSyllableItems } from "./syllableItems.fi";
+import { DEV_FAST } from "@/lib/devConfig";
+
+const syllableItems = DEV_FAST ? allSyllableItems.slice(0, 2) : allSyllableItems;
+import type { SyllableResult } from "./types";
+import { saveSyllablesResult } from "@/lib/exerciseResults";
+
+/** How long each individual syllable stays on screen */
+const MS_PER_SYLLABLE = 1500;
+
+function normalize(s: string): string {
+  return s.trim().toLowerCase();
+}
 
 export function SyllableExercise() {
-  const logger = useSyllableLogger(syllableItems);
-  const session = logger.session;
-
-  const orderedItems = useMemo(() => {
-    if (!session) return [];
-    return seededShuffle(syllableItems, session.seed);
-  }, [session?.seed]);
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedSyllables, setSelectedSyllables] = useState<string[]>([]);
-  const [shuffledTiles, setShuffledTiles] = useState<SyllableTile[]>([]);
-  const [isShaking, setIsShaking] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
+  /** Index of the syllable currently being shown. When it reaches syllables.length, typing begins. */
+  const [syllableIndex, setSyllableIndex] = useState(0);
+  const [phase, setPhase] = useState<"showing" | "typing" | "feedback">("showing");
+  const [inputValue, setInputValue] = useState("");
+  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
+  const [results, setResults] = useState<SyllableResult[]>([]);
 
-  const hasAutoSubmittedRef = useRef(false);
-  const processingRef = useRef(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const currentItem = orderedItems[currentIndex] ?? null;
+  const currentItem = syllableItems[currentIndex];
 
-  // Ref to avoid effect re-running when logger identity changes (startAttempt updates
-  // session, which recreates logger callbacks -> infinite loop). We only need to run
-  // when the displayed item or session seed changes.
-  const loggerRef = useRef(logger);
-  loggerRef.current = logger;
-
-  // Shuffle tiles when item changes (do NOT include logger - it changes when session
-  // updates, causing an infinite loop that clears selectedSyllables and spazzes the UI)
+  // Reset and start flashing syllables when the item changes
   useEffect(() => {
-    if (!currentItem || !session) return;
-    const tileSeed = session.seed + currentIndex * 1000;
-    setShuffledTiles(seededShuffle(currentItem.tiles, tileSeed));
-    setSelectedSyllables([]);
-    hasAutoSubmittedRef.current = false;
-    loggerRef.current.startAttempt(currentItem);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- logger excluded intentionally to prevent effect loop
-  }, [currentItem?.id, currentIndex, session?.seed]);
+    setSyllableIndex(0);
+    setPhase("showing");
+    setInputValue("");
+    setFeedback(null);
+  }, [currentIndex]);
 
-  const advanceToNext = useCallback(() => {
-    if (currentIndex >= orderedItems.length - 1) {
-      setIsComplete(true);
-    } else {
-      setCurrentIndex((i) => i + 1);
-    }
-  }, [currentIndex, orderedItems.length]);
-
-  const handleTileClick = useCallback(
-    (tile: SyllableTile) => {
-      if (!currentItem || selectedSyllables.length >= currentItem.expectedSyllableCount)
-        return;
-      loggerRef.current.logEvent("tile_click", tile.id, tile.value);
-      setSelectedSyllables((prev) => [...prev, tile.value]);
-    },
-    [currentItem, selectedSyllables.length]
-  );
-
-  const handleRemoveLast = useCallback(() => {
-    if (selectedSyllables.length === 0) return;
-    loggerRef.current.logEvent("reset");
-    setSelectedSyllables((prev) => prev.slice(0, -1));
-  }, [selectedSyllables.length]);
-
-  const handleReset = useCallback(() => {
-    loggerRef.current.logEvent("reset");
-    setSelectedSyllables([]);
-  }, []);
-
-  const handleSubmit = useCallback(() => {
-    if (!currentItem) return;
-    if (processingRef.current) return; // guard against double-submit (like PseudoWordTask)
-    processingRef.current = true;
-
-    loggerRef.current.logEvent("submit");
-    const result = loggerRef.current.completeAttempt(
-      selectedSyllables,
-      currentItem,
-      false
-    );
-
-    if (result.isCorrect) {
-      toast.success("Oikein!");
-      advanceToNext();
-      processingRef.current = false;
-    } else {
-      setIsShaking(true);
-      toast.error("Yritä uudelleen");
-      setTimeout(() => {
-        setIsShaking(false);
-        processingRef.current = false;
-      }, 500);
-    }
-  }, [currentItem, selectedSyllables, advanceToNext]);
-
-  // Auto-submit when count matches (once per item)
+  // Advance through syllables one by one, then switch to typing
   useEffect(() => {
-    if (
-      currentItem &&
-      selectedSyllables.length === currentItem.expectedSyllableCount &&
-      !hasAutoSubmittedRef.current
-    ) {
-      hasAutoSubmittedRef.current = true;
-      handleSubmit();
-    }
-  }, [selectedSyllables, currentItem, handleSubmit]);
+    if (phase !== "showing") return;
 
-  if (isComplete) {
-    return (
-      <SyllableEndScreen
-        attempts={logger.session?.attempts ?? []}
-        onRestart={() => {
-          logger.resetSession();
-          setCurrentIndex(0);
-          setIsComplete(false);
-        }}
-      />
-    );
+    const timer = setTimeout(() => {
+      const next = syllableIndex + 1;
+      if (next >= currentItem.syllables.length) {
+        setPhase("typing");
+      } else {
+        setSyllableIndex(next);
+      }
+    }, MS_PER_SYLLABLE);
+
+    return () => clearTimeout(timer);
+  }, [syllableIndex, phase, currentItem.syllables.length]);
+
+  // Auto-focus input when typing begins
+  useEffect(() => {
+    if (phase === "typing") {
+      inputRef.current?.focus();
+    }
+  }, [phase]);
+
+  function handleSubmit() {
+    if (phase !== "typing") return;
+
+    const correct = normalize(inputValue) === normalize(currentItem.correctWord);
+    setFeedback(correct ? "correct" : "incorrect");
+    setPhase("feedback");
+
+    setTimeout(() => {
+      const newResults = [...results, { item: currentItem, userInput: inputValue.trim(), correct }];
+      if (currentIndex < syllableItems.length - 1) {
+        setResults(newResults);
+        setCurrentIndex(i => i + 1);
+      } else {
+        saveSyllablesResult({ correct: newResults.filter(r => r.correct).length, total: newResults.length });
+        navigate("/exercise/minimal-pairs");
+      }
+    }, 800);
   }
 
-  if (!currentItem) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Ladataan...</p>
-      </div>
-    );
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") handleSubmit();
   }
 
-  const progressPct = orderedItems.length > 0
-    ? ((currentIndex + 1) / orderedItems.length) * 100
-    : 0;
+  const progress = ((currentIndex + 1) / syllableItems.length) * 100;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="container mx-auto px-4 py-6 flex-1 flex flex-col gap-6 max-w-2xl">
-        <div>
-          <h1 className="text-2xl font-bold">Sanojen muodostaminen tavuista</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Valitse tavut oikeassa järjestyksessä muodostaaksesi sanan. Ota aikaa.
+      <div className="container mx-auto px-4 py-8 flex-1 flex flex-col max-w-2xl">
+        <div className="mb-8">
+          <h1 className="text-xl font-semibold mb-1">Osa 3: Sanojen muodostaminen tavuista</h1>
+          <p className="text-sm text-muted-foreground mb-4">
+            Katso tavut tarkasti. Muodosta niistä sana ja kirjoita se, kun tavut katoavat.
           </p>
+          <div className="flex justify-between text-sm text-muted-foreground mb-2">
+            <span>Sana {currentIndex + 1} / {syllableItems.length}</span>
+          </div>
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <Badge variant="secondary">Taso {currentItem.level}</Badge>
-          <span className="text-sm text-muted-foreground">
-            Tehtävä {currentIndex + 1} / {orderedItems.length}
-          </span>
-        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <Card className="w-full shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {phase === "showing" ? `Tavu ${syllableIndex + 1} / ${currentItem.syllables.length}` : "Kirjoita sana"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-8">
 
-        <Progress value={progressPct} className="h-2" />
-
-        <Card className={cn("transition-all", isShaking && "animate-shake")}>
-          <CardHeader>
-            <CardTitle className="text-base font-medium text-muted-foreground">
-              Valitse tavut
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex flex-wrap gap-2">
-              {shuffledTiles.map((tile) => (
-                <Button
-                  key={tile.id}
-                  variant="outline"
-                  size="lg"
-                  className="text-lg"
-                  onClick={() => handleTileClick(tile)}
-                  disabled={
-                    selectedSyllables.length >= currentItem.expectedSyllableCount
-                  }
-                >
-                  {tile.value}
-                </Button>
-              ))}
-            </div>
-
-            <div className="border rounded-lg p-4 bg-muted/30 min-h-[4rem]">
-              <p className="text-sm text-muted-foreground mb-2">
-                Valitut tavut (klikkaa poistaaksesi viimeisen):
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {selectedSyllables.length === 0 ? (
-                  <span className="text-muted-foreground italic">
-                    Valitse tavut ylhäältä
+              {/* Single syllable flash */}
+              <div className="min-h-[8rem] flex items-center justify-center">
+                {phase === "showing" ? (
+                  <span
+                    key={`${currentIndex}-${syllableIndex}`}
+                    className="text-6xl font-bold text-foreground tracking-wide"
+                    style={{ animation: `syllable-flash ${MS_PER_SYLLABLE}ms ease-in-out forwards` }}
+                  >
+                    {currentItem.syllables[syllableIndex]}
                   </span>
                 ) : (
-                  selectedSyllables.map((syl, i) => {
-                    const isLast = i === selectedSyllables.length - 1;
-                    return (
-                      <button
-                        key={`${i}-${syl}`}
-                        type="button"
-                        onClick={() => isLast && handleRemoveLast()}
-                        className={cn(
-                          "inline-flex items-center gap-1 px-3 py-1 rounded-md font-medium transition-colors",
-                          isLast
-                            ? "bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
-                            : "bg-primary/10 text-primary cursor-default"
-                        )}
-                        title={isLast ? "Poista viimeinen tavu" : undefined}
-                      >
-                        {syl}
-                      </button>
-                    );
-                  })
+                  <p className="text-muted-foreground italic text-sm">Tavut piilotettu</p>
                 )}
               </div>
-            </div>
 
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleReset}>
-                Tyhjennä
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={selectedSyllables.length === 0}
-              >
-                Tarkista
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              {/* Input — only shown after all syllables have flashed */}
+              {phase !== "showing" && (
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-foreground">
+                    Kirjoita sana:
+                  </label>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={e => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={phase === "feedback"}
+                    placeholder="Kirjoita tähän..."
+                    className="w-full rounded-md border border-input bg-background px-4 py-3 text-base outline-none transition-colors focus:border-primary"
+                  />
+
+                  <Button
+                    className="w-full"
+                    onClick={handleSubmit}
+                    disabled={!inputValue.trim() || phase === "feedback"}
+                  >
+                    Tarkista
+                  </Button>
+                </div>
+              )}
+
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
-  );
-}
-
-interface SyllableEndScreenProps {
-  attempts: Array<{
-    level: number;
-    type: "real" | "pseudo";
-    isCorrect: boolean;
-    errorTags: string[];
-  }>;
-  onRestart: () => void;
-}
-
-function SyllableEndScreen({ attempts, onRestart }: SyllableEndScreenProps) {
-  const navigate = useNavigate();
-  const stats = useMemo(() => {
-    const real = attempts.filter((a) => a.type === "real");
-    const pseudo = attempts.filter((a) => a.type === "pseudo");
-    const realCorrect = real.filter((a) => a.isCorrect).length;
-    const pseudoCorrect = pseudo.filter((a) => a.isCorrect).length;
-
-    const byLevel = new Map<number, number[]>();
-    for (const a of attempts) {
-      if (a.isCorrect) {
-        const times = byLevel.get(a.level) ?? [];
-        times.push(1); // placeholder - we don't have duration per item in attempt
-        byLevel.set(a.level, times);
-      }
-    }
-
-    const errorTagCounts = { double_consonant: 0, vowel_length: 0, syllable_order: 0 };
-    for (const a of attempts) {
-      for (const tag of a.errorTags) {
-        if (tag in errorTagCounts) {
-          errorTagCounts[tag as keyof typeof errorTagCounts]++;
-        }
-      }
-    }
-
-    return {
-      realTotal: real.length,
-      realCorrect,
-      realAccuracy: real.length > 0 ? Math.round((realCorrect / real.length) * 100) : 0,
-      pseudoTotal: pseudo.length,
-      pseudoCorrect,
-      pseudoAccuracy: pseudo.length > 0 ? Math.round((pseudoCorrect / pseudo.length) * 100) : 0,
-      errorTagCounts,
-    };
-  }, [attempts]);
-
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardHeader>
-          <CardTitle>Harjoitus valmis</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Tuloksesi Sanojen muodostaminen tavuista -harjoituksesta
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-3 rounded-lg bg-muted/50">
-              <p className="text-xs text-muted-foreground uppercase">Oikeat sanat</p>
-              <p className="text-lg font-semibold">
-                {stats.realCorrect} / {stats.realTotal} ({stats.realAccuracy}%)
-              </p>
-            </div>
-            <div className="p-3 rounded-lg bg-muted/50">
-              <p className="text-xs text-muted-foreground uppercase">Pseudosanat</p>
-              <p className="text-lg font-semibold">
-                {stats.pseudoCorrect} / {stats.pseudoTotal} ({stats.pseudoAccuracy}%)
-              </p>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-lg bg-muted/50">
-            <p className="text-xs text-muted-foreground uppercase mb-2">
-              Havaitut virhetyypit
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">
-                Kaksoiskonsonantti: {stats.errorTagCounts.double_consonant}
-              </Badge>
-              <Badge variant="secondary">
-                Vokaalin pituus: {stats.errorTagCounts.vowel_length}
-              </Badge>
-              <Badge variant="secondary">
-                Tavujärjestys: {stats.errorTagCounts.syllable_order}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2 pt-2">
-            <Button className="flex-1" size="lg" onClick={onRestart}>
-              Aloita alusta
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1"
-              size="lg"
-              onClick={() => navigate("/exercises")}
-            >
-              Takaisin harjoituslistaan
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -4,9 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { minimalPairItems } from "./minimalPairItems.fi";
+import { minimalPairItems as allMinimalPairItems } from "./minimalPairItems.fi";
+import { saveMinimalPairsResult } from "@/lib/exerciseResults";
+import { DEV_FAST } from "@/lib/devConfig";
 
-const ITEM_DURATION_MS = 6000;
+const minimalPairItems = DEV_FAST ? allMinimalPairItems.slice(0, 2) : allMinimalPairItems;
+
+const ITEM_DURATION_MS = DEV_FAST ? 2000 : 6000;
 const FEEDBACK_DELAY_MS = 900;
 
 export function MinimalPairExercise() {
@@ -54,20 +58,14 @@ export function MinimalPairExercise() {
     [selectedAnswer, currentItem]
   );
 
-  if (isComplete) {
-    return (
-      <EndScreen
-        correctCount={correctCount}
-        total={total}
-        onRestart={() => {
-          setCurrentIndex(0);
-          setSelectedAnswer(null);
-          setCorrectCount(0);
-          setIsComplete(false);
-        }}
-      />
-    );
-  }
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isComplete) {
+      saveMinimalPairsResult({ correct: correctCount, total });
+      navigate("/exercise/word-chains");
+    }
+  }, [isComplete, correctCount, total, navigate]);
 
   const options = [currentItem.optionA, currentItem.optionB];
 
@@ -111,22 +109,13 @@ export function MinimalPairExercise() {
             <div className="flex flex-col sm:flex-row gap-4">
               {options.map((option) => {
                 const isSelected = selectedAnswer === option;
-                const isCorrect = option === currentItem.correctAnswer;
-                let variant: "outline" | "default" | "destructive" = "outline";
-                if (isSelected) {
-                  variant = isCorrect ? "default" : "destructive";
-                }
 
                 return (
                   <Button
                     key={option}
-                    variant={variant}
+                    variant={isSelected ? "default" : "outline"}
                     size="lg"
-                    className={cn(
-                      "flex-1 text-2xl h-20 font-semibold",
-                      isSelected && isCorrect && "bg-green-600 hover:bg-green-600 border-green-600",
-                      isSelected && !isCorrect && "bg-red-600 hover:bg-red-600 border-red-600"
-                    )}
+                    className={cn("flex-1 text-2xl h-20 font-semibold")}
                     onClick={() => handleSelect(option)}
                     disabled={selectedAnswer !== null}
                   >
@@ -142,48 +131,3 @@ export function MinimalPairExercise() {
   );
 }
 
-interface EndScreenProps {
-  correctCount: number;
-  total: number;
-  onRestart: () => void;
-}
-
-function EndScreen({ correctCount, total, onRestart }: EndScreenProps) {
-  const navigate = useNavigate();
-  const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardHeader>
-          <CardTitle>Harjoitus valmis</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Tuloksesi Sanojen pituuden erottaminen -harjoituksesta
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="p-4 rounded-lg bg-muted/50 text-center">
-            <p className="text-4xl font-bold">{accuracy}%</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {correctCount} / {total} oikein
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2 pt-2">
-            <Button className="flex-1" size="lg" onClick={onRestart}>
-              Aloita alusta
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1"
-              size="lg"
-              onClick={() => navigate("/exercises")}
-            >
-              Takaisin harjoituslistaan
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
