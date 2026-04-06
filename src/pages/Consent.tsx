@@ -11,7 +11,7 @@ export default function Consent() {
 
   const handleContinue = () => {
     if (agreed) {
-      navigate("/task/pseudowords");
+      navigate("/start");
     }
   };
 
@@ -91,7 +91,7 @@ export default function Consent() {
               
               <Button
                 variant="outline"
-                onClick={() => navigate("/start")}
+                onClick={() => navigate("/")}
                 className="w-full"
                 aria-label="Palaa takaisin"
               >

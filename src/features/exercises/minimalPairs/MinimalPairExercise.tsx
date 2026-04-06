@@ -7,8 +7,11 @@ import { cn } from "@/lib/utils";
 import { minimalPairItems as allMinimalPairItems } from "./minimalPairItems.fi";
 import { saveMinimalPairsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { shuffleArray } from "@/lib/utils";
 
-const minimalPairItems = DEV_FAST ? allMinimalPairItems.slice(0, 2) : allMinimalPairItems;
+const minimalPairItems = DEV_FAST
+  ? allMinimalPairItems.slice(0, 2)
+  : shuffleArray(allMinimalPairItems).slice(0, 15);
 
 const ITEM_DURATION_MS = DEV_FAST ? 2000 : 6000;
 const FEEDBACK_DELAY_MS = 900;

@@ -243,6 +243,68 @@ export default function FinalResults() {
           Tämä testi ei ole lääketieteellinen diagnoosi. Tarvittaessa käänny asiantuntijan puoleen.
         </p>
 
+        {/* Resources */}
+        <Card className="mb-8 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
+              Lisätietoa ja jatkoaskeleet
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-foreground mb-4">
+              Jos testi viittaa lukemisen haasteisiin, virallinen arvio kannattaa tehdä asiantuntijan
+              kanssa. Dysleksia on oppimisvaikeus, joka voidaan tunnistaa ja jonka kanssa voi oppia
+              pärjäämään hyvin oikeilla tukitoimilla.
+            </p>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <a
+                  href="https://www.lukimat.fi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                >
+                  Lukimat.fi
+                </a>
+                <span className="text-muted-foreground"> — Niilo Mäki Instituutin lukemisen ja laskemisen tukimateriaali</span>
+              </li>
+              <li>
+                <a
+                  href="https://www.eoliitto.fi/oppimisvaikeudet/luku-ja-kirjoitusvaikeudet/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                >
+                  Erilaisten oppijain liitto
+                </a>
+                <span className="text-muted-foreground"> — neuvontaa ja vertaistukea oppimisvaikeuksiin</span>
+              </li>
+              <li>
+                <a
+                  href="https://www.nmi.fi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                >
+                  Niilo Mäki Instituutti
+                </a>
+                <span className="text-muted-foreground"> — tutkimustietoa oppimisvaikeuksista</span>
+              </li>
+              <li>
+                <a
+                  href="https://www.kuntoutussaatio.fi/henkiloasiakkaat/oppimisen-tuki"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                >
+                  Kuntoutussäätiö — oppimisen tuki
+                </a>
+                <span className="text-muted-foreground"> — tietoa ja tukea oppimisen vaikeuksiin</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Button className="flex-1" onClick={() => navigate("/exercises")}>

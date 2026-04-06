@@ -6,8 +6,11 @@ import { wordChainItems as allWordChainItems } from "./wordChainItems.fi";
 import type { WordChainResult } from "./types";
 import { saveWordChainsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { shuffleArray } from "@/lib/utils";
 
-const wordChainItems = DEV_FAST ? allWordChainItems.slice(0, 2) : allWordChainItems;
+const wordChainItems = DEV_FAST
+  ? allWordChainItems.slice(0, 2)
+  : shuffleArray(allWordChainItems).slice(0, 10);
 const TOTAL_TIME_MS = DEV_FAST ? 30_000 : 120_000;
 
 function formatTime(ms: number): string {

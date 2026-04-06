@@ -10,7 +10,8 @@ export const warmupList: WordItem[] = [
   { text: "kirja", isWord: true },
 ];
 
-// Main scored list – 25 items total (Finnish real words + pseudowords)
+// Main scored list – real Finnish words + pseudowords
+// Shuffled at runtime; a random subset of 30 is shown per session
 export const mainList: WordItem[] = [
   // real Finnish words
   { text: "koulu", isWord: true },
@@ -26,6 +27,33 @@ export const mainList: WordItem[] = [
   { text: "kauppa", isWord: true },
   { text: "pallo", isWord: true },
   { text: "sänky", isWord: true },
+  { text: "ruoka", isWord: true },
+  { text: "kukka", isWord: true },
+  { text: "lintu", isWord: true },
+  { text: "pilvi", isWord: true },
+  { text: "korva", isWord: true },
+  { text: "silmä", isWord: true },
+  { text: "nenä", isWord: true },
+  { text: "jalka", isWord: true },
+  { text: "käsi", isWord: true },
+  { text: "koira", isWord: true },
+  { text: "lammas", isWord: true },
+  { text: "ankka", isWord: true },
+  { text: "helppo", isWord: true },
+  { text: "nopea", isWord: true },
+  { text: "vaikea", isWord: true },
+  { text: "kirkas", isWord: true },
+  { text: "pimeä", isWord: true },
+  { text: "lämmin", isWord: true },
+  { text: "kylmä", isWord: true },
+  { text: "kaunis", isWord: true },
+  { text: "ranta", isWord: true },
+  { text: "metsä", isWord: true },
+  { text: "kenttä", isWord: true },
+  { text: "talvi", isWord: true },
+  { text: "kesä", isWord: true },
+  { text: "syksy", isWord: true },
+  { text: "kevät", isWord: true },
 
   // Finnish-looking pseudowords
   { text: "sate", isWord: false },
@@ -35,12 +63,40 @@ export const mainList: WordItem[] = [
   { text: "lampe", isWord: false },
   { text: "kuppiö", isWord: false },
   { text: "terla", isWord: false },
-  { text: "merta", isWord: false },
   { text: "puvila", isWord: false },
-  { text: "rauko", isWord: false },
   { text: "tilpa", isWord: false },
-  { text: "jarki", isWord: false },
+  { text: "nupila", isWord: false },
+  { text: "kepora", isWord: false },
+  { text: "tiluna", isWord: false },
+  { text: "mopeli", isWord: false },
+  { text: "kenilu", isWord: false },
+  { text: "torilu", isWord: false },
+  { text: "penako", isWord: false },
+  { text: "silamu", isWord: false },
+  { text: "vatola", isWord: false },
+  { text: "kurela", isWord: false },
+  { text: "potina", isWord: false },
+  { text: "taselo", isWord: false },
+  { text: "lonipa", isWord: false },
+  { text: "ropeva", isWord: false },
+  { text: "mutilas", isWord: false },
+  { text: "kanuro", isWord: false },
+  { text: "pelaku", isWord: false },
+  { text: "torames", isWord: false },
+  { text: "vilopa", isWord: false },
+  { text: "rampola", isWord: false },
+  { text: "semiku", isWord: false },
+  { text: "lapuro", isWord: false },
+  { text: "tikane", isWord: false },
+  { text: "vunola", isWord: false },
+  { text: "kepari", isWord: false },
+  { text: "salupe", isWord: false },
+  { text: "mirota", isWord: false },
+  { text: "punelo", isWord: false },
+  { text: "torpila", isWord: false },
+  { text: "karupi", isWord: false },
+  { text: "senola", isWord: false },
 ];
 
-// Combined list (3 warmups + 25 main = 28)
+// Combined list (3 warmups + full main pool)
 export const wordList: WordItem[] = [...warmupList, ...mainList];

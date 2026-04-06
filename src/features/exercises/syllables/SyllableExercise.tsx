@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { syllableItems as allSyllableItems } from "./syllableItems.fi";
 import { DEV_FAST } from "@/lib/devConfig";
+import { shuffleArray } from "@/lib/utils";
 
-const syllableItems = DEV_FAST ? allSyllableItems.slice(0, 2) : allSyllableItems;
+const syllableItems = DEV_FAST
+  ? allSyllableItems.slice(0, 2)
+  : shuffleArray(allSyllableItems).slice(0, 12);
 import type { SyllableResult } from "./types";
 import { saveSyllablesResult } from "@/lib/exerciseResults";
 

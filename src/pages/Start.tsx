@@ -77,7 +77,7 @@ export default function Start() {
             <div className="pt-4 space-y-3">
               <Button
                 size="lg"
-                onClick={() => navigate("/consent")}
+                onClick={() => navigate("/task/pseudowords")}
                 className="w-full text-lg h-12"
                 aria-label="Jatka suostumussivulle"
               >
@@ -87,7 +87,7 @@ export default function Start() {
               
               <Button
                 variant="outline"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/consent")}
                 className="w-full"
                 aria-label="Palaa etusivulle"
               >

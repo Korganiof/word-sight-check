@@ -6,7 +6,7 @@ import { DEV_FAST } from "@/lib/devConfig";
 
 export default function TaskPage() {
   const items = useMemo(() => {
-    const shuffledMain = shuffleArray(mainList);
+    const shuffledMain = shuffleArray(mainList).slice(0, 30);
     const allItems = [...warmupList, ...shuffledMain];
     return DEV_FAST ? allItems.slice(0, 3) : allItems;
   }, []);

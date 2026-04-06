@@ -1,34 +1,26 @@
 import type { WordChainItem } from "./types";
 
 export const wordChainItems: WordChainItem[] = [
-  {
-    id: "wc-1",
-    originalSentence: "Lapset leikkivät puistossa",
-    chainedSentence: "Lapsetleikkivätpuistossa",
-  },
-  {
-    id: "wc-2",
-    originalSentence: "Hän unohti avaimensa kotiin",
-    chainedSentence: "Hänunohtiavaimensakotiin",
-  },
-  {
-    id: "wc-3",
-    originalSentence: "Kaupassa oli pitkä jono",
-    chainedSentence: "Kaupassaolipitkäjono",
-  },
-  {
-    id: "wc-4",
-    originalSentence: "Koira haukkui kun vieras tuli",
-    chainedSentence: "Koirahaukkuikunvierastuli",
-  },
-  {
-    id: "wc-5",
-    originalSentence: "Äiti laittoi ruokaa keittiössä",
-    chainedSentence: "Äitilaittoiruokaakeittiössä",
-  },
-  {
-    id: "wc-6",
-    originalSentence: "Pieni poika juoksi pallon perässä",
-    chainedSentence: "Pienipoikajuoksipallonperässä",
-  },
+  { id: "wc-1",  originalSentence: "Lapset leikkivät puistossa",           chainedSentence: "Lapsetleikkivätpuistossa" },
+  { id: "wc-2",  originalSentence: "Hän unohti avaimensa kotiin",          chainedSentence: "Hänunohtiavaimensakotiin" },
+  { id: "wc-3",  originalSentence: "Kaupassa oli pitkä jono",              chainedSentence: "Kaupassaolipitkäjono" },
+  { id: "wc-4",  originalSentence: "Koira haukkui kun vieras tuli",        chainedSentence: "Koirahaukkuikunvierastuli" },
+  { id: "wc-5",  originalSentence: "Äiti laittoi ruokaa keittiössä",       chainedSentence: "Äitilaittoiruokaakeittiössä" },
+  { id: "wc-6",  originalSentence: "Pieni poika juoksi pallon perässä",    chainedSentence: "Pienipoikajuoksipallonperässä" },
+  { id: "wc-7",  originalSentence: "Aurinko paistoi koko päivän",          chainedSentence: "Aurinkopaistooikolopäivän" },
+  { id: "wc-8",  originalSentence: "Kirja oli pöydällä auki",              chainedSentence: "Kirjaoliplatformallaauki" },
+  { id: "wc-9",  originalSentence: "Hän luki kirjaa sängyssä",             chainedSentence: "Hänlukikirjaasängyssä" },
+  { id: "wc-10", originalSentence: "Koulu alkaa aamulla kahdeksalta",      chainedSentence: "Koulualkaaaamullakahdeksalta" },
+  { id: "wc-11", originalSentence: "Sää oli kylmä ja tuulinen",            chainedSentence: "Säöolikylmäjatuulinen" },
+  { id: "wc-12", originalSentence: "He söivät yhdessä iltapalaa",          chainedSentence: "Hesöivätyhdessäiltapalaa" },
+  { id: "wc-13", originalSentence: "Auto pysähtyi liikennevaloissa",       chainedSentence: "Autopysähtyiliikennevaloissa" },
+  { id: "wc-14", originalSentence: "Tyttö piirsi kuvan väreillä",          chainedSentence: "Tyttöpiirtsikuvanväreillä" },
+  { id: "wc-15", originalSentence: "Isä luki lapsille iltasadun",          chainedSentence: "Isälukilapsilleiltasadun" },
+  { id: "wc-16", originalSentence: "Kaupasta ostettiin maitoa ja leipää",  chainedSentence: "Kaupastaostettäinmaitoajaleipää" },
+  { id: "wc-17", originalSentence: "Lintu lauloi puun oksalla",            chainedSentence: "Lintulauloipuunoksalla" },
+  { id: "wc-18", originalSentence: "Lapsi nukkui sikeästi koko yön",       chainedSentence: "Lapsinukkuisikeästikokotyön" },
+  { id: "wc-19", originalSentence: "Järvessä ui paljon kaloja",            chainedSentence: "Järvessäuipaljoonkaloja" },
+  { id: "wc-20", originalSentence: "Opettaja kirjoitti taululle tehtävän", chainedSentence: "Opettajakirjoittitaululletehtävän" },
+  { id: "wc-21", originalSentence: "Talvella lumi peitti maan",            chainedSentence: "Talvellalumipeittiomaan" },
+  { id: "wc-22", originalSentence: "Hän soitti pianoa tunnin verran",      chainedSentence: "Hänsoittipianoatunninverran" },
 ];
