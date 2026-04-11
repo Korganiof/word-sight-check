@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Clock, EyeOff, CheckCircle, AlertTriangle, Star, Type, Layers, Zap, Ruler, Link2 } from "lucide-react";
+import { Clock, EyeOff, CheckCircle, AlertTriangle, Type, Layers, Zap, Ruler, Link2 } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -53,14 +53,6 @@ export default function Home() {
             <p className="text-sm text-[#d2c5b0] mb-6 leading-relaxed">
               Lukihäiriö on yleinen oppimisvaikeus — arviolta 5–10 % suomalaisista kokee sen vaikutuksia.
             </p>
-            <div className="absolute -bottom-4 -right-4 bg-[#ffffff] rounded-xl px-4 py-3 flex items-start gap-2 w-52"
-              style={{ boxShadow: "0 8px 32px rgba(47,36,27,0.08)" }}>
-              <Star className="w-4 h-4 text-[#C69A2B] mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-[#785a00]">Tutkimuspohjainen</p>
-                <p className="text-xs text-[#755e4d] mt-0.5">Kehitetty yhteistyössä oppimisen asiantuntijoiden kanssa.</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
