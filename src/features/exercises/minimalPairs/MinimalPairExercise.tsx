@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
 import { minimalPairItems as allMinimalPairItems } from "./minimalPairItems.fi";
 import { saveMinimalPairsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
@@ -26,7 +22,6 @@ export function MinimalPairExercise() {
   const total = minimalPairItems.length;
   const progressPct = Math.min(100, ((currentIndex + 1) / total) * 100);
 
-  // Ref so the timeout callback never captures a stale advance function
   const advanceRef = useRef<() => void>(() => {});
   advanceRef.current = useCallback(() => {
     setSelectedAnswer(null);
@@ -37,25 +32,18 @@ export function MinimalPairExercise() {
     }
   }, [currentIndex, total]);
 
-  // Auto-advance on timeout. Clears itself if user answers first.
   useEffect(() => {
     if (selectedAnswer !== null) return;
-
-    const id = setTimeout(() => {
-      advanceRef.current();
-    }, ITEM_DURATION_MS);
-
+    const id = setTimeout(() => { advanceRef.current(); }, ITEM_DURATION_MS);
     return () => clearTimeout(id);
   }, [currentIndex, selectedAnswer]);
 
   const handleSelect = useCallback(
     (option: string) => {
       if (selectedAnswer !== null) return;
-
       const isCorrect = option === currentItem.correctAnswer;
       setSelectedAnswer(option);
       if (isCorrect) setCorrectCount((n) => n + 1);
-
       setTimeout(() => advanceRef.current(), FEEDBACK_DELAY_MS);
     },
     [selectedAnswer, currentItem]
@@ -73,64 +61,97 @@ export function MinimalPairExercise() {
   const options = [currentItem.optionA, currentItem.optionB];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="container mx-auto px-4 py-6 flex-1 flex flex-col gap-6 max-w-2xl">
-        <div>
-          <h1 className="text-2xl font-bold">Sanojen pituuden erottaminen</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Valitse lauseeseen sopiva sana.
+    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
+
+      {/* Nav */}
+      <nav className="px-6 py-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+      </nav>
+
+      {/* Progress */}
+      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
+            Osa 4 — Pituuserojen tunnistaminen
           </p>
+          <p className="text-xs text-[#d2c5b0]">Kysymys {currentIndex + 1} / {total}</p>
         </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            Kysymys {currentIndex + 1} / {total}
-          </span>
+        <div className="h-1 bg-[#f9e4d6] rounded-full">
+          <div
+            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
         </div>
+      </div>
 
-        <Progress value={progressPct} className="h-2" />
-
-        {/* Per-item countdown bar */}
-        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+      {/* Item countdown bar */}
+      <div className="px-6 pt-2 max-w-2xl mx-auto w-full">
+        <div className="h-0.5 bg-[#f9e4d6] rounded-full overflow-hidden">
           <div
             key={currentIndex}
-            className="h-full bg-primary rounded-full"
+            className="h-full bg-[#d2c5b0] rounded-full"
             style={{
               animation: `drain ${ITEM_DURATION_MS}ms linear forwards`,
               animationPlayState: selectedAnswer !== null ? "paused" : "running",
             }}
           />
         </div>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-medium leading-relaxed">
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="w-full max-w-2xl">
+
+          <div
+            className="bg-white rounded-xl p-8"
+            style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+          >
+            <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-6">
+              Valitse lauseeseen sopiva sana
+            </p>
+
+            <p className="text-2xl font-bold text-[#241a11] leading-relaxed mb-8">
               {currentItem.sentence}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </p>
+
             <div className="flex flex-col sm:flex-row gap-4">
               {options.map((option) => {
                 const isSelected = selectedAnswer === option;
+                const isCorrect = option === currentItem.correctAnswer;
+
+                let buttonClass =
+                  "flex-1 h-20 rounded-xl text-2xl font-bold transition-colors ";
+
+                if (selectedAnswer !== null) {
+                  if (isSelected && isCorrect) {
+                    buttonClass += "bg-green-100 text-green-800";
+                  } else if (isSelected && !isCorrect) {
+                    buttonClass += "bg-red-100 text-red-700";
+                  } else {
+                    buttonClass += "bg-[#f9ede4] text-[#d2c5b0]";
+                  }
+                } else {
+                  buttonClass +=
+                    "bg-[#f9e4d6] text-[#241a11] hover:bg-[#C69A2B] hover:text-white cursor-pointer";
+                }
 
                 return (
-                  <Button
+                  <button
                     key={option}
-                    variant={isSelected ? "default" : "outline"}
-                    size="lg"
-                    className={cn("flex-1 text-2xl h-20 font-semibold")}
+                    className={buttonClass}
                     onClick={() => handleSelect(option)}
                     disabled={selectedAnswer !== null}
                   >
                     {option}
-                  </Button>
+                  </button>
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+        </div>
       </div>
+
     </div>
   );
 }
-

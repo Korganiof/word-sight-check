@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { WordItem } from "@/lib/pseudowords";
 import type { Trial } from "@/lib/metrics";
 import { saveSession } from "@/lib/metrics";
 
 interface PseudoWordTaskProps {
   items: WordItem[];
-  /**
-   * Number of initial warm-up trials that should NOT be included
-   * in scoring / saved session data.
-   */
   warmupCount?: number;
 }
 
@@ -24,13 +18,10 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   const [isProcessing, setIsProcessing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(ITEM_TIMEOUT_MS);
 
-  // refs for immediate, race-proof state
   const startRef = useRef<number>(0);
   const processingRef = useRef<boolean>(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // button focus refs for a11y / fast keyboard flow
   const realBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const currentItem = items[currentIndex];
@@ -49,7 +40,7 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   const handleAnswer = useCallback(
     (answer: boolean | null, timedOut = false) => {
       if (!currentItem) return;
-      if (processingRef.current) return; // hard guard against double-submits
+      if (processingRef.current) return;
       processingRef.current = true;
       setIsProcessing(true);
       clearTimers();
@@ -69,16 +60,13 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
       setTrials(prev => {
         const newTrials = [...prev, trial];
 
-        // Move to next or finish
         if (currentIndex < items.length - 1) {
-          // small delay for UI feedback, then advance
           setTimeout(() => {
             setCurrentIndex(i => i + 1);
             setIsProcessing(false);
             processingRef.current = false;
           }, 200);
         } else {
-          // Exclude warm-up trials from saved/scored session
           const scoredTrials =
             warmupCount > 0 ? newTrials.slice(Math.min(warmupCount, newTrials.length)) : newTrials;
           saveSession(scoredTrials);
@@ -93,7 +81,6 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
     [currentItem, currentIndex, items.length, warmupCount, navigate, clearTimers]
   );
 
-  // Start timing and countdown when item is shown
   useEffect(() => {
     if (!currentItem) return;
     clearTimers();
@@ -112,23 +99,14 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
     return clearTimers;
   }, [currentIndex, currentItem, clearTimers, handleAnswer]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (processingRef.current) return;
-      // ignore auto-repeat (holding key down)
       if (e.repeat) return;
-
       const k = e.key.toLowerCase();
-      if (k === "a") {
-        e.preventDefault();
-        handleAnswer(true, false);
-      } else if (k === "l") {
-        e.preventDefault();
-        handleAnswer(false, false);
-      }
+      if (k === "a") { e.preventDefault(); handleAnswer(true, false); }
+      else if (k === "l") { e.preventDefault(); handleAnswer(false, false); }
     };
-
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleAnswer]);
@@ -139,86 +117,105 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
     ? `Harjoituskierros ${currentIndex + 1} / ${warmupTotal}`
     : `Tehtävä ${currentIndex - warmupTotal + 1} / ${mainTotal}`;
 
+  const timeRatio = timeLeft / ITEM_TIMEOUT_MS;
+  const timerColor = timeLeft < 1000 ? "#ef4444" : "#C69A2B";
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="container mx-auto px-4 py-8 flex-1 flex flex-col">
-        <div className="mb-8">
-          <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>{progressLabel}</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <div className="w-full bg-secondary rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
+
+      {/* Nav */}
+      <nav className="px-6 py-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+        {isWarmup && (
+          <span className="text-xs font-semibold text-[#785a00] bg-[#f9e4d6] px-3 py-1 rounded-md uppercase tracking-widest">
+            Harjoittelu
+          </span>
+        )}
+      </nav>
+
+      {/* Progress header */}
+      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
+            {progressLabel}
+          </p>
+          <p className="text-xs text-[#d2c5b0]">{Math.round(progress)}%</p>
         </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <Card className="w-full max-w-2xl shadow-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Onko tämä oikea sana?
-              </CardTitle>
-              <CardDescription className="sr-only">
-                Päätä onko näytetty sana oikea suomen sana vai ei
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              <div className="text-center py-12">
-                <p className="text-5xl font-bold text-foreground tracking-wide">{currentItem.text}</p>
-              </div>
-
-              <div className="w-full bg-secondary rounded-full h-1.5">
-                <div
-                  className="h-1.5 rounded-full transition-none"
-                  style={{
-                    width: `${(timeLeft / ITEM_TIMEOUT_MS) * 100}%`,
-                    backgroundColor: timeLeft < 1000 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))',
-                  }}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Button
-                  ref={realBtnRef}
-                  variant="outline"
-                  className="h-16 text-lg px-8"
-                  disabled={isProcessing}
-                  aria-label="Oikea sana (A)"
-                  onClick={() => handleAnswer(true, false)}
-                >
-                  <span className="flex flex-col items-center gap-1">
-                    <span>Oikea sana</span>
-                    <span className="text-xs text-muted-foreground">(A)</span>
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-16 text-lg px-8"
-                  disabled={isProcessing}
-                  aria-label="Ei sana (L)"
-                  onClick={() => handleAnswer(false, false)}
-                >
-                  <span className="flex flex-col items-center gap-1">
-                    <span>Ei sana</span>
-                    <span className="text-xs text-muted-foreground">(L)</span>
-                  </span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="h-1 bg-[#f9e4d6] rounded-full">
+          <div
+            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
 
-      <footer className="border-t bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <p className="text-sm text-muted-foreground text-center">
-            Vastaa mahdollisimman tarkasti. Älä kuitenkaan mieti liian pitkään.
-          </p>
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="w-full max-w-2xl">
+
+          <div
+            className="bg-white rounded-xl"
+            style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+          >
+            {/* Question label */}
+            <div className="px-6 pt-6 pb-2 text-center">
+              <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
+                Onko tämä oikea sana?
+              </p>
+            </div>
+
+            {/* Word display */}
+            <div className="flex items-center justify-center py-12 px-6">
+              <p className="text-5xl font-bold text-[#241a11] tracking-tight">
+                {currentItem.text}
+              </p>
+            </div>
+
+            {/* Timer bar */}
+            <div className="mx-6 mb-6 h-1.5 bg-[#f9e4d6] rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-none"
+                style={{
+                  width: `${timeRatio * 100}%`,
+                  backgroundColor: timerColor,
+                }}
+              />
+            </div>
+
+            {/* Answer buttons */}
+            <div className="grid grid-cols-2 gap-4 px-6 pb-6">
+              <button
+                ref={realBtnRef}
+                disabled={isProcessing}
+                onClick={() => handleAnswer(true, false)}
+                aria-label="Oikea sana (A)"
+                className="h-16 rounded-lg font-semibold text-white text-base bg-[#C69A2B] hover:bg-[#785a00] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex flex-col items-center justify-center gap-0.5"
+              >
+                <span>Oikea sana</span>
+                <span className="text-xs opacity-70">(A)</span>
+              </button>
+              <button
+                disabled={isProcessing}
+                onClick={() => handleAnswer(false, false)}
+                aria-label="Ei sana (L)"
+                className="h-16 rounded-lg font-semibold text-white text-base bg-[#4A3728] hover:bg-[#2F241B] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex flex-col items-center justify-center gap-0.5"
+              >
+                <span>Ei sana</span>
+                <span className="text-xs opacity-70">(L)</span>
+              </button>
+            </div>
+          </div>
+
         </div>
+      </div>
+
+      {/* Footer hint */}
+      <footer className="px-6 py-4 text-center">
+        <p className="text-sm text-[#d2c5b0]">
+          Vastaa mahdollisimman tarkasti. Älä kuitenkaan mieti liian pitkään.
+        </p>
       </footer>
+
     </div>
   );
 }

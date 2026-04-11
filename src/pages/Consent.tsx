@@ -1,112 +1,128 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowRight } from "lucide-react";
+import { Stethoscope, EyeOff, Info, ArrowRight } from "lucide-react";
 
 export default function Consent() {
   const navigate = useNavigate();
   const [agreed, setAgreed] = useState(false);
 
-  const handleContinue = () => {
-    if (agreed) {
-      navigate("/start");
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="container mx-auto px-4 py-12 flex-1 flex items-center justify-center">
-        <Card className="w-full max-w-2xl shadow-lg">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <AlertCircle className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-3xl">Suostumus ja ymmärrys</CardTitle>
-            <CardDescription className="text-base">
-              Vahvista, että ymmärrät seuraavat asiat
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Key points */}
-            <div className="space-y-4">
-              <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">Tämä EI ole diagnoosi</h3>
-                <p className="text-sm text-muted-foreground">
-                  Tämä seula antaa vain alustavaa tietoa. Se ei voi diagnosoida
-                  lukivaikeutta tai mitään muutakaan tilaa. Vain pätevä ammattilainen
-                  voi tehdä varsinaisen diagnoosin laajan tutkimuksen perusteella.
-                </p>
-              </div>
+    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
 
-              <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">Käyttö on anonyymia</h3>
-                <p className="text-sm text-muted-foreground">
-                  Emme kerää henkilötietoja. Tulokset tallentuvat vain selaimesi
-                  istuntotietoihin ja poistuvat automaattisesti, kun suljet selaimen.
-                </p>
-              </div>
+      {/* Nav */}
+      <nav className="px-6 py-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+      </nav>
 
-              <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">Hakeudu tarvittaessa tutkimuksiin</h3>
-                <p className="text-sm text-muted-foreground">
-                  Jos sinulla on huolia lukivaikeudesta tai oppimisvaikeuksista,
-                  ota yhteyttä esimerkiksi erityisopettajaan, oppimisvaikeuksiin
-                  perehtyneeseen psykologiin tai terveydenhuollon ammattilaiseen.
-                </p>
-              </div>
-            </div>
-
-            {/* Consent checkbox */}
-            <div className="flex items-start space-x-3 p-4 bg-secondary/30 rounded-lg">
-              <Checkbox
-                id="consent"
-                checked={agreed}
-                onCheckedChange={(checked) => setAgreed(checked === true)}
-                aria-label="Ymmärrän ja hyväksyn"
-                className="mt-1"
-              />
-              <label
-                htmlFor="consent"
-                className="text-sm font-medium text-foreground leading-relaxed cursor-pointer"
-              >
-                Ymmärrän, että tämä ei ole <strong>diagnoosi</strong> ja että käyttökertani on
-                <strong> anonyymi</strong>. Hyväksyn nämä ehdot ja haluan jatkaa seulan tekemistä.
-              </label>
-            </div>
-
-            {/* Actions */}
-            <div className="pt-4 space-y-3">
-              <Button
-                size="lg"
-                onClick={handleContinue}
-                disabled={!agreed}
-                className="w-full text-lg h-12"
-                aria-label="Jatka tehtävään"
-              >
-                Jatka tehtävään
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => navigate("/")}
-                className="w-full"
-                aria-label="Palaa takaisin"
-              >
-                Takaisin
-              </Button>
-            </div>
-
-            {agreed && (
-              <p className="text-xs text-muted-foreground text-center">
-                Valmis aloittamaan? Napsauta yläpuolella olevaa &quot;Jatka tehtävään&quot; -painiketta.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+      {/* Progress indicator */}
+      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
+        <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-1">
+          Vaihe 0 / 4 — Valmistelu
+        </p>
+        <div className="h-1 bg-[#f9e4d6] rounded-full">
+          <div className="h-1 bg-[#C69A2B] rounded-full w-0" />
+        </div>
       </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex items-start justify-center px-6 py-8">
+        <div className="w-full max-w-2xl">
+
+          <h1 className="text-3xl font-bold text-[#241a11] tracking-tight mb-2">
+            Suostumus ja ymmärrys
+          </h1>
+          <p className="text-[#755e4d] mb-8 leading-relaxed">
+            Ennen kuin aloitamme luku- ja kirjoitusvalmiuksien kartoituksen, pyydämme
+            sinua lukemaan ja hyväksymään seuraavat ehdot.
+          </p>
+
+          {/* Info blocks */}
+          <div className="space-y-4 mb-8">
+            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
+              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
+                <Stethoscope className="w-5 h-5 text-[#785a00]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#241a11] mb-1">Tämä EI ole diagnoosi</h3>
+                <p className="text-sm text-[#755e4d] leading-relaxed">
+                  Tämä työkalu tarjoaa vain alustavaa tietoa. Virallisen diagnoosin saamiseksi
+                  tarvitaan aina ammattilaisen, kuten erikoisopettajan tai psykologin tekemä tutkimus.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
+              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
+                <EyeOff className="w-5 h-5 text-[#785a00]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#241a11] mb-1">Käyttö on anonyymia</h3>
+                <p className="text-sm text-[#755e4d] leading-relaxed">
+                  Emme kerää henkilötietoja. Tuloksesi säilyvät vain tämän istunnon ajan,
+                  eikä niitä voida yhdistää sinuun henkilökohtaisesti.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
+              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
+                <Info className="w-5 h-5 text-[#785a00]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#241a11] mb-1">Hakeudu tarvittaessa tutkimuksiin</h3>
+                <p className="text-sm text-[#755e4d] leading-relaxed">
+                  Jos kartoituksen tulokset herättävät huolta, suosittelemme ottamaan yhteyttä
+                  terveydenhuollon tai oppilaitoksesi asiantuntijoihin lisätutkimuksia varten.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Checkbox */}
+          <label className="flex items-start gap-3 cursor-pointer mb-8 bg-[#fff1e8] rounded-xl p-4">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-1 w-4 h-4 rounded accent-[#C69A2B] flex-shrink-0"
+            />
+            <span className="text-sm text-[#241a11] leading-relaxed">
+              Ymmärrän, että tämä ei ole <strong>diagnoosi</strong> ja että käyttökertani on{" "}
+              <strong>anonyymi</strong>. Hyväksyn nämä ehdot ja haluan jatkaa seulan tekemistä.
+            </span>
+          </label>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => agreed && navigate("/start")}
+              disabled={!agreed}
+              className="flex items-center justify-center gap-2 bg-[#C69A2B] text-white font-semibold px-8 py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#785a00]"
+            >
+              Jatka tehtävään
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => navigate("/")}
+              className="px-8 py-3 rounded-lg font-semibold text-[#755e4d] bg-[#f9e4d6] hover:bg-[#f3dfd1] transition-colors"
+            >
+              Peruuta
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="px-6 py-4 text-center text-xs text-[#d2c5b0]">
+        LukiSeula © 2025 ·{" "}
+        <span className="underline cursor-pointer hover:text-[#755e4d]">Tietosuoja</span>
+        {" · "}
+        <span className="underline cursor-pointer hover:text-[#755e4d]">Saavutettavuus</span>
+        {" · "}
+        <span className="underline cursor-pointer hover:text-[#755e4d]">Yhteystiedot</span>
+      </footer>
+
     </div>
   );
 }

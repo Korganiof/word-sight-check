@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { loadSession, computeAccuracy } from "@/lib/metrics";
 import { loadWordSearchResult } from "@/lib/wordsearch";
 import {
@@ -26,25 +23,32 @@ const LEVEL_LABEL: Record<Level, string> = {
   missing: "Harjoitusta ei tehty",
 };
 
-const LEVEL_COLOR: Record<Level, string> = {
+const LEVEL_DOT: Record<Level, string> = {
   sujuu: "bg-green-500",
   jonkin: "bg-amber-400",
   selvia: "bg-red-500",
-  missing: "bg-muted",
+  missing: "bg-[#d2c5b0]",
 };
 
-const LEVEL_TEXT_COLOR: Record<Level, string> = {
+const LEVEL_TEXT: Record<Level, string> = {
   sujuu: "text-green-700",
   jonkin: "text-amber-700",
-  selvia: "text-red-700",
-  missing: "text-muted-foreground",
+  selvia: "text-red-600",
+  missing: "text-[#d2c5b0]",
 };
 
-const LEVEL_BAR_WIDTH: Record<Level, string> = {
-  sujuu: "w-full",
-  jonkin: "w-2/3",
-  selvia: "w-1/3",
-  missing: "w-0",
+const LEVEL_BAR: Record<Level, string> = {
+  sujuu: "bg-green-500",
+  jonkin: "bg-amber-400",
+  selvia: "bg-red-500",
+  missing: "bg-[#d2c5b0]",
+};
+
+const LEVEL_WIDTH: Record<Level, string> = {
+  sujuu: "100%",
+  jonkin: "66%",
+  selvia: "33%",
+  missing: "0%",
 };
 
 function scoreToLevel(correct: number, total: number): Level {
@@ -110,22 +114,23 @@ function buildSummary(areas: SkillArea[]): string {
 
 function SkillRow({ area }: { area: SkillArea }) {
   return (
-    <div className="py-4 border-b last:border-b-0">
-      <div className="flex items-center justify-between mb-2">
-        <span className="font-medium text-foreground">{area.label}</span>
-        <span className={cn("text-sm font-semibold", LEVEL_TEXT_COLOR[area.level])}>
-          {LEVEL_LABEL[area.level]}
-        </span>
+    <div className="py-5">
+      <div className="flex items-center justify-between mb-3">
+        <span className="font-semibold text-[#241a11]">{area.label}</span>
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${LEVEL_DOT[area.level]}`} />
+          <span className={`text-sm font-semibold ${LEVEL_TEXT[area.level]}`}>
+            {LEVEL_LABEL[area.level]}
+          </span>
+        </div>
       </div>
-
-      {/* Bar */}
-      <div className="h-2 bg-muted rounded-full overflow-hidden mb-2">
+      <div className="h-1.5 bg-[#f9e4d6] rounded-full overflow-hidden mb-2">
         <div
-          className={cn("h-full rounded-full transition-all", LEVEL_COLOR[area.level], LEVEL_BAR_WIDTH[area.level])}
+          className={`h-full rounded-full transition-all ${LEVEL_BAR[area.level]}`}
+          style={{ width: LEVEL_WIDTH[area.level] }}
         />
       </div>
-
-      <p className="text-sm text-muted-foreground">{area.description}</p>
+      <p className="text-sm text-[#755e4d] leading-relaxed">{area.description}</p>
     </div>
   );
 }
@@ -135,7 +140,6 @@ export default function FinalResults() {
   const [areas, setAreas] = useState<SkillArea[]>([]);
 
   useEffect(() => {
-    // 1. Sanantunnistus — pseudoword accuracy
     const trials = loadSession();
     const pseudoAccuracy = trials && trials.length > 0 ? computeAccuracy(trials) : null;
     const sanantunnistusLevel: Level =
@@ -147,174 +151,160 @@ export default function FinalResults() {
         ? "jonkin"
         : "selvia";
 
-    // 2. Tavujen käsittely — syllables
     const syllables = loadSyllablesResult();
     const tavutLevel: Level = syllables ? scoreToLevel(syllables.correct, syllables.total) : "missing";
 
-    // 3. Lukunopeus ja hahmottaminen — word search
     const wordSearch = loadWordSearchResult();
     const lukunopeusLevel: Level = wordSearch
       ? scoreToLevel(wordSearch.foundCorrect, wordSearch.totalTargets)
       : "missing";
 
-    // 4. Pituuserojen tunnistaminen — minimal pairs
     const minimalPairs = loadMinimalPairsResult();
     const pituuserotLevel: Level = minimalPairs
       ? scoreToLevel(minimalPairs.correct, minimalPairs.total)
       : "missing";
 
-    // 5. Sanarajojen hahmottaminen — word chains
     const wordChains = loadWordChainsResult();
     const sanarajatLevel: Level = wordChains
       ? scoreToLevel(wordChains.correct, wordChains.total)
       : "missing";
 
     setAreas([
-      {
-        label: "Sanantunnistus",
-        level: sanantunnistusLevel,
-        description: DESCRIPTIONS.sanantunnistus[sanantunnistusLevel],
-      },
-      {
-        label: "Tavujen käsittely",
-        level: tavutLevel,
-        description: DESCRIPTIONS.tavut[tavutLevel],
-      },
-      {
-        label: "Lukunopeus ja hahmottaminen",
-        level: lukunopeusLevel,
-        description: DESCRIPTIONS.lukunopeus[lukunopeusLevel],
-      },
-      {
-        label: "Pituuserojen tunnistaminen",
-        level: pituuserotLevel,
-        description: DESCRIPTIONS.pituuserot[pituuserotLevel],
-      },
-      {
-        label: "Sanarajojen hahmottaminen",
-        level: sanarajatLevel,
-        description: DESCRIPTIONS.sanarajat[sanarajatLevel],
-      },
+      { label: "Sanantunnistus", level: sanantunnistusLevel, description: DESCRIPTIONS.sanantunnistus[sanantunnistusLevel] },
+      { label: "Tavujen käsittely", level: tavutLevel, description: DESCRIPTIONS.tavut[tavutLevel] },
+      { label: "Lukunopeus ja hahmottaminen", level: lukunopeusLevel, description: DESCRIPTIONS.lukunopeus[lukunopeusLevel] },
+      { label: "Pituuserojen tunnistaminen", level: pituuserotLevel, description: DESCRIPTIONS.pituuserot[pituuserotLevel] },
+      { label: "Sanarajojen hahmottaminen", level: sanarajatLevel, description: DESCRIPTIONS.sanarajat[sanarajatLevel] },
     ]);
   }, []);
 
   const summary = buildSummary(areas);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-2xl">
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-foreground mb-3">Tulokset</h1>
+    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
 
-        {/* Intro */}
-        <p className="text-muted-foreground mb-8">
+      {/* Nav */}
+      <nav className="px-6 py-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+      </nav>
+
+      <div className="flex-1 px-6 py-8 max-w-2xl mx-auto w-full">
+
+        <span className="inline-block text-xs font-semibold tracking-widest uppercase text-[#785a00] bg-[#f9e4d6] px-3 py-1 rounded-md mb-6">
+          Seulonnan tulokset
+        </span>
+
+        <h1 className="text-3xl font-bold text-[#241a11] tracking-tight mb-2">
+          Tulokset
+        </h1>
+        <p className="text-[#755e4d] mb-10 leading-relaxed">
           Tämä testi antaa suuntaa lukemiseen liittyvistä vahvuuksista ja mahdollisista haasteista.
           Se ei ole virallinen diagnoosi.
         </p>
 
         {/* Summary */}
-        <Card className="mb-8 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
-              Yhteenveto
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-foreground">{summary}</p>
-          </CardContent>
-        </Card>
+        <div
+          className="bg-white rounded-xl p-6 mb-6"
+          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+        >
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-3">Yhteenveto</p>
+          <p className="text-[#241a11] leading-relaxed">{summary}</p>
+        </div>
 
         {/* Skill areas */}
-        <Card className="mb-8 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
-              Osa-alueet
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            {areas.map(area => (
-              <SkillRow key={area.label} area={area} />
-            ))}
-          </CardContent>
-        </Card>
+        <div
+          className="bg-white rounded-xl px-6 mb-6"
+          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+        >
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest pt-6 mb-2">Osa-alueet</p>
+          {areas.map((area, i) => (
+            <div key={area.label}>
+              <SkillRow area={area} />
+              {i < areas.length - 1 && <div className="h-px bg-[#f9e4d6]" />}
+            </div>
+          ))}
+        </div>
 
         {/* Disclaimer */}
-        <p className="text-sm text-muted-foreground text-center mb-8 px-4">
+        <p className="text-sm text-[#d2c5b0] text-center mb-8 px-4 leading-relaxed">
           Tämä testi ei ole lääketieteellinen diagnoosi. Tarvittaessa käänny asiantuntijan puoleen.
         </p>
 
         {/* Resources */}
-        <Card className="mb-8 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
-              Lisätietoa ja jatkoaskeleet
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-foreground mb-4">
-              Jos testi viittaa lukemisen haasteisiin, virallinen arvio kannattaa tehdä asiantuntijan
-              kanssa. Dysleksia on oppimisvaikeus, joka voidaan tunnistaa ja jonka kanssa voi oppia
-              pärjäämään hyvin oikeilla tukitoimilla.
-            </p>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a
-                  href="https://www.lukimat.fi"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-                >
-                  Lukimat.fi
-                </a>
-                <span className="text-muted-foreground"> — Niilo Mäki Instituutin lukemisen ja laskemisen tukimateriaali</span>
+        <div
+          className="bg-white rounded-xl p-6 mb-8"
+          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+        >
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-4">Lisätietoa ja jatkoaskeleet</p>
+          <p className="text-sm text-[#755e4d] mb-5 leading-relaxed">
+            Jos testi viittaa lukemisen haasteisiin, virallinen arvio kannattaa tehdä asiantuntijan
+            kanssa. Dysleksia on oppimisvaikeus, joka voidaan tunnistaa ja jonka kanssa voi oppia
+            pärjäämään hyvin oikeilla tukitoimilla.
+          </p>
+          <ul className="space-y-4 text-sm">
+            {[
+              {
+                href: "https://www.lukimat.fi",
+                label: "Lukimat.fi",
+                desc: "Niilo Mäki Instituutin lukemisen ja laskemisen tukimateriaali",
+              },
+              {
+                href: "https://www.eoliitto.fi/oppimisvaikeudet/luku-ja-kirjoitusvaikeudet/",
+                label: "Erilaisten oppijain liitto",
+                desc: "neuvontaa ja vertaistukea oppimisvaikeuksiin",
+              },
+              {
+                href: "https://www.nmi.fi",
+                label: "Niilo Mäki Instituutti",
+                desc: "tutkimustietoa oppimisvaikeuksista",
+              },
+              {
+                href: "https://www.kuntoutussaatio.fi/henkiloasiakkaat/oppimisen-tuki",
+                label: "Kuntoutussäätiö — oppimisen tuki",
+                desc: "tietoa ja tukea oppimisen vaikeuksiin",
+              },
+            ].map(({ href, label, desc }) => (
+              <li key={href} className="flex items-start gap-2">
+                <span className="w-1 h-1 rounded-full bg-[#C69A2B] mt-2 flex-shrink-0" />
+                <span>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-[#C69A2B] hover:text-[#785a00] transition-colors underline underline-offset-4"
+                  >
+                    {label}
+                  </a>
+                  <span className="text-[#755e4d]"> — {desc}</span>
+                </span>
               </li>
-              <li>
-                <a
-                  href="https://www.eoliitto.fi/oppimisvaikeudet/luku-ja-kirjoitusvaikeudet/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-                >
-                  Erilaisten oppijain liitto
-                </a>
-                <span className="text-muted-foreground"> — neuvontaa ja vertaistukea oppimisvaikeuksiin</span>
-              </li>
-              <li>
-                <a
-                  href="https://www.nmi.fi"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-                >
-                  Niilo Mäki Instituutti
-                </a>
-                <span className="text-muted-foreground"> — tutkimustietoa oppimisvaikeuksista</span>
-              </li>
-              <li>
-                <a
-                  href="https://www.kuntoutussaatio.fi/henkiloasiakkaat/oppimisen-tuki"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-                >
-                  Kuntoutussäätiö — oppimisen tuki
-                </a>
-                <span className="text-muted-foreground"> — tietoa ja tukea oppimisen vaikeuksiin</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+            ))}
+          </ul>
+        </div>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button className="flex-1" onClick={() => navigate("/exercises")}>
-            Harjoituksiin
-          </Button>
-          <Button variant="outline" className="flex-1" onClick={() => navigate("/")}>
+          <button
+            onClick={() => navigate("/")}
+            className="flex-1 bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold py-3 rounded-lg transition-colors"
+          >
             Etusivulle
-          </Button>
+          </button>
+          <button
+            onClick={() => navigate("/exercises")}
+            className="flex-1 bg-[#4A3728] hover:bg-[#2F241B] text-white font-semibold py-3 rounded-lg transition-colors"
+          >
+            Harjoituksiin
+          </button>
         </div>
+
       </div>
+
+      {/* Footer */}
+      <footer className="px-6 py-4 text-center text-xs text-[#d2c5b0] mt-8">
+        LukiSeula © 2025
+      </footer>
+
     </div>
   );
 }

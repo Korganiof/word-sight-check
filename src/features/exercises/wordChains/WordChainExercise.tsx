@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { wordChainItems as allWordChainItems } from "./wordChainItems.fi";
 import type { WordChainResult } from "./types";
 import { saveWordChainsResult } from "@/lib/exerciseResults";
@@ -37,7 +35,6 @@ export function WordChainExercise() {
   const exerciseStartRef = useRef<number>(performance.now());
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  // keep latest results accessible inside timer callback without re-subscribing
   const resultsRef = useRef<WordChainResult[]>([]);
   const currentIndexRef = useRef<number>(0);
   const feedbackRef = useRef<boolean>(false);
@@ -73,12 +70,7 @@ export function WordChainExercise() {
     const input = timedOut ? "" : (document.querySelector<HTMLInputElement>("#chain-input")?.value ?? "");
     const correct = !timedOut && normalize(input) === normalize(item.originalSentence);
 
-    const result: WordChainResult = {
-      item,
-      userInput: input.trim(),
-      correct,
-      rtMs,
-    };
+    const result: WordChainResult = { item, userInput: input.trim(), correct, rtMs };
 
     setFeedback(correct ? "correct" : "incorrect");
 
@@ -89,7 +81,6 @@ export function WordChainExercise() {
     }, 600);
   }, [commitResult]);
 
-  // Global countdown timer — starts once on mount
   useEffect(() => {
     exerciseStartRef.current = performance.now();
     timerRef.current = setInterval(() => {
@@ -98,7 +89,6 @@ export function WordChainExercise() {
       setRemainingMs(remaining);
       if (remaining === 0) {
         if (timerRef.current) clearInterval(timerRef.current);
-        // Auto-submit current item then finish with whatever results we have
         const item = wordChainItems[currentIndexRef.current];
         const input = document.querySelector<HTMLInputElement>("#chain-input")?.value ?? "";
         const correct = !feedbackRef.current && normalize(input) === normalize(item.originalSentence);
@@ -111,18 +101,15 @@ export function WordChainExercise() {
         finishExercise([...resultsRef.current, result]);
       }
     }, 100);
-
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [finishExercise]);
 
-  // Reset per-item state when index changes
   useEffect(() => {
     itemStartRef.current = performance.now();
     setInputValue("");
     setFeedback(null);
   }, [currentIndex]);
 
-  // Focus input once feedback is cleared (input is re-enabled at that point)
   useEffect(() => {
     if (feedback === null) {
       inputRef.current?.focus();
@@ -133,8 +120,6 @@ export function WordChainExercise() {
     if (e.key === "Enter") handleSubmit(false);
   }
 
-  const isLow = remainingMs < 30_000;
-
   useEffect(() => {
     if (isComplete && results.length > 0) {
       saveWordChainsResult({ correct: results.filter(r => r.correct).length, total: results.length });
@@ -142,80 +127,114 @@ export function WordChainExercise() {
     }
   }, [isComplete, results, navigate]);
 
+  const isLow = remainingMs < 30_000;
+  const timeProgress = (remainingMs / TOTAL_TIME_MS) * 100;
+  const itemProgress = ((currentIndex + 1) / wordChainItems.length) * 100;
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="container mx-auto px-4 py-8 flex-1 flex flex-col">
-        <div className="mb-8 space-y-2">
-          <div className="flex justify-between items-center text-sm text-muted-foreground">
-            <span>Lause {currentIndex + 1} / {wordChainItems.length}</span>
-            <span
-              className={`font-mono font-semibold text-base tabular-nums ${isLow ? "text-destructive" : "text-foreground"}`}
-            >
-              {formatTime(remainingMs)}
-            </span>
-          </div>
-          <div className="w-full bg-secondary rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentIndex + 1) / wordChainItems.length) * 100}%` }}
-            />
-          </div>
-          {/* Global time bar */}
-          <div className="w-full bg-secondary rounded-full h-1">
-            <div
-              className={`h-1 rounded-full transition-none ${isLow ? "bg-destructive" : "bg-primary/40"}`}
-              style={{ width: `${(remainingMs / TOTAL_TIME_MS) * 100}%` }}
-            />
-          </div>
+    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
+
+      {/* Nav */}
+      <nav className="px-6 py-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+        <span
+          className="font-mono font-bold text-lg tabular-nums"
+          style={{ color: isLow ? "#ef4444" : "#241a11" }}
+        >
+          {formatTime(remainingMs)}
+        </span>
+      </nav>
+
+      {/* Progress bars */}
+      <div className="px-6 pb-2 max-w-2xl mx-auto w-full space-y-1.5">
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
+            Osa 5 — Sanarajojen hahmottaminen
+          </p>
+          <p className="text-xs text-[#d2c5b0]">Lause {currentIndex + 1} / {wordChainItems.length}</p>
         </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <Card className="w-full max-w-2xl shadow-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Sanaketjujen erottaminen
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <p className="text-center text-sm text-muted-foreground">
-                Lisää välilyönnit oikeisiin kohtiin. Kirjoita sanat välilyönneillä erotettuina.
-              </p>
-
-              <div className="text-center py-6">
-                <p className="text-3xl font-bold tracking-wide break-all">{currentItem.chainedSentence}</p>
-              </div>
-
-              <input
-                id="chain-input"
-                ref={inputRef}
-                type="text"
-                value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={!!feedback}
-                placeholder="Kirjoita lause välilyönneillä..."
-                className="w-full rounded-md border border-input bg-background px-4 py-3 text-base outline-none transition-colors focus:border-primary"
-              />
-
-              <Button
-                className="w-full"
-                onClick={() => handleSubmit(false)}
-                disabled={!inputValue.trim() || !!feedback}
-              >
-                Tarkista
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Item progress */}
+        <div className="h-1 bg-[#f9e4d6] rounded-full">
+          <div
+            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
+            style={{ width: `${itemProgress}%` }}
+          />
+        </div>
+        {/* Time progress */}
+        <div className="h-0.5 bg-[#f9e4d6] rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-none"
+            style={{
+              width: `${timeProgress}%`,
+              backgroundColor: isLow ? "#ef4444" : "#d2c5b0",
+            }}
+          />
         </div>
       </div>
 
-      <footer className="border-t bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <p className="text-sm text-muted-foreground text-center">
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="w-full max-w-2xl">
+
+          <div
+            className="bg-white rounded-xl p-8"
+            style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+          >
+            <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-2">
+              Sanaketjujen erottaminen
+            </p>
+            <p className="text-sm text-[#755e4d] mb-8">
+              Lisää välilyönnit oikeisiin kohtiin. Kirjoita sanat välilyönneillä erotettuina.
+            </p>
+
+            <div className="bg-[#f9ede4] rounded-xl px-6 py-8 mb-8 text-center">
+              <p className="text-2xl font-bold text-[#241a11] tracking-tight break-all leading-relaxed">
+                {currentItem.chainedSentence}
+              </p>
+            </div>
+
+            {feedback && (
+              <div
+                className={`text-center text-sm font-semibold py-2 rounded-lg mb-4 ${
+                  feedback === "correct"
+                    ? "bg-green-50 text-green-700"
+                    : "bg-red-50 text-red-600"
+                }`}
+              >
+                {feedback === "correct" ? "Oikein!" : "Ei täsmää — tarkista välilyönnit"}
+              </div>
+            )}
+
+            <input
+              id="chain-input"
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={!!feedback}
+              placeholder="Kirjoita lause välilyönneillä..."
+              className="w-full rounded-lg bg-[#fff8f5] px-4 py-3 text-base text-[#241a11] outline-none transition-colors placeholder:text-[#d2c5b0] mb-4"
+              style={{ border: "1.5px solid #f9e4d6" }}
+              onFocus={e => (e.currentTarget.style.borderColor = "#C69A2B")}
+              onBlur={e => (e.currentTarget.style.borderColor = "#f9e4d6")}
+            />
+
+            <button
+              onClick={() => handleSubmit(false)}
+              disabled={!inputValue.trim() || !!feedback}
+              className="w-full bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Tarkista
+            </button>
+          </div>
+
+          <p className="text-center text-sm text-[#d2c5b0] mt-6">
             Muista lisätä välilyönnit sanojen väliin.
           </p>
         </div>
-      </footer>
+      </div>
+
     </div>
   );
 }
