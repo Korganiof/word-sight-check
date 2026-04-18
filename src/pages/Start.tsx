@@ -15,7 +15,7 @@ export default function Start() {
       {/* Progress */}
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-1">
-          Vaihe 1 / 4 — Sanantunnistus
+          Vaihe 1 / 5 — Sanantunnistus
         </p>
         <div className="h-1 bg-[#f9e4d6] rounded-full">
           <div className="h-1 bg-[#C69A2B] rounded-full" style={{ width: "25%" }} />

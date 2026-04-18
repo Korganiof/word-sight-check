@@ -17,7 +17,7 @@ export default function Consent() {
       {/* Progress indicator */}
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-1">
-          Vaihe 0 / 4 — Valmistelu
+          Valmistelu
         </p>
         <div className="h-1 bg-[#f9e4d6] rounded-full">
           <div className="h-1 bg-[#C69A2B] rounded-full w-0" />
@@ -95,7 +95,7 @@ export default function Consent() {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => agreed && navigate("/start")}
+              onClick={() => { if (agreed) { localStorage.setItem("lukiseula_started_at", String(Date.now())); navigate("/start"); } }}
               disabled={!agreed}
               className="flex items-center justify-center gap-2 bg-[#C69A2B] text-white font-semibold px-8 py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#785a00]"
             >
