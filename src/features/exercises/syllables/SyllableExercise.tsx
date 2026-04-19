@@ -67,7 +67,7 @@ export function SyllableExercise() {
         setCurrentIndex(i => i + 1);
       } else {
         saveSyllablesResult({ correct: newResults.filter(r => r.correct).length, total: newResults.length });
-        navigate("/exercise/minimal-pairs");
+        navigate("/exercises");
       }
     }, 800);
   }
@@ -90,7 +90,7 @@ export function SyllableExercise() {
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <div className="flex items-center justify-between mb-1">
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 3 — Sanojen muodostaminen tavuista
+            Sanojen muodostaminen tavuista
           </p>
           <p className="text-xs text-[#d2c5b0]">Sana {currentIndex + 1} / {syllableItems.length}</p>
         </div>

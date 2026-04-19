@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Search, Layers, AudioLines, Link2, BookText } from "lucide-react";
+import { BookOpen, Search, Layers, AudioLines, Link2, BookText, SpellCheck } from "lucide-react";
 
 const exercises = [
   {
@@ -17,31 +17,38 @@ const exercises = [
     part: "Osa 2",
   },
   {
-    icon: <Layers className="w-5 h-5 text-[#785a00]" />,
-    title: "Sanojen muodostaminen tavuista",
-    desc: "Katso tavut ja kirjoita niistä muodostuva sana.",
-    route: "/exercise/syllables",
-    part: "Osa 3",
-  },
-  {
-    icon: <AudioLines className="w-5 h-5 text-[#785a00]" />,
-    title: "Sanojen pituuden erottaminen",
-    desc: "Valitse lauseeseen sopiva sana. Testaa vokaali- ja konsonanttipituuden erottamista.",
-    route: "/exercise/minimal-pairs",
-    part: "Osa 4",
-  },
-  {
     icon: <Link2 className="w-5 h-5 text-[#785a00]" />,
     title: "Sanaketjujen erottaminen",
     desc: "Lisää välilyönnit oikeisiin kohtiin yhteenkirjoitetussa lauseessa.",
     route: "/exercise/word-chains",
-    part: "Osa 5",
+    part: "Osa 3",
+  },
+  {
+    icon: <SpellCheck className="w-5 h-5 text-[#785a00]" />,
+    title: "Etsi kirjoitusvirheet",
+    desc: "Merkitse sanalistasta ne sanat, joissa on kirjoitusvirhe. 2 min.",
+    route: "/exercise/spelling-errors",
+    part: "Osa 4",
   },
   {
     icon: <BookText className="w-5 h-5 text-[#785a00]" />,
     title: "Luetun ymmärtäminen",
     desc: "Lue lyhyt teksti ja vastaa sisältöä koskeviin kysymyksiin.",
     route: "/exercise/reading-comp",
+    part: "Osa 5",
+  },
+  {
+    icon: <Layers className="w-5 h-5 text-[#785a00]" />,
+    title: "Sanojen muodostaminen tavuista",
+    desc: "Katso tavut ja kirjoita niistä muodostuva sana.",
+    route: "/exercise/syllables",
+    part: "Lisäharjoitus",
+  },
+  {
+    icon: <AudioLines className="w-5 h-5 text-[#785a00]" />,
+    title: "Sanojen pituuden erottaminen",
+    desc: "Valitse lauseeseen sopiva sana. Testaa vokaali- ja konsonanttipituuden erottamista.",
+    route: "/exercise/minimal-pairs",
     part: "Lisäharjoitus",
   },
 ];

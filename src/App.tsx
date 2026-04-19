@@ -13,6 +13,7 @@ import SyllableExercisePage from "./pages/SyllableExercisePage";
 import MinimalPairExercisePage from "./pages/MinimalPairExercisePage";
 import WordChainExercisePage from "./pages/WordChainExercisePage";
 import ReadingCompExercisePage from "./pages/ReadingCompExercisePage";
+import SpellingErrorsExercisePage from "./pages/SpellingErrorsExercisePage";
 import FinalResults from "./pages/FinalResults";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/exercise/minimal-pairs" element={<MinimalPairExercisePage />} />
           <Route path="/exercise/word-chains" element={<WordChainExercisePage />} />
           <Route path="/exercise/reading-comp" element={<ReadingCompExercisePage />} />
+          <Route path="/exercise/spelling-errors" element={<SpellingErrorsExercisePage />} />
           <Route path="/results" element={<FinalResults />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

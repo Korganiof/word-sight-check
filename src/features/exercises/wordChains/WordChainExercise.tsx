@@ -123,7 +123,7 @@ export function WordChainExercise() {
   useEffect(() => {
     if (isComplete && results.length > 0) {
       saveWordChainsResult({ correct: results.filter(r => r.correct).length, total: results.length });
-      navigate("/results");
+      navigate("/exercise/spelling-errors");
     }
   }, [isComplete, results, navigate]);
 
@@ -149,7 +149,7 @@ export function WordChainExercise() {
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full space-y-1.5">
         <div className="flex items-center justify-between mb-1">
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 5 — Sanarajojen hahmottaminen
+            Osa 3 — Sanarajojen hahmottaminen
           </p>
           <p className="text-xs text-[#d2c5b0]">Lause {currentIndex + 1} / {wordChainItems.length}</p>
         </div>

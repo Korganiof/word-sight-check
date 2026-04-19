@@ -54,7 +54,7 @@ export function MinimalPairExercise() {
   useEffect(() => {
     if (isComplete) {
       saveMinimalPairsResult({ correct: correctCount, total });
-      navigate("/exercise/word-chains");
+      navigate("/exercises");
     }
   }, [isComplete, correctCount, total, navigate]);
 
@@ -72,7 +72,7 @@ export function MinimalPairExercise() {
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <div className="flex items-center justify-between mb-1">
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 4 — Pituuserojen tunnistaminen
+            Pituuserojen tunnistaminen
           </p>
           <p className="text-xs text-[#d2c5b0]">Kysymys {currentIndex + 1} / {total}</p>
         </div>

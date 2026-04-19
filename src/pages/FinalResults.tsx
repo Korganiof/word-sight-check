@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { loadSession, computeAccuracy } from "@/lib/metrics";
 import { loadWordSearchResult } from "@/lib/wordsearch";
 import {
-  loadSyllablesResult,
-  loadMinimalPairsResult,
   loadWordChainsResult,
+  loadSpellingErrorsResult,
+  loadReadingCompResult,
 } from "@/lib/exerciseResults";
 
 // ─────────────────────────────────────────────────────────────
@@ -53,22 +53,10 @@ const DESCRIPTIONS: Record<string, Record<Level, string>> = {
     selvia: "Todellisten sanojen ja epäsanojen erottamisessa oli selviä vaikeuksia.",
     missing: "Harjoitusta ei tehty.",
   },
-  tavut: {
-    sujuu: "Sanojen rakentaminen tavuista onnistui hyvin.",
-    jonkin: "Sanojen rakentamisessa tavuista esiintyi jonkin verran vaikeuksia.",
-    selvia: "Sanojen rakentamisessa tavuista oli selviä vaikeuksia.",
-    missing: "Harjoitusta ei tehty.",
-  },
   lukunopeus: {
     sujuu: "Sanojen löytäminen tekstistä onnistui sujuvasti.",
     jonkin: "Sanojen löytämisessä tekstistä esiintyi jonkin verran hitautta tai epätarkkuutta.",
     selvia: "Sanojen löytämisessä tekstistä oli selviä vaikeuksia.",
-    missing: "Harjoitusta ei tehty.",
-  },
-  pituuserot: {
-    sujuu: "Vokaali- ja konsonanttipituuksien erottaminen onnistui hyvin.",
-    jonkin: "Vokaali- ja konsonanttipituuksien erottamisessa esiintyi jonkin verran epävarmuutta.",
-    selvia: "Vokaali- ja konsonanttipituuksien erottamisessa oli selviä vaikeuksia.",
     missing: "Harjoitusta ei tehty.",
   },
   sanarajat: {
@@ -77,14 +65,26 @@ const DESCRIPTIONS: Record<string, Record<Level, string>> = {
     selvia: "Sanarajojen tunnistamisessa yhteenkirjoitetussa tekstissä oli selviä haasteita.",
     missing: "Harjoitusta ei tehty.",
   },
+  kirjoitusvirheet: {
+    sujuu: "Kirjoitusvirheiden tunnistaminen sanalistasta onnistui hyvin.",
+    jonkin: "Kirjoitusvirheiden tunnistamisessa esiintyi jonkin verran epätarkkuutta.",
+    selvia: "Kirjoitusvirheiden tunnistamisessa oli selviä vaikeuksia.",
+    missing: "Harjoitusta ei tehty.",
+  },
+  luetunYmmartaminen: {
+    sujuu: "Luetun ymmärtäminen onnistui hyvin — tekstin sisältö jäsentyi selkeästi.",
+    jonkin: "Luetun ymmärtämisessä esiintyi jonkin verran epävarmuutta yksityiskohdissa.",
+    selvia: "Luetun ymmärtämisessä oli selviä haasteita.",
+    missing: "Harjoitusta ei tehty.",
+  },
 };
 
 const AREA_STATIC: Array<Pick<SkillArea, "key" | "part" | "label" | "sub">> = [
-  { key: "sanantunnistus", part: "Osa 1", label: "Sanantunnistus",              sub: "Todellisten ja epäsanojen erottaminen" },
-  { key: "tavut",          part: "Osa 3", label: "Tavujen käsittely",           sub: "Sanojen rakentaminen tavuista" },
-  { key: "lukunopeus",     part: "Osa 2", label: "Lukunopeus ja hahmottaminen", sub: "Sanojen löytäminen tekstistä" },
-  { key: "pituuserot",     part: "Osa 4", label: "Pituuserojen tunnistaminen",  sub: "Vokaali- ja konsonanttipituuserot" },
-  { key: "sanarajat",      part: "Osa 5", label: "Sanarajojen hahmottaminen",   sub: "Sanojen erottaminen yhteenkirjoitetussa tekstissä" },
+  { key: "sanantunnistus",     part: "Osa 1", label: "Sanantunnistus",              sub: "Todellisten ja epäsanojen erottaminen" },
+  { key: "lukunopeus",         part: "Osa 2", label: "Lukunopeus ja hahmottaminen", sub: "Sanojen löytäminen tekstistä" },
+  { key: "sanarajat",          part: "Osa 3", label: "Sanarajojen hahmottaminen",   sub: "Sanojen erottaminen yhteenkirjoitetussa tekstissä" },
+  { key: "kirjoitusvirheet",   part: "Osa 4", label: "Kirjoitusvirheiden tunnistus", sub: "Virheellisten sanojen löytäminen sanalistasta" },
+  { key: "luetunYmmartaminen", part: "Osa 5", label: "Luetun ymmärtäminen",         sub: "Tekstin sisällön jäsentäminen ja tulkinta" },
 ];
 
 function buildSummary(areas: SkillArea[]): string {
@@ -229,17 +229,17 @@ export default function FinalResults() {
       : pseudoAccuracy >= 50 ? "jonkin"
       : "selvia";
 
-    const syllables = loadSyllablesResult();
     const wordSearch = loadWordSearchResult();
-    const minimalPairs = loadMinimalPairsResult();
     const wordChains = loadWordChainsResult();
+    const spellingErrors = loadSpellingErrorsResult();
+    const readingComp = loadReadingCompResult();
 
     const levels: Record<string, Level> = {
       sanantunnistus: sanantunnistusLevel,
-      tavut: syllables ? scoreToLevel(syllables.correct, syllables.total) : "missing",
       lukunopeus: wordSearch ? scoreToLevel(wordSearch.foundCorrect, wordSearch.totalTargets) : "missing",
-      pituuserot: minimalPairs ? scoreToLevel(minimalPairs.correct, minimalPairs.total) : "missing",
       sanarajat: wordChains ? scoreToLevel(wordChains.correct, wordChains.total) : "missing",
+      kirjoitusvirheet: spellingErrors ? scoreToLevel(spellingErrors.correct, spellingErrors.total) : "missing",
+      luetunYmmartaminen: readingComp ? scoreToLevel(readingComp.correct, readingComp.total) : "missing",
     };
 
     setAreas(AREA_STATIC.map(a => ({

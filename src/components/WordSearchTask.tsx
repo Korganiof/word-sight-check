@@ -108,7 +108,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
       durationMs: Math.round(Math.min(durationMs, elapsed)),
     });
 
-    navigate("/exercise/syllables");
+    navigate("/exercise/word-chains");
   };
 
   const handleWordClick = (index: number) => {

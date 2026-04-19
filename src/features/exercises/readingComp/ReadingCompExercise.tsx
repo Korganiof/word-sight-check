@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, BookOpen, CheckCircle, RotateCcw } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { readingCompPassages } from "./readingCompItems.fi";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
 
@@ -71,51 +71,9 @@ export function ReadingCompExercise() {
   useEffect(() => {
     if (phase === "done") {
       saveReadingCompResult({ correct: correctCount, total: totalQuestionsAllPassages });
+      navigate("/results");
     }
-  }, [phase, correctCount, totalQuestionsAllPassages]);
-
-  if (phase === "done") {
-    return (
-      <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-        <nav className="px-6 py-4 flex items-center justify-between">
-          <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-        </nav>
-
-        <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-xl text-center">
-            <div className="w-14 h-14 rounded-full bg-[#f9e4d6] flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-7 h-7 text-[#785a00]" />
-            </div>
-
-            <h1 className="text-3xl font-bold text-[#241a11] tracking-tight mb-3">
-              Harjoitus valmis
-            </h1>
-            <p className="text-[#755e4d] mb-8 leading-relaxed">
-              Kiitos, vastauksesi on tallennettu. Yksittäisen harjoituksen tuloksia ei
-              näytetä — kokonaiskuva muodostuu yhteenvedossa, kun olet tehnyt useamman
-              osan.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={() => navigate("/exercises")}
-                className="bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-              >
-                Takaisin harjoituksiin
-              </button>
-              <button
-                onClick={() => window.location.reload()}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-[#755e4d] bg-[#f9e4d6] hover:bg-[#f3dfd1] transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Tee uudestaan
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  }, [phase, correctCount, totalQuestionsAllPassages, navigate]);
 
   return (
     <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
@@ -128,7 +86,7 @@ export function ReadingCompExercise() {
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <div className="flex items-center justify-between mb-1">
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Luetun ymmärtäminen — Teksti {passageIndex + 1} / {totalPassages}
+            Osa 5 — Teksti {passageIndex + 1} / {totalPassages}
           </p>
           <p className="text-xs text-[#d2c5b0]">
             {phase === "questions"
