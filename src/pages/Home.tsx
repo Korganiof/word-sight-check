@@ -58,6 +58,19 @@ export default function Home() {
             <span className="flex items-center gap-2"><EyeOff className="w-4 h-4" /> Anonyymi</span>
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Ilmainen</span>
           </div>
+
+          <p className="mt-6 text-xs text-[#755e4d] leading-relaxed">
+            Perustuu suomalaiseen lukivaikeus
+            <a
+              href="https://helda.helsinki.fi/items/1a192f9a-1368-4b3d-a826-7f07c37181d1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-[#C69A2B] decoration-2 underline-offset-2 hover:text-[#241a11] transition-colors"
+            >
+              tutkimukseen
+            </a>
+            {" "}(Panula, 2013, Helsingin yliopisto).
+          </p>
         </div>
 
         {/* Decorative card */}

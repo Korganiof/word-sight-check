@@ -135,6 +135,8 @@ const RESOURCES = [
     desc: "tutkimustietoa oppimisvaikeuksista" },
   { href: "https://www.kuntoutussaatio.fi/henkiloasiakkaat/oppimisen-tuki", label: "Kuntoutussäätiö — oppimisen tuki",
     desc: "tietoa ja tukea oppimisen vaikeuksiin" },
+  { href: "https://helda.helsinki.fi/items/1a192f9a-1368-4b3d-a826-7f07c37181d1", label: "Panula, A.-M. (2013)",
+    desc: "Lukemisvaikeudet ja osa-aikainen erityisopetus — seurantatutkimus (Helsingin yliopisto, väitöskirja)" },
 ];
 
 // ─────────────────────────────────────────────────────────────
