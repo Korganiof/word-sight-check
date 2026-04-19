@@ -144,14 +144,6 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
   const timeProgress = durationMs > 0 ? ((durationMs - remainingMs) / durationMs) * 100 : 0;
   const isLow = remainingMs < 30_000;
 
-  const foundCount = useMemo(() => {
-    let count = 0;
-    for (const idx of clickedIndices) {
-      if (tokens[idx] && tokens[idx].isTarget) count++;
-    }
-    return count;
-  }, [clickedIndices, tokens]);
-
   return (
     <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
 
@@ -175,7 +167,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Osa 2 — Sanojen etsiminen tekstistä
           </p>
-          <p className="text-xs text-[#d2c5b0]">{foundCount} / {totalTargets} löydetty</p>
+          <p className="text-xs text-[#d2c5b0]">{clickedIndices.size} valittua</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
           <div
@@ -202,21 +194,11 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
           <div className="flex flex-wrap gap-2">
             {targets.map(t => {
               const upper = t.word.toUpperCase();
-              const isFound = tokens.some(
-                (tok, idx) =>
-                  tok.isTarget &&
-                  clickedIndices.has(idx) &&
-                  normalizeToken(tok.text) === upper
-              );
-
               return (
                 <span
                   key={t.word}
-                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide transition-colors"
-                  style={{
-                    backgroundColor: isFound ? "#C69A2B" : "#f9e4d6",
-                    color: isFound ? "#ffffff" : "#785a00",
-                  }}
+                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide"
+                  style={{ backgroundColor: "#f9e4d6", color: "#785a00" }}
                 >
                   {upper}
                 </span>
@@ -236,13 +218,10 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
               if (tok.isWhitespace) return tok.text;
 
               const isClicked = clickedIndices.has(index);
-              const isTarget = tok.isTarget;
 
               let style: React.CSSProperties = { cursor: "pointer" };
-              if (isClicked && isTarget) {
+              if (isClicked) {
                 style = { ...style, backgroundColor: "#C69A2B", color: "#ffffff", borderRadius: "3px", padding: "0 2px" };
-              } else if (isClicked && !isTarget) {
-                style = { ...style, backgroundColor: "#fee2e2", color: "#991b1b", borderRadius: "3px", padding: "0 2px" };
               }
 
               return (

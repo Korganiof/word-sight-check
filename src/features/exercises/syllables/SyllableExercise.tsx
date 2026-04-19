@@ -138,14 +138,8 @@ export function SyllableExercise() {
             {phase !== "showing" && (
               <div className="px-6 pb-6 space-y-4">
                 {feedback && (
-                  <div
-                    className={`text-center text-sm font-semibold py-2 rounded-lg ${
-                      feedback === "correct"
-                        ? "bg-green-50 text-green-700"
-                        : "bg-red-50 text-red-600"
-                    }`}
-                  >
-                    {feedback === "correct" ? "Oikein!" : `Väärin — oikea: ${currentItem.correctWord}`}
+                  <div className="text-center text-sm font-semibold py-2 rounded-lg bg-[#f9e4d6] text-[#785a00]">
+                    Vastaus tallennettu
                   </div>
                 )}
 

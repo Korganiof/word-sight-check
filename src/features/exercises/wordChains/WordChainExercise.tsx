@@ -194,14 +194,8 @@ export function WordChainExercise() {
             </div>
 
             {feedback && (
-              <div
-                className={`text-center text-sm font-semibold py-2 rounded-lg mb-4 ${
-                  feedback === "correct"
-                    ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-600"
-                }`}
-              >
-                {feedback === "correct" ? "Oikein!" : "Ei täsmää — tarkista välilyönnit"}
+              <div className="text-center text-sm font-semibold py-2 rounded-lg mb-4 bg-[#f9e4d6] text-[#785a00]">
+                Vastaus tallennettu
               </div>
             )}
 

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Search, Layers, AudioLines, Link2 } from "lucide-react";
+import { BookOpen, Search, Layers, AudioLines, Link2, BookText } from "lucide-react";
 
 const exercises = [
   {
@@ -36,6 +36,13 @@ const exercises = [
     desc: "Lisää välilyönnit oikeisiin kohtiin yhteenkirjoitetussa lauseessa.",
     route: "/exercise/word-chains",
     part: "Osa 5",
+  },
+  {
+    icon: <BookText className="w-5 h-5 text-[#785a00]" />,
+    title: "Luetun ymmärtäminen",
+    desc: "Lue lyhyt teksti ja vastaa sisältöä koskeviin kysymyksiin.",
+    route: "/exercise/reading-comp",
+    part: "Lisäharjoitus",
   },
 ];
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Stethoscope, EyeOff, Info, ArrowRight } from "lucide-react";
+import { Stethoscope, EyeOff, Info, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
 
 export default function Consent() {
   const navigate = useNavigate();
@@ -40,13 +40,42 @@ export default function Consent() {
           <div className="space-y-4 mb-8">
             <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
               <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-5 h-5 text-[#785a00]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#241a11] mb-1">Suunniteltu vähintään 15-vuotiaille</h3>
+                <p className="text-sm text-[#755e4d] leading-relaxed">
+                  Tehtävät on mitoitettu nuorille ja aikuisille — noin 9. luokasta ylöspäin.
+                  Nuoremmille lapsille lukemisen arviointi kannattaa tehdä koulussa erityisopettajan
+                  kanssa, jolla on ikätasolle sopivat välineet.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
+              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
                 <Stethoscope className="w-5 h-5 text-[#785a00]" />
               </div>
               <div>
                 <h3 className="font-semibold text-[#241a11] mb-1">Tämä EI ole diagnoosi</h3>
                 <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Tämä työkalu tarjoaa vain alustavaa tietoa. Virallisen diagnoosin saamiseksi
-                  tarvitaan aina ammattilaisen, kuten erikoisopettajan tai psykologin tekemä tutkimus.
+                  Tämä työkalu tarjoaa vain alustavaa, suuntaa antavaa tietoa. Virallisen
+                  diagnoosin saamiseksi tarvitaan aina ammattilaisen, kuten erikoisopettajan
+                  tai psykologin tekemä tutkimus.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
+              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-[#785a00]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#241a11] mb-1">Harrasteprojekti, rakennettu tekoälyllä</h3>
+                <p className="text-sm text-[#755e4d] leading-relaxed">
+                  LukiSeula on yksityishenkilön harrasteprojekti, joka on toteutettu tekoälyn
+                  avustuksella. Se ei ole kliininen, ammatillinen eikä tieteellisesti validoitu
+                  arviointiväline — vaan harjoitusluonteinen kokeilu.
                 </p>
               </div>
             </div>
@@ -87,8 +116,9 @@ export default function Consent() {
               className="mt-1 w-4 h-4 rounded accent-[#C69A2B] flex-shrink-0"
             />
             <span className="text-sm text-[#241a11] leading-relaxed">
-              Ymmärrän, että tämä ei ole <strong>diagnoosi</strong> ja että käyttökertani on{" "}
-              <strong>anonyymi</strong>. Hyväksyn nämä ehdot ja haluan jatkaa seulan tekemistä.
+              Ymmärrän, että tämä ei ole <strong>diagnoosi</strong>, että kyseessä on{" "}
+              <strong>tekoälyavusteinen harrasteprojekti</strong> ja että käyttökertani on{" "}
+              <strong>anonyymi</strong>. Hyväksyn nämä ehdot ja haluan jatkaa seulonnan tekemistä.
             </span>
           </label>
 
@@ -115,12 +145,7 @@ export default function Consent() {
 
       {/* Footer */}
       <footer className="px-6 py-4 text-center text-xs text-[#d2c5b0]">
-        LukiSeula © 2025 ·{" "}
-        <span className="underline cursor-pointer hover:text-[#755e4d]">Tietosuoja</span>
-        {" · "}
-        <span className="underline cursor-pointer hover:text-[#755e4d]">Saavutettavuus</span>
-        {" · "}
-        <span className="underline cursor-pointer hover:text-[#755e4d]">Yhteystiedot</span>
+        LukiSeula © 2025
       </footer>
 
     </div>

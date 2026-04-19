@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Clock, EyeOff, CheckCircle, AlertTriangle, Type, Layers, Zap, Ruler, Link2 } from "lucide-react";
+import { Clock, EyeOff, CheckCircle, AlertTriangle, Type, Layers, Zap, Ruler, Link2, GraduationCap } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,23 +17,36 @@ export default function Home() {
       <section className="px-6 py-16 md:py-24 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div>
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-[#785a00] bg-[#f9e4d6] px-3 py-1 rounded-md mb-6">
-            Seulontatyökalu
+            Seulontatyökalu · Harrasteprojekti
           </span>
           <h1 className="text-4xl md:text-5xl font-bold text-[#241a11] leading-tight tracking-tight mb-4">
             Lukihäiriön seulonta
           </h1>
-          <p className="text-lg text-[#755e4d] mb-8 leading-relaxed">
-            Lyhyt testi, joka antaa viitteitä siitä, liittyykö lukemiseesi haasteita.
+          <p className="text-lg text-[#755e4d] mb-6 leading-relaxed">
+            Lyhyt seulonta, joka antaa viitteitä siitä, liittyykö lukemiseesi haasteita.
           </p>
+
+          {/* Primary disclaimer — visible above the fold */}
+          <div className="mb-8 p-4 rounded-lg bg-[#f9e4d6] border-l-4 border-[#C69A2B]">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-[#785a00] flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-[#4A3728] leading-relaxed">
+                <strong className="text-[#241a11]">Tämä seulonta ei diagnosoi lukihäiriötä.</strong>{" "}
+                Tulokset ovat vain suuntaa antavia. Jos ne viittaavat haasteisiin, käänny
+                erikoisopettajan, psykologin tai terveydenhuollon ammattilaisen puoleen.
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-3 mb-8">
             <button
               onClick={() => navigate("/consent")}
               className="bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
             >
-              Aloita testi
+              Aloita seulonta
             </button>
             <a
-              href="#mita-testi-tekee"
+              href="#mita-seulonta-tekee"
               className="bg-[#4A3728] hover:bg-[#2F241B] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
             >
               Lue lisää
@@ -41,6 +54,7 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-6 text-sm text-[#755e4d]">
             <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> 10–15 min</span>
+            <span className="flex items-center gap-2"><GraduationCap className="w-4 h-4" /> Yli 15-vuotiaille</span>
             <span className="flex items-center gap-2"><EyeOff className="w-4 h-4" /> Anonyymi</span>
             <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Ilmainen</span>
           </div>
@@ -50,17 +64,21 @@ export default function Home() {
         <div className="hidden md:flex justify-center">
           <div className="bg-[#2F241B] rounded-2xl p-8 w-72 text-white relative">
             <div className="text-5xl mb-4">📖</div>
-            <p className="text-sm text-[#d2c5b0] mb-6 leading-relaxed">
+            <p className="text-sm text-[#d2c5b0] mb-4 leading-relaxed">
               Lukihäiriö on yleinen oppimisvaikeus — arviolta 5–10 % suomalaisista kokee sen vaikutuksia.
+            </p>
+            <p className="text-xs text-[#a08d6e] leading-relaxed border-t border-[#4A3728] pt-4">
+              Tämä sivusto on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella.
+              Ei kliininen eikä ammatillinen työkalu.
             </p>
           </div>
         </div>
       </section>
 
-      {/* What does the test do */}
-      <section id="mita-testi-tekee" className="bg-[#f9ede4] px-6 py-16">
+      {/* What does the screening do */}
+      <section id="mita-seulonta-tekee" className="bg-[#f9ede4] px-6 py-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#241a11] tracking-tight mb-2">Mitä tämä testi tekee?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#241a11] tracking-tight mb-2">Mitä tämä seulonta tekee?</h2>
           <p className="text-[#755e4d] mb-10">Seulonta on suunniteltu antamaan selkeä kuva lukemisen eri osa-alueista.</p>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
@@ -85,7 +103,7 @@ export default function Home() {
               <CheckCircle className="w-5 h-5 text-[#C69A2B] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="font-semibold text-[#241a11]">Saat välittömän yhteenvedon</p>
-                <p className="text-sm text-[#755e4d]">Testin lopuksi saat kattavan raportin tuloksistasi ja suositukset jatkotoimenpiteistä.</p>
+                <p className="text-sm text-[#755e4d]">Seulonnan lopuksi saat kattavan raportin tuloksistasi ja suositukset jatkotoimenpiteistä.</p>
               </div>
             </div>
             <a
@@ -107,51 +125,29 @@ export default function Home() {
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-[#241a11] tracking-tight mb-4">Valmiina aloittamaan?</h2>
           <p className="text-[#755e4d] mb-8 leading-relaxed">
-            Testin tekeminen vie vain noin 10–15 minuuttia. Varaa itsellesi rauhallinen hetki ja paikka, jossa voit keskittyä.
+            Seulonta kestää noin 10–15 minuuttia. Varaa itsellesi rauhallinen hetki ja paikka, jossa voit keskittyä.
           </p>
           <button
             onClick={() => navigate("/consent")}
-            className="bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold text-lg px-10 py-4 rounded-lg transition-colors mb-4 block mx-auto"
+            className="bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold text-lg px-10 py-4 rounded-lg transition-colors block mx-auto"
           >
-            Aloita testi
+            Aloita seulonta
           </button>
-          <p className="text-xs text-[#d2c5b0]">
-            Jatkamalla hyväksyt palvelun{" "}
-            <span className="underline cursor-pointer">käyttöehdot</span>
-            {" "}ja{" "}
-            <span className="underline cursor-pointer">tietosuojaselosteen</span>.
-          </p>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-[#2F241B] text-[#d2c5b0] px-6 py-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-8">
-          <div className="max-w-xs">
-            <p className="text-white font-bold text-lg mb-2">LukiSeula</p>
-            <p className="text-sm leading-relaxed">Moderni työkalu lukihäiriön tunnistamiseen ja oppimisen tukemiseen.</p>
-          </div>
-          <div className="flex gap-16 text-sm">
-            <div>
-              <p className="text-white font-semibold mb-3">Linkit</p>
-              <ul className="space-y-2">
-                <li><a href="#mita-testi-tekee" className="hover:text-white transition-colors">Tietoa meistä</a></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Saavutettavuus</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Ota yhteyttä</span></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-white font-semibold mb-3">Laillinen</p>
-              <ul className="space-y-2">
-                <li><span className="hover:text-white transition-colors cursor-pointer">Tietosuoja</span></li>
-                <li><span className="hover:text-white transition-colors cursor-pointer">Käyttöehdot</span></li>
-              </ul>
-            </div>
-          </div>
+        <div className="max-w-6xl mx-auto">
+          <p className="text-white font-bold text-lg mb-2">LukiSeula</p>
+          <p className="text-sm leading-relaxed max-w-xl">
+            Yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella.
+            Ei kliininen eikä ammatillinen työkalu — tulokset ovat vain suuntaa antavia.
+          </p>
         </div>
         <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-[#4A3728] flex flex-col sm:flex-row justify-between text-xs gap-2">
-          <p>© 2025 LukiSeula. Kaikki oikeudet pidätetään.</p>
-          <p>Suunniteltu Suomessa</p>
+          <p>© 2025 LukiSeula · Harrasteprojekti</p>
+          <p>Rakennettu Suomessa tekoälyn avulla</p>
         </div>
       </footer>
 

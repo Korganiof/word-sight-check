@@ -117,16 +117,13 @@ export function MinimalPairExercise() {
             <div className="flex flex-col sm:flex-row gap-4">
               {options.map((option) => {
                 const isSelected = selectedAnswer === option;
-                const isCorrect = option === currentItem.correctAnswer;
 
                 let buttonClass =
                   "flex-1 h-20 rounded-xl text-2xl font-bold transition-colors ";
 
                 if (selectedAnswer !== null) {
-                  if (isSelected && isCorrect) {
-                    buttonClass += "bg-green-100 text-green-800";
-                  } else if (isSelected && !isCorrect) {
-                    buttonClass += "bg-red-100 text-red-700";
+                  if (isSelected) {
+                    buttonClass += "bg-[#C69A2B] text-white";
                   } else {
                     buttonClass += "bg-[#f9ede4] text-[#d2c5b0]";
                   }

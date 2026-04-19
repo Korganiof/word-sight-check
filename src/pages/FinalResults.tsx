@@ -107,6 +107,25 @@ function buildSummary(areas: SkillArea[]): string {
   return "Tulokset viittaavat pääosin sujuvaan lukutaitoon. Yhdellä tai kahdella osa-alueella esiintyi jonkin verran haasteita.";
 }
 
+function buildInterpretation(areas: SkillArea[]): string {
+  const completed = areas.filter(a => a.level !== "missing");
+  if (completed.length === 0) return "";
+  const severeCount = completed.filter(a => a.level === "selvia").length;
+  const mildCount = completed.filter(a => a.level === "jonkin").length;
+  const goodCount = completed.filter(a => a.level === "sujuu").length;
+
+  if (goodCount === completed.length) {
+    return "Tämä ei silti sulje pois lukivaikeuksia — seulonnan tarkkuus on rajallinen, ja arki on parempi mittari kuin lyhyt tehtäväsarja. Jos lukeminen tuntuu silti kuormittavalta, aiheesta kannattaa keskustella.";
+  }
+  if (severeCount >= 2) {
+    return "Tämänkaltainen kuvio voi olla yhteydessä lukemisen vaikeuksiin, mutta seulonta ei todenna eikä poissulje mitään. Jos tulokset tuntuvat arjessa tutuilta, ammattilaisen arvio voi tuoda selkeyttä.";
+  }
+  if (severeCount === 1 || mildCount >= 2) {
+    return "Haasteet voivat liittyä lukemisen sujuvuuteen tai tarkkuuteen, mutta yhdestä seulonnasta ei voi tehdä päätelmiä. Vireystila, keskittyminen ja päivän kulku vaikuttavat tuloksiin.";
+  }
+  return "Yksittäiset epävarmuudet ovat tavallisia eivätkä kerro vielä mistään. Jos lukeminen tuntuu arjessa raskaalta, kannattaa kysyä asiaa ammattilaiselta.";
+}
+
 const RESOURCES = [
   { href: "https://www.lukimat.fi", label: "Lukimat.fi",
     desc: "Niilo Mäki Instituutin lukemisen ja laskemisen tukimateriaali" },
@@ -231,6 +250,12 @@ export default function FinalResults() {
   }, []);
 
   const summary = useMemo(() => buildSummary(areas), [areas]);
+  const interpretation = useMemo(() => buildInterpretation(areas), [areas]);
+  const strengths = useMemo(() => areas.filter(a => a.level === "sujuu"), [areas]);
+  const challenges = useMemo(
+    () => areas.filter(a => a.level === "selvia" || a.level === "jonkin"),
+    [areas],
+  );
   const completed = areas.filter(a => a.level !== "missing").length;
 
   const now = new Date();
@@ -291,14 +316,59 @@ export default function FinalResults() {
         </div>
 
         {/* Summary */}
-        <div className="p-8 mb-12" style={{ background: "#f9ede4" }}>
+        <div className="p-8 mb-8" style={{ background: "#f9ede4" }}>
           <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#785a00" }}>Yhteenveto</div>
           <p className="m-0 text-xl leading-[1.45]" style={{ color: "#241a11", letterSpacing: "-0.01em", textWrap: "balance" as const }}>{summary}</p>
+          {interpretation && (
+            <p className="mt-4 mb-0 text-[15px] leading-[1.65]" style={{ color: "#4A3728" }}>{interpretation}</p>
+          )}
         </div>
+
+        {/* Strengths / challenges split */}
+        {(strengths.length > 0 || challenges.length > 0) && (
+          <div className="grid md:grid-cols-2 gap-4 mb-10">
+            <div className="p-6" style={{ background: "#e6ebd8" }}>
+              <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#4f7a3a" }}>
+                Missä sujui hyvin
+              </div>
+              {strengths.length === 0 ? (
+                <p className="m-0 text-sm italic leading-[1.5]" style={{ color: "#755e4d" }}>
+                  Ei sujuneita osa-alueita tällä kertaa — se ei tarkoita mitään yksittäisenä tuloksena.
+                </p>
+              ) : (
+                <ul className="m-0 p-0 list-none space-y-1.5">
+                  {strengths.map(a => (
+                    <li key={a.key} className="text-[15px] leading-[1.5]" style={{ color: "#241a11" }}>
+                      {a.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="p-6" style={{ background: "#f1d8ce" }}>
+              <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#a6442a" }}>
+                Missä oli haasteita
+              </div>
+              {challenges.length === 0 ? (
+                <p className="m-0 text-sm italic leading-[1.5]" style={{ color: "#755e4d" }}>
+                  Ei selviä haasteita tällä kertaa.
+                </p>
+              ) : (
+                <ul className="m-0 p-0 list-none space-y-1.5">
+                  {challenges.map(a => (
+                    <li key={a.key} className="text-[15px] leading-[1.5]" style={{ color: "#241a11" }}>
+                      {a.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Section header */}
         <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "#785a00" }}>Osa-alueet</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "#785a00" }}>Tarkemmat tulokset</div>
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#d2c5b0" }}>{areas.length} kohtaa</div>
         </div>
         <div className="h-px mb-2" style={{ background: "#241a11" }} />
@@ -316,14 +386,39 @@ export default function FinalResults() {
         <div className="mt-12 p-6" style={{ background: "#f9e4d6" }}>
           <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: "#785a00" }}>Huomio</div>
           <p className="m-0 text-sm leading-[1.6]" style={{ color: "#755e4d" }}>
-            Tämä testi ei ole lääketieteellinen diagnoosi. Tarvittaessa käänny asiantuntijan puoleen.
+            <strong style={{ color: "#241a11" }}>Tämä seulonta ei diagnosoi lukihäiriötä.</strong>{" "}
+            Tulokset ovat vain suuntaa antavia. Jos ne herättävät huolta, käänny erikoisopettajan,
+            psykologin tai terveydenhuollon ammattilaisen puoleen. LukiSeula on yksityishenkilön
+            tekoälyn avustuksella rakentama harrasteprojekti — ei kliininen eikä tieteellisesti
+            validoitu arviointiväline.
           </p>
+        </div>
+
+        {/* Next steps — concrete actions */}
+        <div className="mt-12">
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
+            Mitä voit tehdä seuraavaksi
+          </div>
+          <ol className="m-0 p-0 list-none space-y-4">
+            {[
+              "Jos huoli on voimakas tai lukeminen kuormittaa arjessa, varaa aika erikoisopettajalle, oppilaitoksesi opinto-ohjaajalle tai terveydenhuoltoon.",
+              "Keskustele havainnoistasi luotetun henkilön — opettajan, läheisen tai työterveyden — kanssa.",
+              "Tutustu alla oleviin tukisivuihin. Sieltä löytyy sekä taustatietoa että konkreettisia harjoitteita.",
+            ].map((text, i) => (
+              <li key={i} className="grid gap-4" style={{ gridTemplateColumns: "32px 1fr" }}>
+                <div className="text-lg font-bold tabular-nums leading-[1.5]" style={{ color: "#C69A2B" }}>
+                  {i + 1}.
+                </div>
+                <p className="m-0 text-[15px] leading-[1.6]" style={{ color: "#241a11" }}>{text}</p>
+              </li>
+            ))}
+          </ol>
         </div>
 
         {/* Resources */}
         <div className="mt-12">
           <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
-            Jatkoaskeleet
+            Tukisivuja ja lisätietoa
           </div>
           {RESOURCES.map((r) => (
             <div
