@@ -149,10 +149,17 @@ export function SyllableExercise() {
                 <input
                   ref={inputRef}
                   type="text"
+                  name={`syllable-input-${currentIndex}`}
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   onKeyDown={handleKeyDown}
                   disabled={phase === "feedback"}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  data-lpignore="true"
+                  data-form-type="other"
                   placeholder="Kirjoita tähän..."
                   className="w-full rounded-lg bg-[#fff8f5] px-4 py-3 text-base text-[#241a11] outline-none transition-colors placeholder:text-[#d2c5b0]"
                   style={{ border: "1.5px solid #f9e4d6" }}

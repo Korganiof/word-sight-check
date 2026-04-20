@@ -26,7 +26,7 @@ const exercises = [
   {
     icon: <SpellCheck className="w-5 h-5 text-[#785a00]" />,
     title: "Etsi kirjoitusvirheet",
-    desc: "Merkitse sanalistasta ne sanat, joissa on kirjoitusvirhe. 2 min.",
+    desc: "Merkitse sanalistasta ne sanat, joissa on kirjoitusvirhe. 3,5 min.",
     route: "/exercise/spelling-errors",
     part: "Osa 4",
   },

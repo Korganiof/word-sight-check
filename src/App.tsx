@@ -14,6 +14,9 @@ import MinimalPairExercisePage from "./pages/MinimalPairExercisePage";
 import WordChainExercisePage from "./pages/WordChainExercisePage";
 import ReadingCompExercisePage from "./pages/ReadingCompExercisePage";
 import SpellingErrorsExercisePage from "./pages/SpellingErrorsExercisePage";
+import SentenceChainExercisePage from "./pages/SentenceChainExercisePage";
+import TrueFalseExercisePage from "./pages/TrueFalseExercisePage";
+import SyllableBoundaryExercisePage from "./pages/SyllableBoundaryExercisePage";
 import FinalResults from "./pages/FinalResults";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +41,10 @@ const App = () => (
           <Route path="/exercise/word-chains" element={<WordChainExercisePage />} />
           <Route path="/exercise/reading-comp" element={<ReadingCompExercisePage />} />
           <Route path="/exercise/spelling-errors" element={<SpellingErrorsExercisePage />} />
+          {/* Hidden scaffolds — not linked from main nav. Direct URL access only. */}
+          <Route path="/exercise/sentence-chains" element={<SentenceChainExercisePage />} />
+          <Route path="/exercise/true-false" element={<TrueFalseExercisePage />} />
+          <Route path="/exercise/syllable-boundaries" element={<SyllableBoundaryExercisePage />} />
           <Route path="/results" element={<FinalResults />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

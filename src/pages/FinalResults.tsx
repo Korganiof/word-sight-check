@@ -126,6 +126,17 @@ function buildInterpretation(areas: SkillArea[]): string {
   return "Yksittäiset epävarmuudet ovat tavallisia eivätkä kerro vielä mistään. Jos lukeminen tuntuu arjessa raskaalta, kannattaa kysyä asiaa ammattilaiselta.";
 }
 
+const NMI_ALIGNED_KEYS = ["sanarajat", "kirjoitusvirheet", "luetunYmmartaminen"] as const;
+
+function shouldFlagSupportNeed(areas: SkillArea[]): boolean {
+  const nmiAreas = areas.filter(a =>
+    (NMI_ALIGNED_KEYS as readonly string[]).includes(a.key) && a.level !== "missing",
+  );
+  if (nmiAreas.length < 2) return false;
+  const severe = nmiAreas.filter(a => a.level === "selvia").length;
+  return severe >= 2;
+}
+
 const RESOURCES = [
   { href: "https://www.lukimat.fi", label: "Lukimat.fi",
     desc: "Niilo Mäki Instituutin lukemisen ja laskemisen tukimateriaali" },
@@ -253,6 +264,7 @@ export default function FinalResults() {
 
   const summary = useMemo(() => buildSummary(areas), [areas]);
   const interpretation = useMemo(() => buildInterpretation(areas), [areas]);
+  const supportNeedFlag = useMemo(() => shouldFlagSupportNeed(areas), [areas]);
   const strengths = useMemo(() => areas.filter(a => a.level === "sujuu"), [areas]);
   const challenges = useMemo(
     () => areas.filter(a => a.level === "selvia" || a.level === "jonkin"),
@@ -325,6 +337,25 @@ export default function FinalResults() {
             <p className="mt-4 mb-0 text-[15px] leading-[1.65]" style={{ color: "#4A3728" }}>{interpretation}</p>
           )}
         </div>
+
+        {/* NMI support-need flag */}
+        {supportNeedFlag && (
+          <div className="p-6 mb-8 border-l-4" style={{ background: "#f1d8ce", borderColor: "#a6442a" }}>
+            <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-2" style={{ color: "#a6442a" }}>
+              Tuen tarpeen selvittely
+            </div>
+            <p className="m-0 text-[15px] leading-[1.65]" style={{ color: "#241a11" }}>
+              <strong>Tuen tarpeen selvittely on vähintään suositeltavaa.</strong> Useammalla niistä osa-alueista,
+              joita käytetään tieteellisessä lukiseulassa (sanarajat, kirjoitusvirheet, luetun ymmärtäminen),
+              esiintyi selviä haasteita. Tämä kaava vastaa Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan
+              (Holopainen ym. 2004) ohjaavaa raja-arvoa, jota myös Panulan (2013) väitöstutkimus käyttää.
+            </p>
+            <p className="mt-3 mb-0 text-xs leading-[1.6] italic" style={{ color: "#755e4d" }}>
+              LukiSeulan katkaisupiste on heuristinen, ei kliinisesti normeerattu. Tuloksia ei tule tulkita
+              diagnoosina — ammattilaisen arvio tuo selkeyttä.
+            </p>
+          </div>
+        )}
 
         {/* Strengths / challenges split */}
         {(strengths.length > 0 || challenges.length > 0) && (

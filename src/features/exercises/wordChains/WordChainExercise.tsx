@@ -9,7 +9,7 @@ import { shuffleArray } from "@/lib/utils";
 const wordChainItems = DEV_FAST
   ? allWordChainItems.slice(0, 2)
   : shuffleArray(allWordChainItems).slice(0, 10);
-const TOTAL_TIME_MS = DEV_FAST ? 30_000 : 120_000;
+const TOTAL_TIME_MS = DEV_FAST ? 30_000 : 90_000;
 
 function formatTime(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -203,10 +203,17 @@ export function WordChainExercise() {
               id="chain-input"
               ref={inputRef}
               type="text"
+              name={`chain-input-${currentIndex}`}
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={!!feedback}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              data-lpignore="true"
+              data-form-type="other"
               placeholder="Kirjoita lause välilyönneillä..."
               className="w-full rounded-lg bg-[#fff8f5] px-4 py-3 text-base text-[#241a11] outline-none transition-colors placeholder:text-[#d2c5b0] mb-4"
               style={{ border: "1.5px solid #f9e4d6" }}

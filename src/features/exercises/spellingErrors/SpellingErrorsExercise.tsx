@@ -5,7 +5,7 @@ import { saveSpellingErrorsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
 import { shuffleArray } from "@/lib/utils";
 
-const DURATION_MS = DEV_FAST ? 30_000 : 120_000;
+const DURATION_MS = DEV_FAST ? 30_000 : 210_000;
 
 export function SpellingErrorsExercise() {
   const navigate = useNavigate();

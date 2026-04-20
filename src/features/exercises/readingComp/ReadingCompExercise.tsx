@@ -1,13 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen } from "lucide-react";
-import { readingCompPassages } from "./readingCompItems.fi";
+import { readingCompPassages as allPassages } from "./readingCompItems.fi";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
+import { DEV_FAST } from "@/lib/devConfig";
 
 type Phase = "reading" | "questions" | "done";
 
 export function ReadingCompExercise() {
   const navigate = useNavigate();
+
+  const readingCompPassages = useMemo(
+    () =>
+      DEV_FAST
+        ? allPassages.slice(0, 1).map((p) => ({ ...p, questions: p.questions.slice(0, 2) }))
+        : allPassages,
+    [],
+  );
 
   const [passageIndex, setPassageIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("reading");

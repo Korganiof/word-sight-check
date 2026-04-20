@@ -17,7 +17,7 @@ const STEPS = [
   },
   {
     heading: "Aikaraja",
-    text: "Sinulla on 2 minuuttia aikaa. Etene rauhallisesti mutta älä jää liikaa miettimään yhtä lausetta.",
+    text: "Sinulla on 1,5 minuuttia aikaa. Etene rauhallisesti mutta älä jää liikaa miettimään yhtä lausetta.",
   },
 ];
 
