@@ -60,16 +60,16 @@ export default function Home() {
           </div>
 
           <p className="mt-6 text-xs text-[#755e4d] leading-relaxed">
-            Perustuu suomalaiseen lukivaikeus
+            Perustuu suomalaiseen lukivaikeustutkimukseen —{" "}
             <a
               href="https://helda.helsinki.fi/items/1a192f9a-1368-4b3d-a826-7f07c37181d1"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline decoration-[#C69A2B] decoration-2 underline-offset-2 hover:text-[#241a11] transition-colors"
+              className="text-[#785a00] hover:text-[#241a11] transition-colors underline decoration-[#d2c5b0] hover:decoration-[#C69A2B] decoration-1 underline-offset-[3px]"
             >
-              tutkimukseen
+              Panula, 2013, Helsingin yliopisto
             </a>
-            {" "}(Panula, 2013, Helsingin yliopisto).
+            .
           </p>
         </div>
 
