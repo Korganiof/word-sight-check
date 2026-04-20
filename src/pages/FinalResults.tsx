@@ -415,6 +415,46 @@ export default function FinalResults() {
           ))}
         </div>
 
+        {/* Menetelmä — what each area measures */}
+        <div className="mt-12">
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
+            Menetelmä — mitä osa-alueet mittaavat
+          </div>
+          <dl className="m-0 space-y-5">
+            <div>
+              <dt className="text-[15px] font-semibold mb-1" style={{ color: "#241a11" }}>
+                Sanantunnistus
+              </dt>
+              <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
+                Dekoodaustaito — todellisten sanojen ja pseudosanojen erottaminen mittaa
+                automaattista sanamuotojen tunnistusta. Toimii kirjallisena vastineena NMI:n
+                sanelukirjoitus-osiolle.
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[15px] font-semibold mb-1" style={{ color: "#241a11" }}>
+                Lukunopeus ja hahmottaminen
+              </dt>
+              <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
+                Visuaalinen sanamuotojen tunnistus ja valikoiva tarkkaavaisuus.
+                Suomen säännöllisessä ortografiassa pelkkä tarkkuus saavuttaa katon
+                aikuisiässä — lukunopeus erottaa lukivaikeuksia herkemmin.
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[15px] font-semibold mb-1" style={{ color: "#241a11" }}>
+                Sanarajat, kirjoitusvirheet ja luetun ymmärtäminen
+              </dt>
+              <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
+                Nämä kolme vastaavat Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan
+                (Holopainen ym. 2004) ydinmittareita — Tekninen 2, Tekninen 1 ja Luetun
+                ymmärtäminen. Aikarajat ja sanamäärät noudattavat NMI:n normeja.
+                Tuen tarpeen selvittelyn raja-arvo perustuu näihin kolmeen.
+              </dd>
+            </div>
+          </dl>
+        </div>
+
         {/* Disclaimer */}
         <div className="mt-12 p-6" style={{ background: "#f9e4d6" }}>
           <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: "#785a00" }}>Huomio</div>
