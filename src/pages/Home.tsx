@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Clock, EyeOff, CheckCircle, AlertTriangle, Type, Layers, Zap, Ruler, Link2, GraduationCap } from "lucide-react";
+import { Clock, EyeOff, CheckCircle, AlertTriangle, BookOpen, Search, Link2, SpellCheck, BookText, GraduationCap } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -96,11 +96,11 @@ export default function Home() {
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             {[
-              { icon: <Type className="w-5 h-5" />, title: "Sanojen tunnistus", desc: "Arvioimme, kuinka nopeasti ja tarkasti tunnistat kirjoitettuja sanoja." },
-              { icon: <Zap className="w-5 h-5" />, title: "Lukemisnopeus", desc: "Seuraamme lukemisen sujuvuutta ja tekstin prosessointiaikaa." },
-              { icon: <Layers className="w-5 h-5" />, title: "Tavujen käsittely", desc: "Mittaamme kykyä hahmottaa sanojen rakenteita ja tavutusta." },
-              { icon: <Ruler className="w-5 h-5" />, title: "Pituuserojen hahmotus", desc: "Tarkastelemme tarkkuutta kirjainten ja sanojen kestoeroissa." },
-              { icon: <Link2 className="w-5 h-5" />, title: "Sanarajojen hahmotus", desc: "Tunnistamme kykyä erottaa sanat yhteenkirjoitetussa tekstissä." },
+              { icon: <BookOpen className="w-5 h-5" />, title: "Sanantunnistus", desc: "Todellisten sanojen ja pseudosanojen erottaminen — dekoodauksen automatisoituminen." },
+              { icon: <Search className="w-5 h-5" />, title: "Lukunopeus ja hahmottaminen", desc: "Sanojen löytäminen tekstistä aikarajan puitteissa — mittaa lukusujuvuutta." },
+              { icon: <Link2 className="w-5 h-5" />, title: "Sanarajojen hahmottaminen", desc: "Sanojen erottaminen yhteenkirjoitetussa tekstissä." },
+              { icon: <SpellCheck className="w-5 h-5" />, title: "Kirjoitusvirheiden tunnistus", desc: "Virheellisten sanojen löytäminen sanalistasta — oikeinkirjoitus­tarkkuus." },
+              { icon: <BookText className="w-5 h-5" />, title: "Luetun ymmärtäminen", desc: "Tekstin sisällön jäsentäminen ja tulkinta kysymysten kautta." },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="bg-[#ffffff] rounded-xl p-5" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
                 <div className="text-[#C69A2B] mb-3">{icon}</div>
