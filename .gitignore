@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local-only: design reference dumps and agent worktrees
+design_handoff_final_results/
+.claude/worktrees/
