@@ -24,5 +24,5 @@ dist-ssr
 *.sw?
 
 # Local-only: design reference dumps and agent worktrees
-design_handoff_final_results/
+design_handoff_*/
 .claude/worktrees/
