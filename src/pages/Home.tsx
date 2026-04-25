@@ -153,7 +153,7 @@ export default function Home() {
               size="lg"
               icon={<SpellCheck className="w-5 h-5" />}
               title="Sanantunnistus"
-              desc="Erottelet todellisia sanoja pseudosanoista — mittaa dekoodauksen automatisoitumista."
+              desc="Erottelet todellisia suomen kielen sanoja keksityistä pseudosanoista pelkän kirjoitusasun perusteella. Tehtävä mittaa, kuinka automaattisesti tunnistat sanamuotoja — keskeinen dekoodaustaidon mittari lukivaikeustutkimuksessa."
             />
             {/* Lukunopeus (wide) */}
             <BentoCard
@@ -161,28 +161,28 @@ export default function Home() {
               size="lg"
               icon={<Gauge className="w-5 h-5" />}
               title="Lukunopeus ja hahmottaminen"
-              desc="Etsit sanoja tekstistä aikarajan puitteissa — mittaa lukusujuvuutta."
+              desc="Etsit annettuja sanoja pidemmästä tekstistä aikarajan puitteissa. Tehtävä mittaa lukunopeutta ja visuaalista tarkkaavaisuutta — suomen säännöllisessä ortografiassa juuri nopeus erottaa sujuvan ja työlään lukijan toisistaan."
             />
             {/* Sanarajat */}
             <BentoCard
               cols={2}
               icon={<AlignLeft className="w-5 h-5" />}
               title="Sanarajojen hahmottaminen"
-              desc="Tunnistat sanat yhteenkirjoitetusta tekstistä."
+              desc="Lauseessa kaikki sanat on kirjoitettu yhteen ilman välejä — tunnistat, mistä yksi sana loppuu ja toinen alkaa. Mittaa sanahahmojen automaattista tunnistusta lukemisen aikana."
             />
             {/* Kirjoitusvirheet */}
             <BentoCard
               cols={2}
               icon={<PenLine className="w-5 h-5" />}
               title="Kirjoitusvirheiden tunnistus"
-              desc="Löydät virheelliset sanat sanalistasta — oikeinkirjoitus­tarkkuus."
+              desc="Käyt läpi sanalistan ja merkitset sanat, joissa on kirjoitusvirhe. Mittaa oikeinkirjoitus­tarkkuutta ja kirjoitettujen sanahahmojen hallintaa."
             />
             {/* Luetun ymmärtäminen */}
             <BentoCard
               cols={2}
               icon={<Brain className="w-5 h-5" />}
               title="Luetun ymmärtäminen"
-              desc="Jäsennät tekstin sisällön ja vastaat kysymyksiin."
+              desc="Luet lyhyen tekstin ja vastaat sen sisältöä koskeviin kysymyksiin. Mittaa kykyä jäsentää ja tulkita lukemaa — oma ulottuvuutensa lukunopeuden ja oikeinkirjoituksen rinnalla."
             />
           </div>
         </section>
