@@ -15,10 +15,6 @@ const STEPS = [
     heading: "Miten valitset",
     text: "Klikkaa oikeaa vaihtoehtoa. Siirryt sen jälkeen automaattisesti seuraavaan lauseeseen.",
   },
-  {
-    heading: "Vinkki",
-    text: "Lue lause äänessä mielessäsi — se auttaa kuulemaan kumpi sana sopii paremmin.",
-  },
 ];
 
 export default function MinimalPairExercisePage() {

@@ -209,13 +209,6 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
         </div>
       </div>
 
-      {/* Footer hint */}
-      <footer className="px-6 py-4 text-center">
-        <p className="text-sm text-[#d2c5b0]">
-          Vastaa mahdollisimman tarkasti. Älä kuitenkaan mieti liian pitkään.
-        </p>
-      </footer>
-
     </div>
   );
 }

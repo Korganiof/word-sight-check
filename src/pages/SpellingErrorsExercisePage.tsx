@@ -15,10 +15,6 @@ const STEPS = [
     heading: "Aikaraja",
     text: "Sinulla on 3,5 minuuttia aikaa. Voit myös painaa Valmis-painiketta heti, kun olet käynyt listan läpi.",
   },
-  {
-    heading: "Vinkki",
-    text: "Katso sanoja tarkasti — virhe voi olla pieni, kuten yksi ylimääräinen tai puuttuva kirjain.",
-  },
 ];
 
 export default function SpellingErrorsExercisePage() {

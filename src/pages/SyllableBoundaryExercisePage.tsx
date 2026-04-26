@@ -11,10 +11,6 @@ const STEPS = [
     heading: "Mitä sinun pitää tehdä",
     text: "Merkitse tavurajat klikkaamalla kirjainten välistä. Klikkaa uudelleen poistaaksesi merkinnän.",
   },
-  {
-    heading: "Vinkki",
-    text: "Suomen tavutus noudattaa tavutussääntöjä, esim. kon-sert-ti-sa-lei-hin.",
-  },
 ];
 
 export default function SyllableBoundaryExercisePage() {

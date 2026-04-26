@@ -117,22 +117,13 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
     if (!token || token.isWhitespace) return;
 
     setClickedIndices(prev => {
-      if (prev.has(index)) return prev;
       const next = new Set(prev);
-      next.add(index);
-      clickedIndicesRef.current = next;
-
-      if (totalTargets > 0) {
-        let correctCount = 0;
-        for (const idx of next) {
-          if (tokens[idx] && tokens[idx].isTarget) correctCount += 1;
-        }
-        if (correctCount >= totalTargets && !finishedRef.current) {
-          finishedRef.current = true;
-          finishTask();
-        }
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
       }
-
+      clickedIndicesRef.current = next;
       return next;
     });
   };
@@ -238,9 +229,16 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
           </p>
         </div>
 
-        <p className="text-center text-sm text-[#d2c5b0]">
-          Selaimen hakutoiminto (Ctrl+F / Cmd+F) on poistettu käytöstä.
-        </p>
+        <button
+          onClick={finishTask}
+          disabled={isFinished}
+          className="self-center px-8 py-3 rounded-xl font-bold text-white transition-all active:scale-95 disabled:opacity-50"
+          style={{ background: "#C69A2B" }}
+          onMouseOver={e => (e.currentTarget.style.background = "#785a00")}
+          onMouseOut={e => (e.currentTarget.style.background = "#C69A2B")}
+        >
+          Olen valmis
+        </button>
       </div>
 
     </div>

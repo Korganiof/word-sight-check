@@ -1,207 +1,232 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, BookOpen } from "lucide-react";
-import { readingCompPassages as allPassages } from "./readingCompItems.fi";
+import { readingCompPassages } from "./readingCompItems.fi";
+import type { ReadingCompToken } from "./types";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
 
-type Phase = "reading" | "questions" | "done";
+const DURATION_MS = DEV_FAST ? 30_000 : 240_000;
+
+const TOKEN_RE = /\[\[([^|\]]+)\|([^\]]+)\]\]|\S+|\s+/g;
+
+function parseParagraph(text: string, paragraphIndex: number): ReadingCompToken[] {
+  const tokens: ReadingCompToken[] = [];
+  let wordCounter = 0;
+  let match: RegExpExecArray | null;
+  TOKEN_RE.lastIndex = 0;
+  while ((match = TOKEN_RE.exec(text)) !== null) {
+    const [whole, wrong, correct] = match;
+    if (wrong !== undefined && correct !== undefined) {
+      tokens.push({
+        kind: "word",
+        id: `p${paragraphIndex}-w${wordCounter++}`,
+        text: wrong,
+        isError: true,
+        correctForm: correct,
+      });
+    } else if (/^\s+$/.test(whole)) {
+      tokens.push({ kind: "whitespace", text: whole });
+    } else {
+      tokens.push({
+        kind: "word",
+        id: `p${paragraphIndex}-w${wordCounter++}`,
+        text: whole,
+        isError: false,
+      });
+    }
+  }
+  return tokens;
+}
 
 export function ReadingCompExercise() {
   const navigate = useNavigate();
 
-  const readingCompPassages = useMemo(
-    () =>
-      DEV_FAST
-        ? allPassages.slice(0, 1).map((p) => ({ ...p, questions: p.questions.slice(0, 2) }))
-        : allPassages,
-    [],
+  const passage = readingCompPassages[0];
+
+  const paragraphs = useMemo(
+    () => passage.paragraphs.map((text, i) => parseParagraph(text, i)),
+    [passage],
   );
 
-  const [passageIndex, setPassageIndex] = useState(0);
-  const [phase, setPhase] = useState<Phase>("reading");
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [correctCount, setCorrectCount] = useState(0);
-
-  const currentPassage = readingCompPassages[passageIndex];
-  const currentQuestion = currentPassage.questions[questionIndex];
-  const totalPassages = readingCompPassages.length;
-  const totalQuestionsAllPassages = readingCompPassages.reduce(
-    (sum, p) => sum + p.questions.length,
-    0,
-  );
-  const answeredCountBeforeCurrent =
-    readingCompPassages
-      .slice(0, passageIndex)
-      .reduce((sum, p) => sum + p.questions.length, 0) + questionIndex;
-
-  const progressPct =
-    phase === "done"
-      ? 100
-      : Math.round(
-          ((answeredCountBeforeCurrent + (selectedAnswer !== null ? 1 : 0)) /
-            totalQuestionsAllPassages) *
-            100,
-        );
-
-  const startQuestions = useCallback(() => {
-    setPhase("questions");
-    setQuestionIndex(0);
-    setSelectedAnswer(null);
-  }, []);
-
-  const advanceToNext = useCallback(() => {
-    setSelectedAnswer(null);
-    if (questionIndex < currentPassage.questions.length - 1) {
-      setQuestionIndex((i) => i + 1);
-      return;
+  const totalErrors = useMemo(() => {
+    let count = 0;
+    for (const para of paragraphs) {
+      for (const t of para) if (t.kind === "word" && t.isError) count += 1;
     }
-    if (passageIndex < totalPassages - 1) {
-      setPassageIndex((i) => i + 1);
-      setQuestionIndex(0);
-      setPhase("reading");
-      return;
-    }
-    setPhase("done");
-  }, [questionIndex, passageIndex, currentPassage.questions.length, totalPassages]);
+    return count;
+  }, [paragraphs]);
 
-  const handleSelect = useCallback(
-    (option: string) => {
-      if (selectedAnswer !== null) return;
-      const isCorrect = option === currentQuestion.correctAnswer;
-      setSelectedAnswer(option);
-      if (isCorrect) setCorrectCount((n) => n + 1);
-      setTimeout(() => advanceToNext(), 900);
-    },
-    [selectedAnswer, currentQuestion, advanceToNext],
-  );
+  const [remainingMs, setRemainingMs] = useState(DURATION_MS);
+  const [isFinished, setIsFinished] = useState(false);
+  const [markedIds, setMarkedIds] = useState<Set<string>>(new Set());
+
+  const startRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const finishedRef = useRef(false);
+  const markedIdsRef = useRef<Set<string>>(new Set());
+
+  const finish = () => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    setIsFinished(true);
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    const marked = markedIdsRef.current;
+    let hits = 0;
+    for (const para of paragraphs) {
+      for (const t of para) {
+        if (t.kind === "word" && t.isError && marked.has(t.id)) hits += 1;
+      }
+    }
+    saveReadingCompResult({ correct: hits, total: totalErrors });
+    navigate("/results");
+  };
 
   useEffect(() => {
-    if (phase === "done") {
-      saveReadingCompResult({ correct: correctCount, total: totalQuestionsAllPassages });
-      navigate("/results");
-    }
-  }, [phase, correctCount, totalQuestionsAllPassages, navigate]);
+    startRef.current = performance.now();
+    timerRef.current = setInterval(() => {
+      if (!startRef.current) return;
+      const elapsed = performance.now() - startRef.current;
+      const remaining = Math.max(0, DURATION_MS - elapsed);
+      setRemainingMs(remaining);
+      if (remaining <= 0 && !finishedRef.current) finish();
+    }, 250);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggleMark = (id: string) => {
+    if (finishedRef.current) return;
+    setMarkedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      markedIdsRef.current = next;
+      return next;
+    });
+  };
+
+  const totalSeconds = Math.ceil(remainingMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const timeProgress = ((DURATION_MS - remainingMs) / DURATION_MS) * 100;
+  const isLow = remainingMs < 30_000;
 
   return (
     <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
+
       {/* Nav */}
       <nav className="px-6 py-4 flex items-center justify-between">
         <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+        <div className="text-right">
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">Aikaa jäljellä</p>
+          <p
+            className="text-xl font-mono font-bold tabular-nums"
+            style={{ color: isLow ? "#ef4444" : "#241a11" }}
+          >
+            {formattedTime}
+          </p>
+        </div>
       </nav>
 
       {/* Progress */}
-      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
+      <div className="px-6 pb-2 max-w-3xl mx-auto w-full">
         <div className="flex items-center justify-between mb-1">
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 5 — Teksti {passageIndex + 1} / {totalPassages}
+            Osa 5 — Luetun ymmärtäminen
           </p>
-          <p className="text-xs text-[#d2c5b0]">
-            {phase === "questions"
-              ? `Kysymys ${questionIndex + 1} / ${currentPassage.questions.length}`
-              : "Lue teksti"}
-          </p>
+          <p className="text-xs text-[#d2c5b0]">{markedIds.size} merkittyä</p>
         </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full">
+        <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
           <div
-            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
-            style={{ width: `${progressPct}%` }}
+            className="h-full rounded-full transition-none"
+            style={{
+              width: `${Math.min(100, Math.max(0, timeProgress))}%`,
+              backgroundColor: isLow ? "#ef4444" : "#C69A2B",
+            }}
           />
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-start justify-center px-6 py-8">
-        <div className="w-full max-w-2xl">
-          {phase === "reading" && (
-            <>
-              <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="w-4 h-4 text-[#785a00]" />
-                <span className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-                  Teksti
-                </span>
-              </div>
-              <h1 className="text-2xl font-bold text-[#241a11] tracking-tight mb-6">
-                {currentPassage.title}
-              </h1>
+      <div className="flex-1 px-6 py-6 max-w-3xl mx-auto w-full flex flex-col gap-5">
 
-              <div
-                className="bg-white rounded-xl p-7 mb-6 space-y-4"
-                style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-              >
-                {currentPassage.paragraphs.map((p, i) => (
-                  <p
-                    key={i}
-                    className="text-[17px] text-[#241a11] leading-[1.7]"
-                  >
-                    {p}
-                  </p>
-                ))}
-              </div>
+        {/* Instructions */}
+        <div
+          className="bg-white rounded-xl p-5"
+          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+        >
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-2">
+            Ohje
+          </p>
+          <p className="text-sm text-[#755e4d] leading-relaxed">
+            Lue teksti rauhassa. Tekstiin on piilotettu noin tusina <strong>väärää sanaa</strong>
+            {" "}— sanoja, joiden merkitys ei sovi yhteyteen tai joiden sijamuoto on väärä.
+            Klikkaa jokainen virheellinen sana. Voit poistaa merkinnän klikkaamalla uudelleen.
+          </p>
+        </div>
 
-              <p className="text-sm text-[#755e4d] mb-5 leading-relaxed">
-                Lue teksti rauhassa. Kun olet valmis, siirry vastaamaan kysymyksiin.
-                Et voi palata takaisin tekstiin kysymysten aikana.
-              </p>
+        {/* Text passage */}
+        <div
+          className="bg-white rounded-xl p-6 flex-1"
+          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
+        >
+          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-3">
+            Teksti
+          </p>
+          <h2 className="text-xl font-bold text-[#241a11] tracking-tight mb-4">
+            {passage.title}
+          </h2>
 
-              <button
-                onClick={startQuestions}
-                className="flex items-center justify-center gap-2 bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold px-8 py-3 rounded-lg transition-colors"
-              >
-                Aloita kysymykset
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </>
-          )}
-
-          {phase === "questions" && (
-            <div
-              className="bg-white rounded-xl p-8"
-              style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-            >
-              <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-3">
-                Kysymys tekstistä: {currentPassage.title}
-              </p>
-
-              <p className="text-xl font-semibold text-[#241a11] leading-relaxed mb-8">
-                {currentQuestion.question}
-              </p>
-
-              <div className="flex flex-col gap-3">
-                {currentQuestion.options.map((option) => {
-                  const isSelected = selectedAnswer === option;
-
-                  let buttonClass =
-                    "text-left px-5 py-4 rounded-xl text-base font-medium transition-colors ";
-
-                  if (selectedAnswer !== null) {
-                    if (isSelected) {
-                      buttonClass += "bg-[#C69A2B] text-white";
-                    } else {
-                      buttonClass += "bg-[#f9ede4] text-[#d2c5b0]";
-                    }
-                  } else {
-                    buttonClass +=
-                      "bg-[#f9e4d6] text-[#241a11] hover:bg-[#C69A2B] hover:text-white cursor-pointer";
+          <div className="space-y-4">
+            {paragraphs.map((tokens, pIdx) => (
+              <p key={pIdx} className="leading-relaxed text-[#241a11] text-base md:text-lg">
+                {tokens.map((t, tIdx) => {
+                  if (t.kind === "whitespace") {
+                    return <React.Fragment key={tIdx}>{t.text}</React.Fragment>;
                   }
-
+                  const isMarked = markedIds.has(t.id);
+                  let style: React.CSSProperties = { cursor: "pointer" };
+                  if (isMarked) {
+                    style = {
+                      ...style,
+                      backgroundColor: "#C69A2B",
+                      color: "#ffffff",
+                      borderRadius: "3px",
+                      padding: "0 2px",
+                    };
+                  }
                   return (
-                    <button
-                      key={option}
-                      className={buttonClass}
-                      onClick={() => handleSelect(option)}
-                      disabled={selectedAnswer !== null}
+                    <span
+                      key={t.id}
+                      style={style}
+                      className={isMarked ? "" : "hover:bg-[#f9e4d6] rounded-sm transition-colors"}
+                      onClick={() => toggleMark(t.id)}
                     >
-                      {option}
-                    </button>
+                      {t.text}
+                    </span>
                   );
                 })}
-              </div>
-            </div>
-          )}
+              </p>
+            ))}
+          </div>
         </div>
+
+        <button
+          onClick={finish}
+          disabled={isFinished}
+          className="self-center px-8 py-3 rounded-xl font-bold text-white transition-all active:scale-95 disabled:opacity-50"
+          style={{ background: "#C69A2B" }}
+          onMouseOver={(e) => (e.currentTarget.style.background = "#785a00")}
+          onMouseOut={(e) => (e.currentTarget.style.background = "#C69A2B")}
+        >
+          Olen valmis
+        </button>
       </div>
+
     </div>
   );
 }

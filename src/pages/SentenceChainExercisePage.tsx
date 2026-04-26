@@ -11,10 +11,6 @@ const STEPS = [
     heading: "Mitä sinun pitää tehdä",
     text: "Kirjoita teksti uudelleen omalle tekstikentälle niin, että lisäät isot alkukirjaimet ja pisteet oikeisiin kohtiin.",
   },
-  {
-    heading: "Vinkki",
-    text: "Mieti, missä yksi ajatus päättyy ja uusi alkaa. Kaikkia välimerkkejä ei tarvita — vain pisteet ja isot kirjaimet.",
-  },
 ];
 
 export default function SentenceChainExercisePage() {

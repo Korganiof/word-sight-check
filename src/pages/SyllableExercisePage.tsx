@@ -15,10 +15,6 @@ const STEPS = [
     heading: "Nopeus ei ole pääasia",
     text: "Tehtävässä ei ole aikarajaa. Kirjoita sana rauhassa — tärkeintä on, että sana on oikein kirjoitettu.",
   },
-  {
-    heading: "Vinkki",
-    text: "Toista tavut mielessäsi nopeasti ääneen kun ne näkyvät — se auttaa muistamaan ne kun kirjoitat.",
-  },
 ];
 
 export default function SyllableExercisePage() {

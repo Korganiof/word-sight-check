@@ -7,148 +7,18 @@ import {
   loadSpellingErrorsResult,
   loadReadingCompResult,
 } from "@/lib/exerciseResults";
-
-// ─────────────────────────────────────────────────────────────
-// Levels & meta — same logic as the prior FinalResults,
-// extended with warm status colors that sit inside the palette.
-// ─────────────────────────────────────────────────────────────
-type Level = "sujuu" | "jonkin" | "selvia" | "missing";
-
-interface LevelMeta {
-  label: string;
-  short: string;
-  ratio: number;
-  color: string;
-  soft: string;
-}
-
-const LEVEL_META: Record<Level, LevelMeta> = {
-  sujuu:   { label: "Sujuu hyvin",             short: "Sujuu",     ratio: 1.00, color: "#4f7a3a", soft: "#e6ebd8" },
-  jonkin:  { label: "Jonkin verran haasteita", short: "Vaihtelua", ratio: 0.66, color: "#C69A2B", soft: "#f9e4d6" },
-  selvia:  { label: "Selviä haasteita",        short: "Haasteita", ratio: 0.33, color: "#a6442a", soft: "#f1d8ce" },
-  missing: { label: "Harjoitusta ei tehty",    short: "Puuttuu",   ratio: 0.00, color: "#d2c5b0", soft: "#f0ece3" },
-};
-
-function scoreToLevel(correct: number, total: number): Level {
-  if (total === 0) return "missing";
-  const ratio = correct / total;
-  if (ratio >= 0.75) return "sujuu";
-  if (ratio >= 0.5) return "jonkin";
-  return "selvia";
-}
-
-interface SkillArea {
-  key: string;
-  part: string;
-  label: string;
-  sub: string;
-  level: Level;
-  description: string;
-}
-
-const DESCRIPTIONS: Record<string, Record<Level, string>> = {
-  sanantunnistus: {
-    sujuu: "Todellisten sanojen ja epäsanojen erottaminen onnistui sujuvasti.",
-    jonkin: "Todellisten sanojen ja epäsanojen erottamisessa esiintyi jonkin verran epävarmuutta.",
-    selvia: "Todellisten sanojen ja epäsanojen erottamisessa oli selviä vaikeuksia.",
-    missing: "Harjoitusta ei tehty.",
-  },
-  lukunopeus: {
-    sujuu: "Sanojen löytäminen tekstistä onnistui sujuvasti.",
-    jonkin: "Sanojen löytämisessä tekstistä esiintyi jonkin verran hitautta tai epätarkkuutta.",
-    selvia: "Sanojen löytämisessä tekstistä oli selviä vaikeuksia.",
-    missing: "Harjoitusta ei tehty.",
-  },
-  sanarajat: {
-    sujuu: "Sanarajojen tunnistaminen yhteenkirjoitetussa tekstissä onnistui hyvin.",
-    jonkin: "Sanarajojen tunnistamisessa yhteenkirjoitetussa tekstissä esiintyi jonkin verran vaikeuksia.",
-    selvia: "Sanarajojen tunnistamisessa yhteenkirjoitetussa tekstissä oli selviä haasteita.",
-    missing: "Harjoitusta ei tehty.",
-  },
-  kirjoitusvirheet: {
-    sujuu: "Kirjoitusvirheiden tunnistaminen sanalistasta onnistui hyvin.",
-    jonkin: "Kirjoitusvirheiden tunnistamisessa esiintyi jonkin verran epätarkkuutta.",
-    selvia: "Kirjoitusvirheiden tunnistamisessa oli selviä vaikeuksia.",
-    missing: "Harjoitusta ei tehty.",
-  },
-  luetunYmmartaminen: {
-    sujuu: "Luetun ymmärtäminen onnistui hyvin — tekstin sisältö jäsentyi selkeästi.",
-    jonkin: "Luetun ymmärtämisessä esiintyi jonkin verran epävarmuutta yksityiskohdissa.",
-    selvia: "Luetun ymmärtämisessä oli selviä haasteita.",
-    missing: "Harjoitusta ei tehty.",
-  },
-};
-
-const AREA_STATIC: Array<Pick<SkillArea, "key" | "part" | "label" | "sub">> = [
-  { key: "sanantunnistus",     part: "Osa 1", label: "Sanantunnistus",              sub: "Todellisten ja epäsanojen erottaminen" },
-  { key: "lukunopeus",         part: "Osa 2", label: "Lukunopeus ja hahmottaminen", sub: "Sanojen löytäminen tekstistä" },
-  { key: "sanarajat",          part: "Osa 3", label: "Sanarajojen hahmottaminen",   sub: "Sanojen erottaminen yhteenkirjoitetussa tekstissä" },
-  { key: "kirjoitusvirheet",   part: "Osa 4", label: "Kirjoitusvirheiden tunnistus", sub: "Virheellisten sanojen löytäminen sanalistasta" },
-  { key: "luetunYmmartaminen", part: "Osa 5", label: "Luetun ymmärtäminen",         sub: "Tekstin sisällön jäsentäminen ja tulkinta" },
-];
-
-function buildSummary(areas: SkillArea[]): string {
-  const completed = areas.filter(a => a.level !== "missing");
-  if (completed.length === 0) {
-    return "Yhtään harjoitusta ei ole tehty. Tee harjoitukset nähdäksesi yhteenvedon.";
-  }
-  const severeCount = completed.filter(a => a.level === "selvia").length;
-  const goodCount = completed.filter(a => a.level === "sujuu").length;
-
-  if (goodCount === completed.length) {
-    return "Tulokset viittaavat sujuvaan lukutaitoon kaikilla mitatuilla osa-alueilla.";
-  }
-  if (severeCount >= 2) {
-    return "Tulokset viittaavat selkeisiin haasteisiin useammalla osa-alueella. Asiantuntijan arvio voi olla hyödyllinen.";
-  }
-  if (severeCount === 1) {
-    return "Tuloksissa on vaihtelua. Yhdellä osa-alueella esiintyi selviä haasteita, muut sujuivat kohtuullisesti tai hyvin.";
-  }
-  return "Tulokset viittaavat pääosin sujuvaan lukutaitoon. Yhdellä tai kahdella osa-alueella esiintyi jonkin verran haasteita.";
-}
-
-function buildInterpretation(areas: SkillArea[]): string {
-  const completed = areas.filter(a => a.level !== "missing");
-  if (completed.length === 0) return "";
-  const severeCount = completed.filter(a => a.level === "selvia").length;
-  const mildCount = completed.filter(a => a.level === "jonkin").length;
-  const goodCount = completed.filter(a => a.level === "sujuu").length;
-
-  if (goodCount === completed.length) {
-    return "Tämä ei silti sulje pois lukivaikeuksia — seulonnan tarkkuus on rajallinen, ja arki on parempi mittari kuin lyhyt tehtäväsarja. Jos lukeminen tuntuu silti kuormittavalta, aiheesta kannattaa keskustella.";
-  }
-  if (severeCount >= 2) {
-    return "Tämänkaltainen kuvio voi olla yhteydessä lukemisen vaikeuksiin, mutta seulonta ei todenna eikä poissulje mitään. Jos tulokset tuntuvat arjessa tutuilta, ammattilaisen arvio voi tuoda selkeyttä.";
-  }
-  if (severeCount === 1 || mildCount >= 2) {
-    return "Haasteet voivat liittyä lukemisen sujuvuuteen tai tarkkuuteen, mutta yhdestä seulonnasta ei voi tehdä päätelmiä. Vireystila, keskittyminen ja päivän kulku vaikuttavat tuloksiin.";
-  }
-  return "Yksittäiset epävarmuudet ovat tavallisia eivätkä kerro vielä mistään. Jos lukeminen tuntuu arjessa raskaalta, kannattaa kysyä asiaa ammattilaiselta.";
-}
-
-const NMI_ALIGNED_KEYS = ["sanarajat", "kirjoitusvirheet", "luetunYmmartaminen"] as const;
-
-function shouldFlagSupportNeed(areas: SkillArea[]): boolean {
-  const nmiAreas = areas.filter(a =>
-    (NMI_ALIGNED_KEYS as readonly string[]).includes(a.key) && a.level !== "missing",
-  );
-  if (nmiAreas.length < 2) return false;
-  const severe = nmiAreas.filter(a => a.level === "selvia").length;
-  return severe >= 2;
-}
-
-const RESOURCES = [
-  { href: "https://www.lukimat.fi", label: "Lukimat.fi",
-    desc: "Niilo Mäki Instituutin lukemisen ja laskemisen tukimateriaali" },
-  { href: "https://www.eoliitto.fi/oppimisvaikeudet/luku-ja-kirjoitusvaikeudet/", label: "Erilaisten oppijain liitto",
-    desc: "neuvontaa ja vertaistukea oppimisvaikeuksiin" },
-  { href: "https://www.nmi.fi", label: "Niilo Mäki Instituutti",
-    desc: "tutkimustietoa oppimisvaikeuksista" },
-  { href: "https://www.kuntoutussaatio.fi/henkiloasiakkaat/oppimisen-tuki", label: "Kuntoutussäätiö — oppimisen tuki",
-    desc: "tietoa ja tukea oppimisen vaikeuksiin" },
-  { href: "https://helda.helsinki.fi/items/1a192f9a-1368-4b3d-a826-7f07c37181d1", label: "Panula, A.-M. (2013)",
-    desc: "Lukemisvaikeudet ja osa-aikainen erityisopetus — seurantatutkimus (Helsingin yliopisto, väitöskirja)" },
-];
+import { LEVEL_META, scoreToLevel, type Level } from "@/lib/levels";
+import {
+  AREA_STATIC,
+  DESCRIPTIONS,
+  RESOURCES,
+  type SkillArea,
+} from "@/lib/finalResultsContent";
+import {
+  buildSummary,
+  buildInterpretation,
+  shouldFlagSupportNeed,
+} from "@/lib/finalResultsCopy";
 
 // ─────────────────────────────────────────────────────────────
 // Atoms — using inline hex (matches existing Home.tsx / ExerciseList.tsx style)
@@ -320,7 +190,7 @@ export default function FinalResults() {
           {[
             ["Osa-alueita tehty", `${completed} / ${areas.length || 5}`],
             ["Kesto", `${durationMin} min`],
-            ["Raportin tyyppi", "Alustava"],
+            ["Raportin tyyppi", "Suuntaa antava"],
           ].map(([k, v], i) => (
             <div key={k} className="p-6" style={{ background: i % 2 === 1 ? "#f9ede4" : "#ffffff" }}>
               <div className="text-[10px] font-bold uppercase tracking-[0.14em] mb-2" style={{ color: "#785a00" }}>{k}</div>
@@ -488,33 +358,48 @@ export default function FinalResults() {
           </ol>
         </div>
 
-        {/* Resources */}
+        {/* Resources — stacked editorial bands */}
         <div className="mt-12">
           <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
             Tukisivuja ja lisätietoa
           </div>
-          {RESOURCES.map((r) => (
-            <div
-              key={r.href}
-              className="grid gap-6 py-4"
-              style={{ gridTemplateColumns: "220px 1fr" }}
-            >
+          <div className="-mx-5 flex flex-col gap-px">
+            {RESOURCES.map((r, i) => (
               <a
+                key={r.href}
                 href={r.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="justify-self-start self-start text-[15px] font-bold no-underline"
-                style={{
-                  color: "#241a11",
-                  letterSpacing: "-0.01em",
-                  borderBottom: "2px solid #C69A2B",
-                }}
+                className="block px-5 py-5 no-underline transition-colors group"
+                style={{ background: i % 2 === 0 ? "#f9ede4" : "#fff8f5" }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#f9e4d6")}
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.background = i % 2 === 0 ? "#f9ede4" : "#fff8f5")
+                }
               >
-                {r.label}
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="flex-1">
+                    <div
+                      className="text-[17px] font-bold mb-1"
+                      style={{ color: "#241a11", letterSpacing: "-0.01em" }}
+                    >
+                      {r.label}
+                    </div>
+                    <div className="text-sm leading-[1.55]" style={{ color: "#755e4d" }}>
+                      {r.desc}
+                    </div>
+                  </div>
+                  <div
+                    className="text-lg leading-none pt-1 ml-2"
+                    style={{ color: "#C69A2B" }}
+                    aria-hidden="true"
+                  >
+                    ↗
+                  </div>
+                </div>
               </a>
-              <div className="text-sm leading-[1.5]" style={{ color: "#755e4d" }}>{r.desc}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Actions */}
@@ -529,13 +414,13 @@ export default function FinalResults() {
             Tallenna PDF
           </button>
           <button
-            onClick={() => navigate("/exercises")}
+            onClick={() => navigate("/")}
             className="flex-1 text-white font-semibold py-4 rounded-lg transition-colors"
             style={{ background: "#4A3728" }}
             onMouseOver={e => (e.currentTarget.style.background = "#2F241B")}
             onMouseOut={e => (e.currentTarget.style.background = "#4A3728")}
           >
-            Harjoituksiin
+            Takaisin etusivulle
           </button>
         </div>
       </div>

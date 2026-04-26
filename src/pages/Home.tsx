@@ -13,6 +13,7 @@ import {
   Brain,
   ArrowRight,
   BarChart3,
+  ExternalLink,
 } from "lucide-react";
 
 export default function Home() {
@@ -28,7 +29,10 @@ export default function Home() {
             Etusivu
           </a>
           <a className="text-[#4e4636] hover:text-[#28180b] transition-colors" href="#mita-mittaa">
-            Mitä mittaa
+            Mitä seulonta mittaa?
+          </a>
+          <a className="text-[#4e4636] hover:text-[#28180b] transition-colors" href="#lisatietoa">
+            Lisätietoa ja tukea
           </a>
         </div>
         <button
@@ -235,6 +239,53 @@ export default function Home() {
               LukiSeula on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella. Ei
               kliininen eikä ammatillinen työkalu — tulokset ovat vain suuntaa antavia.
             </p>
+          </div>
+        </section>
+
+        {/* ─── Resources ─── */}
+        <section id="lisatietoa" className="max-w-5xl mx-auto px-6 mt-20 scroll-mt-28">
+          <h2 className="text-center text-sm font-bold uppercase tracking-[0.18em] text-[#785a00] mb-8">
+            Lisätietoa ja tukea
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                href: "https://www.lukimat.fi",
+                label: "Lukimat.fi",
+                desc: "harjoituksia ja tietoa lukivaikeudesta",
+              },
+              {
+                href: "https://www.eoliitto.fi/oppimisvaikeudet/",
+                label: "Erilaisten oppijain liitto",
+                desc: "neuvontaa ja vertaistukea oppimisvaikeuksiin",
+              },
+              {
+                href: "https://www.nmi.fi",
+                label: "Niilo Mäki Instituutti",
+                desc: "tutkimustietoa oppimisvaikeuksista",
+              },
+              {
+                href: "https://www.kuntoutussaatio.fi/toiminta/oppimisen-tuki/",
+                label: "Kuntoutussäätiö — oppimisen tuki",
+                desc: "tietoa ja tukea oppimisen vaikeuksiin",
+              },
+            ].map((r) => (
+              <a
+                key={r.href}
+                href={r.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-start gap-4 bg-white hover:bg-[#ffe3cf] rounded-2xl p-5 transition-all shadow-[0_4px_16px_-4px_rgba(120,90,0,0.06)]"
+              >
+                <div className="mt-0.5 w-9 h-9 shrink-0 bg-[#785a00]/5 rounded-xl flex items-center justify-center text-[#785a00] group-hover:scale-110 transition-transform">
+                  <ExternalLink className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-bold text-[#28180b] text-sm">{r.label}</div>
+                  <div className="text-xs text-[#4e4636] leading-relaxed mt-1">{r.desc}</div>
+                </div>
+              </a>
+            ))}
           </div>
         </section>
       </main>

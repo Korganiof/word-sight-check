@@ -5,19 +5,15 @@ import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
 const STEPS = [
   {
     heading: "Mitä ruudulla näkyy",
-    text: "Näet lyhyen tekstin. Lue se rauhassa — aikarajaa ei ole. Tekstien jälkeen vastaat muutamaan kysymykseen sisällöstä.",
+    text: "Näet lyhyen suomenkielisen tekstin. Tekstiin on piilotettu noin tusina väärää sanaa — sanoja, joiden merkitys ei sovi yhteyteen tai joiden sijamuoto on väärä.",
   },
   {
     heading: "Mitä sinun pitää tehdä",
-    text: "Lue teksti tarkasti ja yritä painaa mieleen, mitä siinä tapahtuu. Et voi palata takaisin tekstiin sen jälkeen, kun olet aloittanut kysymykset.",
+    text: "Lue teksti rauhassa ja klikkaa jokainen sana, jonka mielestäsi pitäisi olla joku toinen. Klikkaamalla uudelleen voit poistaa merkinnän.",
   },
   {
-    heading: "Miten vastaat",
-    text: "Kuhunkin kysymykseen on kolme vastausvaihtoehtoa. Valitse se, joka parhaiten vastaa tekstin sisältöä. Siirryt automaattisesti seuraavaan kysymykseen.",
-  },
-  {
-    heading: "Vinkki",
-    text: "Kysymykset koskevat vain tekstissä mainittuja asioita — älä arvaile yleistiedon perusteella.",
+    heading: "Aikaraja",
+    text: "Sinulla on 4 minuuttia aikaa. Voit painaa Valmis-painiketta heti, kun olet käynyt tekstin läpi.",
   },
 ];
 
@@ -28,7 +24,7 @@ export default function ReadingCompExercisePage() {
     return (
       <ExerciseReadyScreen
         title="Luetun ymmärtäminen"
-        subtitle="Lue lyhyt teksti ja vastaa kysymyksiin sen sisällöstä."
+        subtitle="Löydätkö tekstin väärät sanat?"
         steps={STEPS}
         onStart={() => setReady(true)}
       />

@@ -193,12 +193,6 @@ export function WordChainExercise() {
               </p>
             </div>
 
-            {feedback && (
-              <div className="text-center text-sm font-semibold py-2 rounded-lg mb-4 bg-[#f9e4d6] text-[#785a00]">
-                Vastaus tallennettu
-              </div>
-            )}
-
             <input
               id="chain-input"
               ref={inputRef}

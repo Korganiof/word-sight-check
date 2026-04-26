@@ -17,10 +17,6 @@ const STEPS = [
     heading: "Aikaraja",
     text: "Sinulla on 3 minuuttia aikaa. Yritä löytää kaikki sanat ennen kuin aika loppuu.",
   },
-  {
-    heading: "Vinkki",
-    text: "Etsi yksi sana kerrallaan. Skannaa teksti rivi riviltä — älä jää jumiin, vaan siirry seuraavaan sanaan.",
-  },
 ];
 
 export default function WordSearchTaskPage() {

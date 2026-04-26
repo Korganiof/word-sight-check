@@ -11,10 +11,6 @@ const STEPS = [
     heading: "Mitä sinun pitää tehdä",
     text: "Vastaa jokaiseen väittämään K (kyllä) tai E (ei) sen mukaan, pitääkö väittämä paikkansa tekstin perusteella.",
   },
-  {
-    heading: "Vinkki",
-    text: "Lue teksti huolellisesti. Et voi palata tekstiin takaisin väittämien aikana.",
-  },
 ];
 
 export default function TrueFalseExercisePage() {
