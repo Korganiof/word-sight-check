@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import type { WordItem } from "@/lib/pseudowords";
 import type { Trial } from "@/lib/metrics";
 import { saveSession } from "@/lib/metrics";
+import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 
 interface PseudoWordTaskProps {
   items: WordItem[];
@@ -12,7 +12,7 @@ interface PseudoWordTaskProps {
 const ITEM_TIMEOUT_MS = 3000;
 
 export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) {
-  const navigate = useNavigate();
+  const goToNext = useScreeningFlow();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trials, setTrials] = useState<Trial[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,14 +71,14 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
             warmupCount > 0 ? newTrials.slice(Math.min(warmupCount, newTrials.length)) : newTrials;
           saveSession(scoredTrials);
           setTimeout(() => {
-            navigate("/task/word-search");
+            goToNext();
           }, 200);
         }
 
         return newTrials;
       });
     },
-    [currentItem, currentIndex, items.length, warmupCount, navigate, clearTimers]
+    [currentItem, currentIndex, items.length, warmupCount, goToNext, clearTimers]
   );
 
   useEffect(() => {

@@ -1,48 +1,41 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { wordChainItems as allWordChainItems } from "./wordChainItems.fi";
 import type { WordChainResult } from "./types";
 import { saveWordChainsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
-import { shuffleArray } from "@/lib/utils";
+import { formatMmSs, shuffleArray } from "@/lib/utils";
+import { useCountdown } from "@/hooks/useCountdown";
+import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 
 const wordChainItems = DEV_FAST
   ? allWordChainItems.slice(0, 2)
   : shuffleArray(allWordChainItems).slice(0, 10);
 const TOTAL_TIME_MS = DEV_FAST ? 30_000 : 90_000;
 
-function formatTime(ms: number): string {
-  const totalSeconds = Math.ceil(ms / 1000);
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
 function normalize(s: string): string {
   return s.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 export function WordChainExercise() {
-  const navigate = useNavigate();
+  const goToNext = useScreeningFlow();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [inputValue, setInputValue] = useState("");
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [results, setResults] = useState<WordChainResult[]>([]);
   const [isComplete, setIsComplete] = useState(false);
-  const [remainingMs, setRemainingMs] = useState(TOTAL_TIME_MS);
 
   const itemStartRef = useRef<number>(performance.now());
-  const exerciseStartRef = useRef<number>(performance.now());
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const resultsRef = useRef<WordChainResult[]>([]);
   const currentIndexRef = useRef<number>(0);
   const feedbackRef = useRef<boolean>(false);
+  const doneRef = useRef(false);
 
   const currentItem = wordChainItems[currentIndex];
 
   const finishExercise = useCallback((finalResults: WordChainResult[]) => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (doneRef.current) return;
+    doneRef.current = true;
     setResults(finalResults);
     setIsComplete(true);
   }, []);
@@ -67,7 +60,7 @@ export function WordChainExercise() {
 
     const rtMs = Math.round(performance.now() - itemStartRef.current);
     const item = wordChainItems[currentIndexRef.current];
-    const input = timedOut ? "" : (document.querySelector<HTMLInputElement>("#chain-input")?.value ?? "");
+    const input = timedOut ? "" : (inputRef.current?.value ?? "");
     const correct = !timedOut && normalize(input) === normalize(item.originalSentence);
 
     const result: WordChainResult = { item, userInput: input.trim(), correct, rtMs };
@@ -81,28 +74,21 @@ export function WordChainExercise() {
     }, 600);
   }, [commitResult]);
 
-  useEffect(() => {
-    exerciseStartRef.current = performance.now();
-    timerRef.current = setInterval(() => {
-      const elapsed = performance.now() - exerciseStartRef.current;
-      const remaining = Math.max(0, TOTAL_TIME_MS - elapsed);
-      setRemainingMs(remaining);
-      if (remaining === 0) {
-        if (timerRef.current) clearInterval(timerRef.current);
-        const item = wordChainItems[currentIndexRef.current];
-        const input = document.querySelector<HTMLInputElement>("#chain-input")?.value ?? "";
-        const correct = !feedbackRef.current && normalize(input) === normalize(item.originalSentence);
-        const result: WordChainResult = {
-          item,
-          userInput: input.trim(),
-          correct,
-          rtMs: Math.round(performance.now() - itemStartRef.current),
-        };
-        finishExercise([...resultsRef.current, result]);
-      }
-    }, 100);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [finishExercise]);
+  const handleTimeout = () => {
+    if (doneRef.current) return;
+    const item = wordChainItems[currentIndexRef.current];
+    const input = inputRef.current?.value ?? "";
+    const correct = !feedbackRef.current && normalize(input) === normalize(item.originalSentence);
+    const result: WordChainResult = {
+      item,
+      userInput: input.trim(),
+      correct,
+      rtMs: Math.round(performance.now() - itemStartRef.current),
+    };
+    finishExercise([...resultsRef.current, result]);
+  };
+
+  const remainingMs = useCountdown({ durationMs: TOTAL_TIME_MS, onExpire: handleTimeout, intervalMs: 100 });
 
   useEffect(() => {
     itemStartRef.current = performance.now();
@@ -123,9 +109,9 @@ export function WordChainExercise() {
   useEffect(() => {
     if (isComplete && results.length > 0) {
       saveWordChainsResult({ correct: results.filter(r => r.correct).length, total: results.length });
-      navigate("/exercise/spelling-errors");
+      goToNext();
     }
-  }, [isComplete, results, navigate]);
+  }, [isComplete, results, goToNext]);
 
   const isLow = remainingMs < 30_000;
   const timeProgress = (remainingMs / TOTAL_TIME_MS) * 100;
@@ -141,7 +127,7 @@ export function WordChainExercise() {
           className="font-mono font-bold text-lg tabular-nums"
           style={{ color: isLow ? "#ef4444" : "#241a11" }}
         >
-          {formatTime(remainingMs)}
+          {formatMmSs(remainingMs)}
         </span>
       </nav>
 

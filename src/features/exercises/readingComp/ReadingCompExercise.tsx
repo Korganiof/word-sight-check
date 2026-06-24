@@ -1,9 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useMemo, useRef, useState } from "react";
 import { readingCompPassages } from "./readingCompItems.fi";
 import type { ReadingCompToken } from "./types";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { formatMmSs } from "@/lib/utils";
+import { useCountdown } from "@/hooks/useCountdown";
+import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 
 const DURATION_MS = DEV_FAST ? 30_000 : 240_000;
 
@@ -39,7 +41,7 @@ function parseParagraph(text: string, paragraphIndex: number): ReadingCompToken[
 }
 
 export function ReadingCompExercise() {
-  const navigate = useNavigate();
+  const goToNext = useScreeningFlow();
 
   const passage = readingCompPassages[0];
 
@@ -56,12 +58,9 @@ export function ReadingCompExercise() {
     return count;
   }, [paragraphs]);
 
-  const [remainingMs, setRemainingMs] = useState(DURATION_MS);
   const [isFinished, setIsFinished] = useState(false);
   const [markedIds, setMarkedIds] = useState<Set<string>>(new Set());
 
-  const startRef = useRef<number | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const finishedRef = useRef(false);
   const markedIdsRef = useRef<Set<string>>(new Set());
 
@@ -69,7 +68,6 @@ export function ReadingCompExercise() {
     if (finishedRef.current) return;
     finishedRef.current = true;
     setIsFinished(true);
-    if (timerRef.current) clearInterval(timerRef.current);
 
     const marked = markedIdsRef.current;
     let hits = 0;
@@ -79,23 +77,10 @@ export function ReadingCompExercise() {
       }
     }
     saveReadingCompResult({ correct: hits, total: totalErrors });
-    navigate("/results");
+    goToNext();
   };
 
-  useEffect(() => {
-    startRef.current = performance.now();
-    timerRef.current = setInterval(() => {
-      if (!startRef.current) return;
-      const elapsed = performance.now() - startRef.current;
-      const remaining = Math.max(0, DURATION_MS - elapsed);
-      setRemainingMs(remaining);
-      if (remaining <= 0 && !finishedRef.current) finish();
-    }, 250);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const remainingMs = useCountdown({ durationMs: DURATION_MS, onExpire: finish });
 
   const toggleMark = (id: string) => {
     if (finishedRef.current) return;
@@ -108,10 +93,7 @@ export function ReadingCompExercise() {
     });
   };
 
-  const totalSeconds = Math.ceil(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const formattedTime = formatMmSs(remainingMs);
   const timeProgress = ((DURATION_MS - remainingMs) / DURATION_MS) * 100;
   const isLow = remainingMs < 30_000;
 

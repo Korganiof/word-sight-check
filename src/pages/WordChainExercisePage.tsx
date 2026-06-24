@@ -9,11 +9,11 @@ const STEPS = [
   },
   {
     heading: "Mitä sinun pitää tehdä",
-    text: "Lisää välilyönnit oikeisiin kohtiin niin, että lause muodostuu järkeväksi. Klikkaa kirjainten väliin lisätäksesi välilyönnin — klikkaa uudelleen poistaaksesi sen.",
+    text: 'Kirjoita lause uudelleen tekstikenttään niin, että lisäät välilyönnit oikeisiin kohtiin ja lause muodostuu järkeväksi — esimerkiksi "kissa istuu matolla".',
   },
   {
     heading: "Miten hyväksyt vastauksesi",
-    text: "Kun olet tyytyväinen, paina Valmis-painiketta. Siirryt sen jälkeen seuraavaan lauseeseen.",
+    text: "Kun olet kirjoittanut lauseen, paina Tarkista-painiketta (tai Enter). Siirryt sen jälkeen seuraavaan lauseeseen.",
   },
   {
     heading: "Aikaraja",

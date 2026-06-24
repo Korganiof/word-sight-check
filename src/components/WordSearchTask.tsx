@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { saveWordSearchResult, type WordSearchTarget } from "@/lib/wordsearch";
+import { formatMmSs } from "@/lib/utils";
+import { useCountdown } from "@/hooks/useCountdown";
+import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 
 interface WordSearchTaskProps {
   text: string;
@@ -22,13 +24,11 @@ function normalizeToken(raw: string): string {
 }
 
 export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProps) {
-  const navigate = useNavigate();
-  const [remainingMs, setRemainingMs] = useState(durationMs);
+  const goToNext = useScreeningFlow();
   const [isFinished, setIsFinished] = useState(false);
   const [clickedIndices, setClickedIndices] = useState<Set<number>>(new Set());
 
-  const startTimeRef = useRef<number | null>(null);
-  const timerIdRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(performance.now());
   const finishedRef = useRef(false);
   const clickedIndicesRef = useRef<Set<number>>(new Set());
 
@@ -54,25 +54,6 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
   }, [text, targets]);
 
   useEffect(() => {
-    startTimeRef.current = performance.now();
-
-    timerIdRef.current = window.setInterval(() => {
-      if (!startTimeRef.current) return;
-      const elapsed = performance.now() - startTimeRef.current;
-      const remaining = Math.max(0, durationMs - elapsed);
-      setRemainingMs(remaining);
-      if (remaining <= 0 && !finishedRef.current) {
-        finishTask();
-      }
-    }, 250);
-
-    return () => {
-      if (timerIdRef.current !== null) clearInterval(timerIdRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationMs]);
-
-  useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "f" || e.key === "F")) {
         e.preventDefault();
@@ -87,8 +68,6 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
     finishedRef.current = true;
     setIsFinished(true);
 
-    if (timerIdRef.current !== null) clearInterval(timerIdRef.current);
-
     const clicked = clickedIndicesRef.current;
     let foundCorrect = 0;
     for (const idx of clicked) {
@@ -97,8 +76,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
 
     const incorrectClicks = clicked.size - foundCorrect;
     const missedTargets = Math.max(0, totalTargets - foundCorrect);
-    const now = performance.now();
-    const elapsed = startTimeRef.current != null ? now - startTimeRef.current : durationMs;
+    const elapsed = performance.now() - startTimeRef.current;
 
     saveWordSearchResult({
       foundCorrect,
@@ -108,8 +86,10 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
       durationMs: Math.round(Math.min(durationMs, elapsed)),
     });
 
-    navigate("/exercise/word-chains");
+    goToNext();
   };
+
+  const remainingMs = useCountdown({ durationMs, onExpire: finishTask });
 
   const handleWordClick = (index: number) => {
     if (isFinished) return;
@@ -128,10 +108,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
     });
   };
 
-  const totalSeconds = Math.ceil(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const formattedTime = formatMmSs(remainingMs);
   const timeProgress = durationMs > 0 ? ((durationMs - remainingMs) / durationMs) * 100 : 0;
   const isLow = remainingMs < 30_000;
 

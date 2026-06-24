@@ -1,3 +1,5 @@
+import { createSessionStore } from "./sessionStore";
+
 export interface WordSearchTarget {
   word: string;
 }
@@ -10,25 +12,11 @@ export interface WordSearchResult {
   durationMs: number;
 }
 
-const STORAGE_KEY = "dyslexia-wordsearch-result";
+const store = createSessionStore<WordSearchResult>("dyslexia-wordsearch-result");
 
-export function saveWordSearchResult(result: WordSearchResult): void {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(result));
-}
-
-export function loadWordSearchResult(): WordSearchResult | null {
-  const raw = sessionStorage.getItem(STORAGE_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as WordSearchResult;
-  } catch {
-    return null;
-  }
-}
-
-export function clearWordSearchResult(): void {
-  sessionStorage.removeItem(STORAGE_KEY);
-}
+export const saveWordSearchResult = (result: WordSearchResult): void => store.save(result);
+export const loadWordSearchResult = (): WordSearchResult | null => store.load();
+export const clearWordSearchResult = (): void => store.clear();
 
 // Passage text and targets for the word search task.
 // Original text written for LukiSeula.

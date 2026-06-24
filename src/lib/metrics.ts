@@ -1,3 +1,5 @@
+import { createSessionStore } from "./sessionStore";
+
 export interface Trial {
   item: string;
   isWord: boolean; // ground truth
@@ -19,20 +21,8 @@ export function computeAvgRt(trials: Trial[]): number {
   return Math.round(sum / trials.length);
 }
 
-export function saveSession(trials: Trial[]): void {
-  sessionStorage.setItem('dyslexia-screener-trials', JSON.stringify(trials));
-}
+const sessionStore = createSessionStore<Trial[]>('dyslexia-screener-trials');
 
-export function loadSession(): Trial[] | null {
-  const data = sessionStorage.getItem('dyslexia-screener-trials');
-  if (!data) return null;
-  try {
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
-}
-
-export function clearSession(): void {
-  sessionStorage.removeItem('dyslexia-screener-trials');
-}
+export const saveSession = (trials: Trial[]): void => sessionStore.save(trials);
+export const loadSession = (): Trial[] | null => sessionStore.load();
+export const clearSession = (): void => sessionStore.clear();

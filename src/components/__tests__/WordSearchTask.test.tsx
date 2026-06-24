@@ -23,16 +23,16 @@ describe("WordSearchTask", () => {
       </BrowserRouter>
     );
 
-    const [chip, word] = getAllByText("KUULIJAT");
+    const [, word] = getAllByText("KUULIJAT");
     expect(word).toBeInTheDocument();
 
-    // Initially not highlighted as found
-    expect(word.className).not.toContain("bg-yellow-300");
+    // Initially not highlighted as found (no inline background)
+    expect(word.style.backgroundColor).toBe("");
 
     fireEvent.click(word);
 
-    // After click, should be highlighted as found
-    expect(word.className).toContain("bg-yellow-300");
+    // After click, should be highlighted as found (#C69A2B)
+    expect(word.style.backgroundColor).toBe("rgb(198, 154, 43)");
   });
 });
 

@@ -1,32 +1,29 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useRef, useState } from "react";
 import { spellingErrorItems as allItems } from "./spellingErrorItems.fi";
 import { saveSpellingErrorsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
-import { shuffleArray } from "@/lib/utils";
+import { formatMmSs, shuffleArray } from "@/lib/utils";
+import { useCountdown } from "@/hooks/useCountdown";
+import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 
 const DURATION_MS = DEV_FAST ? 30_000 : 210_000;
 
 export function SpellingErrorsExercise() {
-  const navigate = useNavigate();
+  const goToNext = useScreeningFlow();
 
   const items = useMemo(
     () => (DEV_FAST ? allItems.slice(0, 12) : shuffleArray(allItems)),
     [],
   );
 
-  const [remainingMs, setRemainingMs] = useState(DURATION_MS);
   const [markedIds, setMarkedIds] = useState<Set<string>>(new Set());
 
-  const startRef = useRef<number | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const finishedRef = useRef(false);
   const markedIdsRef = useRef<Set<string>>(new Set());
 
   const finish = () => {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    if (timerRef.current) clearInterval(timerRef.current);
 
     const marked = markedIdsRef.current;
     let correct = 0;
@@ -36,23 +33,10 @@ export function SpellingErrorsExercise() {
       else if (!isMarked && !item.hasError) correct += 1;
     }
     saveSpellingErrorsResult({ correct, total: items.length });
-    navigate("/exercise/reading-comp");
+    goToNext();
   };
 
-  useEffect(() => {
-    startRef.current = performance.now();
-    timerRef.current = setInterval(() => {
-      if (!startRef.current) return;
-      const elapsed = performance.now() - startRef.current;
-      const remaining = Math.max(0, DURATION_MS - elapsed);
-      setRemainingMs(remaining);
-      if (remaining <= 0) finish();
-    }, 200);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const remainingMs = useCountdown({ durationMs: DURATION_MS, onExpire: finish });
 
   const toggleMark = (id: string) => {
     if (finishedRef.current) return;
@@ -65,10 +49,7 @@ export function SpellingErrorsExercise() {
     });
   };
 
-  const totalSeconds = Math.ceil(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const formattedTime = formatMmSs(remainingMs);
   const timeProgress = ((DURATION_MS - remainingMs) / DURATION_MS) * 100;
   const isLow = remainingMs < 20_000;
 
