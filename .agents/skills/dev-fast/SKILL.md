@@ -1,0 +1,1 @@
+../../../.claude/skills/dev-fast/SKILL.md

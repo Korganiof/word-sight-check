@@ -1,4 +1,4 @@
-# CLAUDE.md — Project Context for Claude Code
+# Project Context (CLAUDE.md — AGENTS.md is a symlink to this file)
 
 ## What this project is
 
@@ -6,32 +6,56 @@ LukiSeula — a Finnish dyslexia screening tool for **15+ year-olds and adults**
 It presents a short battery of reading exercises and produces a risk summary.
 All UI text and exercise content is in Finnish.
 
-The app is standalone — no backend, no auth, no database. All state lives in
-React component state, refs, and `sessionStorage` (cleared when the tab closes).
+The app is standalone — no backend, no auth, no database, no analytics, no
+third-party requests (the Manrope font is self-hosted). All state lives in
+React component state, refs, and `sessionStorage` (cleared when the tab
+closes). The Home page's "Tietosuoja" section promises exactly this — update
+it if that ever changes (e.g. if PostHog is added).
 
 ### Scientific grounding
 
 The exercise battery is modeled on the NMI "Lukivaikeuksien seulontamenetelmä
 nuorille ja aikuisille" (Holopainen, Kairaluoma, Nevala, Ahonen & Aro 2004) and
 validated against Panula 2013 (Helsingin yliopisto dissertation on adult
-dyslexia). Timers and word counts match NMI norms where applicable:
+dyslexia). Timers follow NMI norms where applicable:
 
 - Etsi kirjoitusvirheet (Tekninen 1): 100 words / 3.5 min
-- Sanarajojen hahmottaminen (Tekninen 2): ~100 words / 1.5 min
-- NMI cutoff for "tuen tarpeen selvittely": persentiili 12%
+- Sanarajojen hahmottaminen (Tekninen 2): 15 sentences ≈ 60 words / 1.5 min
+  (NMI uses ~100 words with a pen; tapping boundaries is the browser
+  equivalent — do not turn this into a typing task, typing speed is a confound)
+- Luetun ymmärtäminen: one ~165-word passage with 12 wrong-word
+  substitutions / 4 min. Every substitution must be decidable from the text.
+- NMI cutoff for "tuen tarpeen selvittely": persentiili 12 %
 
 Keep this in mind when tweaking content volume or timer durations — they are
 not arbitrary.
 
+### Scoring rules (`src/lib/levels.ts`)
+
+- `scoreToLevel(correct, total, thresholds)` → `sujuu` / `jonkin` / `selvia`.
+  Default cut-offs 75 % / 50 %. Two-alternative tasks (pseudowords, minimal
+  pairs) use `TWO_AFC_THRESHOLDS` (90 % / 75 %) because chance is 50 % there.
+- `scoreMarking(hits, falseAlarms, targets)` for every "mark the X" task
+  (word search, spelling errors, reading comp): hits minus false alarms, out
+  of the number of targets. Marking nothing and marking everything both score
+  zero.
+- Timed tasks score against the **full** item set — unreached items are wrong.
+  That is how the timer measures speed.
+- The report flags "tuen tarpeen selvittely" when ≥ 2 of the three
+  NMI-aligned areas (sanarajat, kirjoitusvirheet, luetun ymmärtäminen) score
+  `selvia`. All cut-offs are heuristic, not clinically normed — the UI says so.
+
 ## Tech stack
 
 - **Vite** + **React 18** + **TypeScript**
-- **shadcn/ui** for all UI components (`src/components/ui/`)
-- **Tailwind CSS** for styling
-- **React Router v6** for routing
-- **Sonner** for toast notifications
+- **Tailwind CSS** — styling uses literal palette values (`bg-[#fff8f5]`),
+  no semantic tokens
+- **React Router v6** (with v7 future flags on)
+- **lucide-react** for icons
 - **Vitest** + Testing Library for tests
 - Package manager: **npm**
+- shadcn/ui and the Lovable template were removed; do not re-add UI libraries.
+  Avoid adding dependencies in general.
 
 ## Project structure
 
@@ -40,9 +64,10 @@ src/
   App.tsx                        — all routes defined here
   pages/                         — one file per page/route
   features/exercises/<name>/     — exercise feature folders
-  components/                    — shared components
-  components/ui/                 — shadcn/ui primitives (do not edit)
-  lib/                           — utilities
+  components/                    — shared components (ready/end screens, footer, tasks 1–2)
+  hooks/                         — useCountdown, useScreeningFlow
+  lib/                           — flow, levels/scoring, session stores, content for the report
+public/fonts/                    — self-hosted Manrope
 ```
 
 ## Exercise architecture
@@ -52,57 +77,70 @@ Each exercise lives in `src/features/exercises/<name>/` and follows this pattern
 ```
 types.ts              — TypeScript types for the exercise
 <name>Items.fi.ts     — Finnish content/question data
-<name>Exercise.tsx    — main component + inline end screen
+<name>Exercise.tsx    — main component (+ inline end screen if not in the battery)
 ```
 
-A thin page wrapper in `src/pages/<Name>ExercisePage.tsx` renders the feature component.
+A thin page wrapper in `src/pages/<Name>ExercisePage.tsx` shows an
+`ExerciseReadyScreen` with instructions, then renders the feature component.
+
+Battery exercises save their result and call `goToNext()` from
+`useScreeningFlow` — the order lives in `src/lib/flow.ts`. Supplementary
+exercises show `ExerciseEndScreen` instead and return to `/exercises`.
 
 To add a new exercise:
 1. Create `src/features/exercises/<name>/` with the files above
 2. Create `src/pages/<Name>ExercisePage.tsx`
-3. Add a route in `src/App.tsx` (`/exercise/<name>`)
+3. Add a route in `src/App.tsx`
 4. Add a card in `src/pages/ExerciseList.tsx`
+5. If it's part of the battery: add it to `SCREENING_FLOW`, a store in
+   `src/lib/exerciseResults.ts`, and a row in `src/lib/finalResultsContent.ts`
 
 ## Existing exercises
 
-Main flow (linked from `ExerciseList.tsx`):
+Main flow (`SCREENING_FLOW`; also linked from `ExerciseList.tsx`):
 
 | Part | Name | Route | NMI-aligned | Description |
 |---|---|---|---|---|
-| Osa 1 | Pseudoword detection | `/task/pseudowords` | — | Real vs. pseudoword judgement |
-| Osa 2 | Word search | `/task/word-search` | supplementary | Find target words in a text, 2-min timer |
-| Osa 3 | Word chains | `/exercise/word-chains` | ✓ Tekninen 2 | Insert spaces into concatenated sentences (1.5 min) |
-| Osa 4 | Spelling errors | `/exercise/spelling-errors` | ✓ Tekninen 1 | Flag misspelled words in a 100-item list (3.5 min) |
-| Osa 5 | Reading comprehension | `/exercise/reading-comp` | ✓ Luetun ymmärtäminen | Read a passage, answer questions |
-| Lisä | Syllable assembly | `/exercise/syllables` | — | Build a word from syllable tiles |
-| Lisä | Minimal pair detection | `/exercise/minimal-pairs` | — | Choose the correct word from a minimal pair |
+| Osa 1 | Pseudoword detection | `/task/pseudowords` | — | 15 real + 15 pseudo, 3 s each; pools are length-matched |
+| Osa 2 | Word search | `/task/word-search` | supplementary | Find 12 target words in a 250-word passage, 3 min |
+| Osa 3 | Word chains | `/exercise/word-chains` | ✓ Tekninen 2 | Tap word boundaries in 15 run-together sentences, 1.5 min |
+| Osa 4 | Spelling errors | `/exercise/spelling-errors` | ✓ Tekninen 1 | Mark misspelt words in a 100-item list (50 errors), 3.5 min |
+| Osa 5 | Reading comprehension | `/exercise/reading-comp` | ✓ Luetun ymmärtäminen | Mark the 12 wrong words in a passage, 4 min |
+| Lisä | Syllable assembly | `/exercise/syllables` | — | Build a word from flashed syllables |
+| Lisä | Minimal pair detection | `/exercise/minimal-pairs` | — | Choose the correct word from a length minimal pair |
 
-Hidden scaffolds (no nav link, direct URL only — reserved for heavier future battery):
-
-| Name | Route |
-|---|---|
-| Sentence chains | `/exercise/sentence-chains` |
-| True/false statements | `/exercise/true-false` |
-| Syllable boundaries | `/exercise/syllable-boundaries` |
+Unrouted scaffolds (code kept in `src/features/exercises/`, **not** in
+`App.tsx`): sentence chains, true/false statements, syllable boundaries. Their
+passages (Mozart / Klassismi) need a provenance check before they ship — add
+a `<Route>` only after that.
 
 Results flow into `src/pages/FinalResults.tsx`, which renders a dossier-style
-summary and flags "tuen tarpeen selvittely" when ≥2 NMI-aligned areas score in
-the "selviä vaikeuksia" tier.
+summary. The report deliberately does not reveal which items were missed
+(retest contamination).
 
 ## Key conventions
 
-- All exercise UI text is in Finnish
-- Design system is documented in user memory as "The Elevated Curator" — palette
-  anchored on `#fff8f5` / `#C69A2B` / `#241a11`. Check before restyling.
-- shadcn/ui `Card`, `Button`, `Progress`, `Badge` are the primary UI primitives
+- All UI text is in Finnish; button labels quoted in instructions must match
+  the actual button ("Tarkista", "Valmis", "Olen valmis")
+- Design system: "The Elevated Curator" (documented in user memory) — canvas
+  `#fff8f5`, text `#241a11`, gold `#C69A2B` for primary CTAs only, labels
+  `#785a00`, secondary text `#755e4d`. **`#d2c5b0` is for bars and ghost
+  borders only — never for text** (1.6:1 contrast on the canvas).
+- `PageFooter` for page footers, `ExerciseReadyScreen` for instructions,
+  `ExerciseEndScreen` for supplementary-exercise results
+- Clickable things are `<button>`s (keyboard reachable), with `aria-pressed`
+  for toggles
 - `cn()` from `@/lib/utils` for conditional classNames
 - Feature components export named exports; page wrappers use default exports
-- No global state management — exercises use local `useState`/`useRef`;
-  cross-exercise results persist via `src/lib/exerciseResults.ts` (sessionStorage)
-- Avoid adding new dependencies
-- Text inputs should disable Chrome autofill (autoComplete="off", dynamic `name`,
-  `data-lpignore`, `data-form-type="other"`) so prior answers don't bleed between
-  items
+- Pick/shuffle exercise items inside the component (`useMemo`), never at
+  module scope — a retry in the same tab must get a fresh set
+- Text inputs disable Chrome autofill (autoComplete="off", dynamic `name`,
+  `data-lpignore`, `data-form-type="other"`) so prior answers don't bleed
+  between items
+- Content rules: pseudowords must not be inflected real words; minimal-pair
+  sentences must be grammatical with the correct option in place (mind
+  consonant gradation); syllable splits follow Finnish hyphenation; every
+  reading-comp substitution must be detectable from the text
 
 ## Dev helpers
 
@@ -110,12 +148,20 @@ the "selviä vaikeuksia" tier.
   tiny subset and timers drop to ~30s, so the whole flow can be smoke-tested in
   under a minute. Toggle via the `dev-fast` skill or edit the file directly.
   **Never ship with `DEV_FAST = true`.**
+- `npm run dev` runs in React StrictMode — effects double-invoke in dev, which
+  is intended.
 
 ## Commands
 
 ```sh
 npm run dev       # start dev server (localhost:8080)
 npm run build     # production build
-npm run lint      # ESLint
-npx vitest        # run tests
+npm run lint      # ESLint (must be clean — no ignores for app code)
+npx vitest run    # run tests
 ```
+
+## Deployment
+
+Static SPA. `public/_redirects` (Netlify / Cloudflare Pages) and `vercel.json`
+(Vercel) provide the `index.html` fallback that client-side routing needs.
+Before launch: make `og:image` in `index.html` absolute and add `og:url`.

@@ -3,6 +3,7 @@ import { readingCompPassages } from "./readingCompItems.fi";
 import type { ReadingCompToken } from "./types";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { scoreMarking } from "@/lib/levels";
 import { formatMmSs } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
@@ -71,12 +72,15 @@ export function ReadingCompExercise() {
 
     const marked = markedIdsRef.current;
     let hits = 0;
+    let falseAlarms = 0;
     for (const para of paragraphs) {
       for (const t of para) {
-        if (t.kind === "word" && t.isError && marked.has(t.id)) hits += 1;
+        if (t.kind !== "word" || !marked.has(t.id)) continue;
+        if (t.isError) hits += 1;
+        else falseAlarms += 1;
       }
     }
-    saveReadingCompResult({ correct: hits, total: totalErrors });
+    saveReadingCompResult(scoreMarking(hits, falseAlarms, totalErrors));
     goToNext();
   };
 
@@ -120,7 +124,7 @@ export function ReadingCompExercise() {
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Osa 5 — Luetun ymmärtäminen
           </p>
-          <p className="text-xs text-[#d2c5b0]">{markedIds.size} merkittyä</p>
+          <p className="text-xs text-[#755e4d]">{markedIds.size} merkittyä</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
           <div

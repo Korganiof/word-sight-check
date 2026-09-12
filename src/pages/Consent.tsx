@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { markScreeningStarted } from "@/lib/screeningSession";
+import { PageFooter } from "@/components/PageFooter";
 import { Stethoscope, EyeOff, Info, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
 
 export default function Consent() {
@@ -125,7 +127,7 @@ export default function Consent() {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => { if (agreed) { localStorage.setItem("lukiseula_started_at", String(Date.now())); navigate("/start"); } }}
+              onClick={() => { if (agreed) { markScreeningStarted(); navigate("/start"); } }}
               disabled={!agreed}
               className="flex items-center justify-center gap-2 bg-[#C69A2B] text-white font-semibold px-8 py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#785a00]"
             >
@@ -143,10 +145,7 @@ export default function Consent() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="px-6 py-4 text-center text-xs text-[#d2c5b0]">
-        LukiSeula © 2025
-      </footer>
+      <PageFooter />
 
     </div>
   );

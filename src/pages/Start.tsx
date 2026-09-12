@@ -15,10 +15,10 @@ export default function Start() {
       {/* Progress */}
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-1">
-          Vaihe 1 / 5 — Sanantunnistus
+          Osa 1 / 5 — Sanantunnistus
         </p>
         <div className="h-1 bg-[#f9e4d6] rounded-full">
-          <div className="h-1 bg-[#C69A2B] rounded-full" style={{ width: "25%" }} />
+          <div className="h-1 bg-[#C69A2B] rounded-full" style={{ width: "20%" }} />
         </div>
       </div>
 
@@ -46,7 +46,8 @@ export default function Start() {
                 <h3 className="font-semibold text-[#241a11] mb-1">Tehtävän kuvaus</h3>
                 <p className="text-sm text-[#755e4d] leading-relaxed">
                   Näet sanoja yksi kerrallaan. Tehtäväsi on päättää, onko kukin sana{" "}
-                  <strong className="text-[#241a11]">oikeaa suomea</strong> vai ei.
+                  <strong className="text-[#241a11]">oikeaa suomea</strong> vai keksitty.
+                  Ensin tulee kolme harjoitussanaa, joita ei lasketa mukaan.
                 </p>
               </div>
             </div>
@@ -84,11 +85,11 @@ export default function Start() {
                 <Timer className="w-5 h-5 text-[#785a00]" />
               </div>
               <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Vastaa rauhassa</h3>
+                <h3 className="font-semibold text-[#241a11] mb-1">Kolme sekuntia per sana</h3>
                 <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Tehtävällä ei ole aikarajaa, mutta pyri vastaamaan{" "}
-                  <strong className="text-[#241a11]">mahdollisimman nopeasti ja tarkasti</strong>.
-                  Usein ensimmäinen tuntuma on oikea.
+                  Jokainen sana näkyy <strong className="text-[#241a11]">enintään kolme sekuntia</strong>.
+                  Jos et ehdi vastata, sana lasketaan vääräksi — luota ensivaikutelmaan ja
+                  vastaa heti.
                 </p>
               </div>
             </div>

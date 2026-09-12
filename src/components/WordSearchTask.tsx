@@ -18,7 +18,7 @@ interface TokenInfo {
 
 function normalizeToken(raw: string): string {
   return raw
-    .replace(/[.,:;!?()"""–-]/g, "")
+    .replace(/[.,:;!?()"“”„–—-]/g, "")
     .trim()
     .toUpperCase();
 }
@@ -135,7 +135,7 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Osa 2 — Sanojen etsiminen tekstistä
           </p>
-          <p className="text-xs text-[#d2c5b0]">{clickedIndices.size} valittua</p>
+          <p className="text-xs text-[#755e4d]">{clickedIndices.size} valittua</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
           <div

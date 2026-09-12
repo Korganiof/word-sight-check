@@ -9,7 +9,7 @@ const STEPS = [
   },
   {
     heading: "Mitä sinun pitää tehdä",
-    text: "Muista tavut, yhdistä ne mielessäsi sanaksi ja kirjoita sana tekstikenttään. Paina Enter tai klikkaa Valmis.",
+    text: "Muista tavut, yhdistä ne mielessäsi sanaksi ja kirjoita sana tekstikenttään. Paina Enter tai klikkaa Tarkista.",
   },
   {
     heading: "Nopeus ei ole pääasia",

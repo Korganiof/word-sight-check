@@ -1,32 +1,33 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { syllableItems as allSyllableItems } from "./syllableItems.fi";
-import { DEV_FAST } from "@/lib/devConfig";
-import { shuffleArray } from "@/lib/utils";
-
-const syllableItems = DEV_FAST
-  ? allSyllableItems.slice(0, 2)
-  : shuffleArray(allSyllableItems).slice(0, 12);
 import type { SyllableResult } from "./types";
 import { saveSyllablesResult } from "@/lib/exerciseResults";
+import { DEV_FAST } from "@/lib/devConfig";
+import { shuffleArray } from "@/lib/utils";
+import { ExerciseEndScreen } from "@/components/ExerciseEndScreen";
 
+const ITEM_COUNT = DEV_FAST ? 2 : 12;
 const MS_PER_SYLLABLE = 1500;
+const FEEDBACK_MS = 800;
+
+type Phase = "showing" | "typing" | "feedback" | "done";
 
 function normalize(s: string): string {
   return s.trim().toLowerCase();
 }
 
 export function SyllableExercise() {
-  const navigate = useNavigate();
+  const items = useMemo(() => shuffleArray(allSyllableItems).slice(0, ITEM_COUNT), []);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [syllableIndex, setSyllableIndex] = useState(0);
-  const [phase, setPhase] = useState<"showing" | "typing" | "feedback">("showing");
+  const [phase, setPhase] = useState<Phase>("showing");
   const [inputValue, setInputValue] = useState("");
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [results, setResults] = useState<SyllableResult[]>([]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const currentItem = syllableItems[currentIndex];
+  const currentItem = items[currentIndex];
 
   useEffect(() => {
     setSyllableIndex(0);
@@ -57,26 +58,39 @@ export function SyllableExercise() {
   function handleSubmit() {
     if (phase !== "typing") return;
     const correct = normalize(inputValue) === normalize(currentItem.correctWord);
+    const newResults = [...results, { item: currentItem, userInput: inputValue.trim(), correct }];
+    setResults(newResults);
     setFeedback(correct ? "correct" : "incorrect");
     setPhase("feedback");
 
     setTimeout(() => {
-      const newResults = [...results, { item: currentItem, userInput: inputValue.trim(), correct }];
-      if (currentIndex < syllableItems.length - 1) {
-        setResults(newResults);
+      if (currentIndex < items.length - 1) {
         setCurrentIndex(i => i + 1);
       } else {
-        saveSyllablesResult({ correct: newResults.filter(r => r.correct).length, total: newResults.length });
-        navigate("/exercises");
+        saveSyllablesResult({
+          correct: newResults.filter(r => r.correct).length,
+          total: newResults.length,
+        });
+        setPhase("done");
       }
-    }, 800);
+    }, FEEDBACK_MS);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter") handleSubmit();
   }
 
-  const progress = ((currentIndex + 1) / syllableItems.length) * 100;
+  if (phase === "done") {
+    return (
+      <ExerciseEndScreen
+        title="Sanojen muodostaminen tavuista"
+        correct={results.filter(r => r.correct).length}
+        total={results.length}
+      />
+    );
+  }
+
+  const progress = ((currentIndex + 1) / items.length) * 100;
 
   return (
     <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
@@ -92,7 +106,7 @@ export function SyllableExercise() {
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Sanojen muodostaminen tavuista
           </p>
-          <p className="text-xs text-[#d2c5b0]">Sana {currentIndex + 1} / {syllableItems.length}</p>
+          <p className="text-xs text-[#755e4d]">Sana {currentIndex + 1} / {items.length}</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full">
           <div
@@ -130,17 +144,18 @@ export function SyllableExercise() {
                   {currentItem.syllables[syllableIndex]}
                 </span>
               ) : (
-                <p className="text-[#d2c5b0] text-sm italic">Tavut piilotettu</p>
+                <p className="text-[#755e4d] text-sm italic">Tavut piilotettu</p>
               )}
             </div>
 
             {/* Input section */}
             {phase !== "showing" && (
               <div className="px-6 pb-6 space-y-4">
-                <label className="block text-sm font-semibold text-[#241a11]">
+                <label htmlFor="syllable-input" className="block text-sm font-semibold text-[#241a11]">
                   Kirjoita sana:
                 </label>
                 <input
+                  id="syllable-input"
                   ref={inputRef}
                   type="text"
                   name={`syllable-input-${currentIndex}`}
@@ -155,11 +170,23 @@ export function SyllableExercise() {
                   data-lpignore="true"
                   data-form-type="other"
                   placeholder="Kirjoita tähän..."
-                  className="w-full rounded-lg bg-[#fff8f5] px-4 py-3 text-base text-[#241a11] outline-none transition-colors placeholder:text-[#d2c5b0]"
+                  className="w-full rounded-lg bg-[#fff8f5] px-4 py-3 text-base text-[#241a11] outline-none transition-colors placeholder:text-[#755e4d]/60"
                   style={{ border: "1.5px solid #f9e4d6" }}
                   onFocus={e => (e.currentTarget.style.borderColor = "#C69A2B")}
                   onBlur={e => (e.currentTarget.style.borderColor = "#f9e4d6")}
                 />
+
+                {feedback && (
+                  <div
+                    className="text-center text-sm font-semibold py-2 rounded-lg"
+                    style={{
+                      background: feedback === "correct" ? "#e6ebd8" : "#f1d8ce",
+                      color: feedback === "correct" ? "#4f7a3a" : "#a6442a",
+                    }}
+                  >
+                    {feedback === "correct" ? "Oikein" : `Oikea sana: ${currentItem.correctWord}`}
+                  </div>
+                )}
 
                 <button
                   onClick={handleSubmit}
@@ -172,7 +199,7 @@ export function SyllableExercise() {
             )}
           </div>
 
-          <p className="text-center text-sm text-[#d2c5b0] mt-6">
+          <p className="text-center text-sm text-[#755e4d] mt-6">
             Katso tavut tarkasti. Muodosta niistä sana ja kirjoita se, kun tavut katoavat.
           </p>
         </div>

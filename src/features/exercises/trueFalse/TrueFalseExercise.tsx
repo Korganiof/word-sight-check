@@ -78,7 +78,7 @@ export function TrueFalseExercise() {
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Väittämiin vastaaminen
           </p>
-          <p className="text-xs text-[#d2c5b0]">
+          <p className="text-xs text-[#755e4d]">
             {phase === "statements"
               ? `Väittämä ${stmtIndex + 1} / ${passage.statements.length}`
               : "Lue teksti"}
@@ -143,7 +143,7 @@ export function TrueFalseExercise() {
                     "flex-1 px-5 py-4 rounded-xl text-base font-semibold transition-colors ";
                   if (selected !== null) {
                     if (isSelected) cls += "bg-[#C69A2B] text-white";
-                    else cls += "bg-[#f9ede4] text-[#d2c5b0]";
+                    else cls += "bg-[#f9ede4] text-[#755e4d]";
                   } else {
                     cls +=
                       "bg-[#f9e4d6] text-[#241a11] hover:bg-[#C69A2B] hover:text-white cursor-pointer";

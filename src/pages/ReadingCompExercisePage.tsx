@@ -13,7 +13,7 @@ const STEPS = [
   },
   {
     heading: "Aikaraja",
-    text: "Sinulla on 4 minuuttia aikaa. Voit painaa Valmis-painiketta heti, kun olet käynyt tekstin läpi.",
+    text: "Sinulla on 4 minuuttia aikaa. Voit painaa Olen valmis -painiketta heti, kun olet käynyt tekstin läpi.",
   },
 ];
 

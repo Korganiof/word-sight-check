@@ -1,29 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { minimalPairItems as allMinimalPairItems } from "./minimalPairItems.fi";
 import { saveMinimalPairsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { TWO_AFC_THRESHOLDS } from "@/lib/levels";
 import { shuffleArray } from "@/lib/utils";
+import { ExerciseEndScreen } from "@/components/ExerciseEndScreen";
 
-const minimalPairItems = DEV_FAST
-  ? allMinimalPairItems.slice(0, 2)
-  : shuffleArray(allMinimalPairItems).slice(0, 15);
-
+const ITEM_COUNT = DEV_FAST ? 2 : 15;
 const ITEM_DURATION_MS = DEV_FAST ? 2000 : 6000;
 const FEEDBACK_DELAY_MS = 900;
 
 export function MinimalPairExercise() {
+  const items = useMemo(() => shuffleArray(allMinimalPairItems).slice(0, ITEM_COUNT), []);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
 
-  const currentItem = minimalPairItems[currentIndex];
-  const total = minimalPairItems.length;
+  const currentItem = items[currentIndex];
+  const total = items.length;
   const progressPct = Math.min(100, ((currentIndex + 1) / total) * 100);
 
-  const advanceRef = useRef<() => void>(() => {});
-  advanceRef.current = useCallback(() => {
+  const advance = useCallback(() => {
     setSelectedAnswer(null);
     if (currentIndex >= total - 1) {
       setIsComplete(true);
@@ -31,32 +30,37 @@ export function MinimalPairExercise() {
       setCurrentIndex((i) => i + 1);
     }
   }, [currentIndex, total]);
+  const advanceRef = useRef(advance);
+  advanceRef.current = advance;
 
+  // An unanswered item times out and counts as wrong.
   useEffect(() => {
-    if (selectedAnswer !== null) return;
-    const id = setTimeout(() => { advanceRef.current(); }, ITEM_DURATION_MS);
+    if (selectedAnswer !== null || isComplete) return;
+    const id = setTimeout(() => advanceRef.current(), ITEM_DURATION_MS);
     return () => clearTimeout(id);
-  }, [currentIndex, selectedAnswer]);
+  }, [currentIndex, selectedAnswer, isComplete]);
 
-  const handleSelect = useCallback(
-    (option: string) => {
-      if (selectedAnswer !== null) return;
-      const isCorrect = option === currentItem.correctAnswer;
-      setSelectedAnswer(option);
-      if (isCorrect) setCorrectCount((n) => n + 1);
-      setTimeout(() => advanceRef.current(), FEEDBACK_DELAY_MS);
-    },
-    [selectedAnswer, currentItem]
-  );
-
-  const navigate = useNavigate();
+  const handleSelect = (option: string) => {
+    if (selectedAnswer !== null) return;
+    setSelectedAnswer(option);
+    if (option === currentItem.correctAnswer) setCorrectCount((n) => n + 1);
+    setTimeout(() => advanceRef.current(), FEEDBACK_DELAY_MS);
+  };
 
   useEffect(() => {
-    if (isComplete) {
-      saveMinimalPairsResult({ correct: correctCount, total });
-      navigate("/exercises");
-    }
-  }, [isComplete, correctCount, total, navigate]);
+    if (isComplete) saveMinimalPairsResult({ correct: correctCount, total });
+  }, [isComplete, correctCount, total]);
+
+  if (isComplete) {
+    return (
+      <ExerciseEndScreen
+        title="Sanojen pituuden erottaminen"
+        correct={correctCount}
+        total={total}
+        thresholds={TWO_AFC_THRESHOLDS}
+      />
+    );
+  }
 
   const options = [currentItem.optionA, currentItem.optionB];
 
@@ -74,7 +78,7 @@ export function MinimalPairExercise() {
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Pituuserojen tunnistaminen
           </p>
-          <p className="text-xs text-[#d2c5b0]">Kysymys {currentIndex + 1} / {total}</p>
+          <p className="text-xs text-[#755e4d]">Kysymys {currentIndex + 1} / {total}</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full">
           <div
@@ -125,7 +129,7 @@ export function MinimalPairExercise() {
                   if (isSelected) {
                     buttonClass += "bg-[#C69A2B] text-white";
                   } else {
-                    buttonClass += "bg-[#f9ede4] text-[#d2c5b0]";
+                    buttonClass += "bg-[#f9ede4] text-[#755e4d]";
                   }
                 } else {
                   buttonClass +=

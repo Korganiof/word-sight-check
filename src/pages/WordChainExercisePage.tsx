@@ -5,19 +5,19 @@ import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
 const STEPS = [
   {
     heading: "Mitä ruudulla näkyy",
-    text: 'Näet lauseen, jossa kaikki sanat on kirjoitettu yhteen ilman välilyöntejä. Esimerkiksi: "kissaistuumatolla" tarkoittaa "kissa istuu matolla".',
+    text: 'Näet lauseen, jossa kaikki sanat on kirjoitettu yhteen ilman välilyöntejä. Esimerkiksi "kissaistuumatolla" tarkoittaa "kissa istuu matolla".',
   },
   {
     heading: "Mitä sinun pitää tehdä",
-    text: 'Kirjoita lause uudelleen tekstikenttään niin, että lisäät välilyönnit oikeisiin kohtiin ja lause muodostuu järkeväksi — esimerkiksi "kissa istuu matolla".',
+    text: "Napauta jokaisen sanan viimeistä kirjainta — sen perään ilmestyy sanaraja. Napauta uudelleen, jos haluat poistaa merkinnän.",
   },
   {
     heading: "Miten hyväksyt vastauksesi",
-    text: "Kun olet kirjoittanut lauseen, paina Tarkista-painiketta (tai Enter). Siirryt sen jälkeen seuraavaan lauseeseen.",
+    text: "Kun kaikki sanarajat ovat paikoillaan, paina Tarkista (tai Enter). Siirryt sen jälkeen seuraavaan lauseeseen.",
   },
   {
     heading: "Aikaraja",
-    text: "Sinulla on 1,5 minuuttia aikaa. Etene rauhallisesti mutta älä jää liikaa miettimään yhtä lausetta.",
+    text: "Sinulla on 1,5 minuuttia aikaa 15 lauseeseen. Etene ripeästi mutta älä jää liikaa miettimään yhtä lausetta — lauseet, joihin et ehdi, lasketaan vääriksi.",
   },
 ];
 

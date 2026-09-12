@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loadSession, computeAccuracy } from "@/lib/metrics";
+import { loadSession } from "@/lib/metrics";
+import { loadScreeningStartedAt } from "@/lib/screeningSession";
+import { PageFooter } from "@/components/PageFooter";
 import { loadWordSearchResult } from "@/lib/wordsearch";
 import {
   loadWordChainsResult,
   loadSpellingErrorsResult,
   loadReadingCompResult,
 } from "@/lib/exerciseResults";
-import { LEVEL_META, scoreToLevel, type Level } from "@/lib/levels";
+import { LEVEL_META, TWO_AFC_THRESHOLDS, scoreMarking, scoreToLevel, type Level } from "@/lib/levels";
 import {
   AREA_STATIC,
   DESCRIPTIONS,
@@ -62,7 +64,7 @@ function DossierRow({ area, index }: { area: SkillArea; index: number }) {
     >
       <div
         className="text-4xl font-extralight leading-none tabular-nums"
-        style={{ color: "#d2c5b0", letterSpacing: "-0.02em" }}
+        style={{ color: "#755e4d", letterSpacing: "-0.02em" }}
       >
         {num}
       </div>
@@ -96,33 +98,25 @@ function DossierRow({ area, index }: { area: SkillArea; index: number }) {
 // ─────────────────────────────────────────────────────────────
 export default function FinalResults() {
   const navigate = useNavigate();
-  const printRef = useRef<HTMLDivElement>(null);
   const [areas, setAreas] = useState<SkillArea[]>([]);
-  const [startedAt] = useState<number>(() => {
-    const raw = localStorage.getItem("lukiseula_started_at");
-    return raw ? Number(raw) : Date.now();
-  });
+  const [startedAt] = useState<number>(() => loadScreeningStartedAt() ?? Date.now());
 
   useEffect(() => {
-    const trials = loadSession();
-    const pseudoAccuracy = trials && trials.length > 0 ? computeAccuracy(trials) : null;
-    const sanantunnistusLevel: Level =
-      pseudoAccuracy === null ? "missing"
-      : pseudoAccuracy >= 75 ? "sujuu"
-      : pseudoAccuracy >= 50 ? "jonkin"
-      : "selvia";
-
+    const trials = loadSession() ?? [];
     const wordSearch = loadWordSearchResult();
-    const wordChains = loadWordChainsResult();
-    const spellingErrors = loadSpellingErrorsResult();
-    const readingComp = loadReadingCompResult();
+    const levelOf = (r: { correct: number; total: number } | null): Level =>
+      r ? scoreToLevel(r.correct, r.total) : "missing";
 
     const levels: Record<string, Level> = {
-      sanantunnistus: sanantunnistusLevel,
-      lukunopeus: wordSearch ? scoreToLevel(wordSearch.foundCorrect, wordSearch.totalTargets) : "missing",
-      sanarajat: wordChains ? scoreToLevel(wordChains.correct, wordChains.total) : "missing",
-      kirjoitusvirheet: spellingErrors ? scoreToLevel(spellingErrors.correct, spellingErrors.total) : "missing",
-      luetunYmmartaminen: readingComp ? scoreToLevel(readingComp.correct, readingComp.total) : "missing",
+      // Two-alternative task: chance is 50 %, so it gets its own cut-offs.
+      sanantunnistus: scoreToLevel(trials.filter(t => t.correct).length, trials.length, TWO_AFC_THRESHOLDS),
+      // Word search stores raw counts; score it like the other marking tasks.
+      lukunopeus: levelOf(
+        wordSearch && scoreMarking(wordSearch.foundCorrect, wordSearch.incorrectClicks, wordSearch.totalTargets),
+      ),
+      sanarajat: levelOf(loadWordChainsResult()),
+      kirjoitusvirheet: levelOf(loadSpellingErrorsResult()),
+      luetunYmmartaminen: levelOf(loadReadingCompResult()),
     };
 
     setAreas(AREA_STATIC.map(a => ({
@@ -163,7 +157,7 @@ export default function FinalResults() {
         </button>
       </nav>
 
-      <div ref={printRef} className="flex-1 w-full max-w-2xl mx-auto px-8 sm:px-16 py-14 print:py-8">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-8 sm:px-16 py-14 print:py-8">
 
         {/* Masthead */}
         <div className="flex items-baseline justify-between pb-6">
@@ -272,7 +266,7 @@ export default function FinalResults() {
         {/* Section header */}
         <div className="flex items-baseline justify-between mb-2">
           <div className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "#785a00" }}>Tarkemmat tulokset</div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#d2c5b0" }}>{areas.length} kohtaa</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#755e4d" }}>{areas.length} kohtaa</div>
         </div>
         <div className="h-px mb-2" style={{ background: "#241a11" }} />
 
@@ -318,7 +312,7 @@ export default function FinalResults() {
               <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
                 Nämä kolme vastaavat Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan
                 (Holopainen ym. 2004) ydinmittareita — Tekninen 2, Tekninen 1 ja Luetun
-                ymmärtäminen. Aikarajat ja sanamäärät noudattavat NMI:n normeja.
+                ymmärtäminen. Aikarajat vastaavat NMI:n normeja; tehtävien laajuus on sovitettu selaimessa tehtäväksi.
                 Tuen tarpeen selvittelyn raja-arvo perustuu näihin kolmeen.
               </dd>
             </div>
@@ -425,9 +419,7 @@ export default function FinalResults() {
         </div>
       </div>
 
-      <footer className="px-6 py-4 text-center text-xs mt-8 print:hidden" style={{ color: "#d2c5b0" }}>
-        LukiSeula © 2025
-      </footer>
+      <PageFooter className="mt-8 print:hidden" />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { spellingErrorItems as allItems } from "./spellingErrorItems.fi";
 import { saveSpellingErrorsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { scoreMarking } from "@/lib/levels";
 import { formatMmSs, shuffleArray } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
@@ -26,13 +27,18 @@ export function SpellingErrorsExercise() {
     finishedRef.current = true;
 
     const marked = markedIdsRef.current;
-    let correct = 0;
+    let hits = 0;
+    let falseAlarms = 0;
+    let targets = 0;
     for (const item of items) {
-      const isMarked = marked.has(item.id);
-      if (isMarked && item.hasError) correct += 1;
-      else if (!isMarked && !item.hasError) correct += 1;
+      if (item.hasError) {
+        targets += 1;
+        if (marked.has(item.id)) hits += 1;
+      } else if (marked.has(item.id)) {
+        falseAlarms += 1;
+      }
     }
-    saveSpellingErrorsResult({ correct, total: items.length });
+    saveSpellingErrorsResult(scoreMarking(hits, falseAlarms, targets));
     goToNext();
   };
 
@@ -77,7 +83,7 @@ export function SpellingErrorsExercise() {
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Osa 4 — Etsi kirjoitusvirheet
           </p>
-          <p className="text-xs text-[#d2c5b0]">{markedIds.size} merkittyä</p>
+          <p className="text-xs text-[#755e4d]">{markedIds.size} merkittyä</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
           <div
@@ -113,6 +119,7 @@ export function SpellingErrorsExercise() {
               <button
                 key={item.id}
                 onClick={() => toggleMark(item.id)}
+                aria-pressed={isMarked}
                 className={`px-4 py-3 rounded-lg text-base font-semibold transition-colors text-center ${
                   isMarked
                     ? "bg-[#C69A2B] text-white"

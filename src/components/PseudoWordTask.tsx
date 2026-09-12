@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { WordItem } from "@/lib/pseudowords";
 import type { Trial } from "@/lib/metrics";
 import { saveSession } from "@/lib/metrics";
@@ -9,19 +9,23 @@ interface PseudoWordTaskProps {
   warmupCount?: number;
 }
 
+// Per-item limit. A timeout is recorded as a wrong answer — the Start page
+// tells the user this.
 const ITEM_TIMEOUT_MS = 3000;
+const ADVANCE_DELAY_MS = 200;
 
 export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) {
   const goToNext = useScreeningFlow();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [trials, setTrials] = useState<Trial[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(ITEM_TIMEOUT_MS);
 
+  const trialsRef = useRef<Trial[]>([]);
   const startRef = useRef<number>(0);
   const processingRef = useRef<boolean>(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const advanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const realBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const currentItem = items[currentIndex];
@@ -33,52 +37,47 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   const clearTimers = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (intervalRef.current) clearInterval(intervalRef.current);
+    if (advanceRef.current) clearTimeout(advanceRef.current);
     timeoutRef.current = null;
     intervalRef.current = null;
+    advanceRef.current = null;
   }, []);
 
   const handleAnswer = useCallback(
     (answer: boolean | null, timedOut = false) => {
-      if (!currentItem) return;
-      if (processingRef.current) return;
+      if (!currentItem || processingRef.current) return;
       processingRef.current = true;
       setIsProcessing(true);
       clearTimers();
 
-      const endTime = performance.now();
-      const rtMs = Math.round(endTime - startRef.current);
-
-      const trial: Trial = {
+      const rtMs = Math.round(performance.now() - startRef.current);
+      trialsRef.current.push({
         item: currentItem.text,
         isWord: currentItem.isWord,
         answer,
         correct: answer === currentItem.isWord,
         rtMs,
         ...(timedOut && { timedOut: true }),
-      };
-
-      setTrials(prev => {
-        const newTrials = [...prev, trial];
-
-        if (currentIndex < items.length - 1) {
-          setTimeout(() => {
-            setCurrentIndex(i => i + 1);
-            setIsProcessing(false);
-            processingRef.current = false;
-          }, 200);
-        } else {
-          const scoredTrials =
-            warmupCount > 0 ? newTrials.slice(Math.min(warmupCount, newTrials.length)) : newTrials;
-          saveSession(scoredTrials);
-          setTimeout(() => {
-            goToNext();
-          }, 200);
-        }
-
-        return newTrials;
       });
+
+      const isLast = currentIndex >= items.length - 1;
+      if (isLast) {
+        // Warm-up trials are practice only and never scored.
+        saveSession(trialsRef.current.slice(warmupTotal));
+      }
+
+      advanceRef.current = setTimeout(() => {
+        advanceRef.current = null;
+        if (isLast) {
+          goToNext();
+          return;
+        }
+        processingRef.current = false;
+        setIsProcessing(false);
+        setCurrentIndex(i => i + 1);
+      }, ADVANCE_DELAY_MS);
     },
-    [currentItem, currentIndex, items.length, warmupCount, goToNext, clearTimers]
+    [currentItem, currentIndex, items.length, warmupTotal, goToNext, clearTimers]
   );
 
   useEffect(() => {
@@ -89,7 +88,7 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
     realBtnRef.current?.focus();
 
     intervalRef.current = setInterval(() => {
-      setTimeLeft(prev => Math.max(0, prev - 50));
+      setTimeLeft(Math.max(0, ITEM_TIMEOUT_MS - (performance.now() - startRef.current)));
     }, 50);
 
     timeoutRef.current = setTimeout(() => {
@@ -137,9 +136,9 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
         <div className="flex items-center justify-between mb-1">
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            {progressLabel}
+            {isWarmup ? progressLabel : `Osa 1 — ${progressLabel}`}
           </p>
-          <p className="text-xs text-[#d2c5b0]">{Math.round(progress)}%</p>
+          <p className="text-xs text-[#755e4d]">{Math.round(progress)}%</p>
         </div>
         <div className="h-1 bg-[#f9e4d6] rounded-full">
           <div

@@ -186,7 +186,7 @@ export default function Home() {
               cols={2}
               icon={<Brain className="w-5 h-5" />}
               title="Luetun ymmärtäminen"
-              desc="Luet lyhyen tekstin ja vastaat sen sisältöä koskeviin kysymyksiin. Mittaa kykyä jäsentää ja tulkita lukemaa — oma ulottuvuutensa lukunopeuden ja oikeinkirjoituksen rinnalla."
+              desc="Luet lyhyen tekstin, johon on piilotettu sanoja, jotka eivät sovi yhteyteen tai ovat väärässä muodossa — ja merkitset ne. Mittaa luetun ymmärtämistä ja tarkkuutta: huomaatko, kun teksti ei täsmää."
             />
           </div>
         </section>
@@ -202,8 +202,8 @@ export default function Home() {
                 </h2>
               </div>
               <p className="text-white/85 text-base md:text-lg max-w-xl leading-relaxed">
-                Seulonnan lopuksi saat kattavan raportin tuloksistasi ja suositukset
-                jatkotoimenpiteistä. Tiedät tarkalleen, miten edetä.
+                Seulonnan lopuksi saat yhteenvedon tuloksistasi osa-alueittain sekä
+                vinkkejä siitä, mistä hakea lisätietoa tai tukea.
               </p>
             </div>
             <div className="relative z-10">
@@ -238,6 +238,24 @@ export default function Home() {
             <p className="text-xs text-[#4e4636]/70 max-w-xl mx-auto leading-relaxed">
               LukiSeula on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella. Ei
               kliininen eikä ammatillinen työkalu — tulokset ovat vain suuntaa antavia.
+            </p>
+          </div>
+        </section>
+
+        {/* ─── Tietosuoja ─── */}
+        <section id="tietosuoja" className="max-w-3xl mx-auto px-6 mt-16 scroll-mt-28">
+          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-[0_4px_16px_-4px_rgba(120,90,0,0.06)]">
+            <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-[#785a00] mb-3">
+              Tietosuoja
+            </h2>
+            {/* Keep this in sync with what the app actually does — it must be
+                revisited if analytics (e.g. PostHog) are ever added. */}
+            <p className="text-sm text-[#4e4636] leading-relaxed">
+              LukiSeula ei kerää henkilötietoja, ei käytä evästeitä eikä lähetä tuloksia
+              minnekään. Sivusto ei lataa mitään kolmansien osapuolten palveluista. Vastauksesi
+              ja tuloksesi säilyvät vain selaimesi istuntomuistissa ja katoavat, kun suljet
+              välilehden. Jos haluat tuloksen talteen, tallenna raportti PDF-tiedostoksi
+              tulossivulta.
             </p>
           </div>
         </section>
@@ -295,11 +313,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
           <div className="text-base font-bold tracking-tight text-[#28180b]">LukiSeula</div>
           <div className="flex flex-wrap justify-center gap-x-7 gap-y-2 text-[#4e4636] text-xs uppercase tracking-[0.14em] font-medium">
-            <a className="hover:text-[#785a00] transition-colors" href="#">
+            <a className="hover:text-[#785a00] transition-colors" href="#tietosuoja">
               Tietosuoja
             </a>
           </div>
-          <div className="text-[#4e4636]/80 text-xs">© 2026 LukiSeula · Harrasteprojekti</div>
+          <div className="text-[#4e4636]/80 text-xs">© {new Date().getFullYear()} LukiSeula · Harrasteprojekti</div>
         </div>
       </footer>
     </div>

@@ -11,7 +11,7 @@ const STEPS = [
   },
   {
     heading: "Mitä sinun pitää tehdä",
-    text: "Lue teksti läpi ja etsi sieltä listassa olevat sanat. Kun löydät sanan tekstistä, klikkaa sitä. Löydetyt sanat merkitään automaattisesti.",
+    text: "Lue teksti läpi ja etsi sieltä listassa olevat sanat. Kun löydät sanan tekstistä, klikkaa sitä — se korostuu. Klikkaa uudelleen, jos haluat poistaa merkinnän.",
   },
   {
     heading: "Aikaraja",

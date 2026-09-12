@@ -3,10 +3,3 @@ export interface WordChainItem {
   originalSentence: string;
   chainedSentence: string;
 }
-
-export interface WordChainResult {
-  item: WordChainItem;
-  userInput: string;
-  correct: boolean;
-  rtMs: number;
-}

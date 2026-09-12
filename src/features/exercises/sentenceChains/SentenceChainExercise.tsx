@@ -71,7 +71,7 @@ export function SentenceChainExercise() {
           <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
             Lauseketjujen erottaminen
           </p>
-          <p className="text-xs text-[#d2c5b0]">
+          <p className="text-xs text-[#755e4d]">
             {index + 1} / {items.length}
           </p>
         </div>
