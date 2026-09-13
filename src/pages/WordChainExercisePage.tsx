@@ -12,8 +12,8 @@ const STEPS = [
     text: "Napauta jokaisen sanan viimeistä kirjainta — sen perään ilmestyy sanaraja. Napauta uudelleen, jos haluat poistaa merkinnän.",
   },
   {
-    heading: "Miten hyväksyt vastauksesi",
-    text: "Kun kaikki sanarajat ovat paikoillaan, paina Tarkista (tai Enter). Siirryt sen jälkeen seuraavaan lauseeseen.",
+    heading: "Lause vaihtuu itsestään",
+    text: "Kun olet merkinnyt kaikki sanarajat, lause vaihtuu hetken kuluttua itsestään — ehdit vielä perua väärän napautuksen. Jos et ole varma, voit siirtyä eteenpäin painamalla Seuraava (tai Enter).",
   },
   {
     heading: "Aikaraja",

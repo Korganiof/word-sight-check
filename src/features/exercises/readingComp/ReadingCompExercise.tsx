@@ -149,9 +149,10 @@ export function ReadingCompExercise() {
             Ohje
           </p>
           <p className="text-sm text-[#755e4d] leading-relaxed">
-            Lue teksti rauhassa. Tekstiin on piilotettu noin tusina <strong>väärää sanaa</strong>
-            {" "}— sanoja, joiden merkitys ei sovi yhteyteen tai joiden sijamuoto on väärä.
-            Klikkaa jokainen virheellinen sana. Voit poistaa merkinnän klikkaamalla uudelleen.
+            Lue tarina rauhassa. Siihen on vaihdettu <strong>12 sanaa</strong>, jotka eivät
+            sovi lauseen merkitykseen — sana on oikeaa suomea, mutta se tekee lauseesta
+            järjettömän. Napauta jokaista sanaa, joka ei sovi. Sinun ei tarvitse tietää, mikä
+            sana siinä kuuluisi olla. Napauta uudelleen, jos haluat poistaa merkinnän.
           </p>
         </div>
 

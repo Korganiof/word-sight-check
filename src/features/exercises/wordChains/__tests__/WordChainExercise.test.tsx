@@ -18,7 +18,7 @@ vi.mock("@/lib/utils", async (importOriginal) => ({
   shuffleArray: <T,>(arr: readonly T[]) => [...arr],
 }));
 
-const FEEDBACK_MS = 600;
+const COMMIT_DELAY_MS = 500;
 const TOTAL_TIME_MS = 90_000;
 
 function renderExercise() {
@@ -34,6 +34,7 @@ function renderExercise() {
 
 // Letter buttons in order; the last letter of a chain has no boundary button.
 const letterButtons = () => screen.getAllByRole("button", { name: /sanaraja/ });
+const advanceTimers = (ms: number) => act(() => { vi.advanceTimersByTime(ms); });
 
 describe("WordChainExercise", () => {
   beforeEach(() => {
@@ -51,42 +52,58 @@ describe("WordChainExercise", () => {
     renderExercise();
     expect(screen.getByText(/Lause 1 \/ 2/)).toBeInTheDocument();
 
-    act(() => {
-      vi.advanceTimersByTime(TOTAL_TIME_MS + 200);
-    });
+    advanceTimers(TOTAL_TIME_MS + 200);
 
     expect(loadWordChainsResult()).toEqual({ correct: 0, total: 2 });
     expect(screen.getByText("next step")).toBeInTheDocument();
   });
 
-  it("accepts a correctly split sentence and advances", () => {
+  it("moves on by itself once every boundary is marked", () => {
     renderExercise();
 
-    // "kissaistuu" → boundary after the 5th letter.
+    // "kissaistuu" → one boundary, after the 5th letter.
     fireEvent.click(letterButtons()[4]);
-    fireEvent.click(screen.getByRole("button", { name: "Tarkista" }));
-    act(() => {
-      vi.advanceTimersByTime(FEEDBACK_MS);
-    });
+    expect(screen.getByText(/Lause 1 \/ 2/)).toBeInTheDocument();
 
+    advanceTimers(COMMIT_DELAY_MS);
     expect(screen.getByText(/Lause 2 \/ 2/)).toBeInTheDocument();
   });
 
-  it("credits a correct, unchecked split at the buzzer but still scores the full set", () => {
+  it("lets a wrong tap be undone during the grace period", () => {
     renderExercise();
 
-    fireEvent.click(letterButtons()[4]);
-    fireEvent.click(screen.getByRole("button", { name: "Tarkista" }));
-    act(() => {
-      vi.advanceTimersByTime(FEEDBACK_MS);
-    });
+    fireEvent.click(letterButtons()[2]); // wrong spot
+    advanceTimers(COMMIT_DELAY_MS - 100);
+    fireEvent.click(letterButtons()[2]); // undo — cancels the pending advance
+    advanceTimers(COMMIT_DELAY_MS);
+    expect(screen.getByText(/Lause 1 \/ 2/)).toBeInTheDocument();
 
-    // "talooniso" → boundaries after letters 4 and 6; leave it unchecked.
+    fireEvent.click(letterButtons()[4]);
+    advanceTimers(COMMIT_DELAY_MS);
+    expect(screen.getByText(/Lause 2 \/ 2/)).toBeInTheDocument();
+  });
+
+  it("skips an incomplete sentence with Seuraava and scores it wrong", () => {
+    renderExercise();
+
+    fireEvent.click(screen.getByRole("button", { name: /Seuraava/ }));
+    expect(screen.getByText(/Lause 2 \/ 2/)).toBeInTheDocument();
+
+    advanceTimers(TOTAL_TIME_MS);
+    expect(loadWordChainsResult()).toEqual({ correct: 0, total: 2 });
+  });
+
+  it("credits a correct sentence still in its grace period at the buzzer", () => {
+    renderExercise();
+    advanceTimers(TOTAL_TIME_MS - 800);
+
+    fireEvent.click(letterButtons()[4]);
+    advanceTimers(COMMIT_DELAY_MS); // → sentence 2 at T-300 ms
+
+    // "talooniso" → boundaries after letters 4 and 6; the buzzer beats the grace period.
     fireEvent.click(letterButtons()[3]);
     fireEvent.click(letterButtons()[5]);
-    act(() => {
-      vi.advanceTimersByTime(TOTAL_TIME_MS);
-    });
+    advanceTimers(400);
 
     expect(loadWordChainsResult()).toEqual({ correct: 2, total: 2 });
   });

@@ -5,11 +5,11 @@ import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
 const STEPS = [
   {
     heading: "Mitä ruudulla näkyy",
-    text: "Näet lyhyen suomenkielisen tekstin. Tekstiin on piilotettu noin tusina väärää sanaa — sanoja, joiden merkitys ei sovi yhteyteen tai joiden sijamuoto on väärä.",
+    text: "Näet lyhyen tarinan. Siihen on vaihdettu 12 sanaa toisiksi niin, ettei lause ole enää järkevä — esimerkiksi ”hän joi lasillisen leipää”.",
   },
   {
     heading: "Mitä sinun pitää tehdä",
-    text: "Lue teksti rauhassa ja klikkaa jokainen sana, jonka mielestäsi pitäisi olla joku toinen. Klikkaamalla uudelleen voit poistaa merkinnän.",
+    text: "Lue teksti ja napauta jokaista sanaa, joka ei sovi lauseeseen. Sinun ei tarvitse keksiä oikeaa sanaa — riittää, että huomaat, ettei sana sovi. Napauta uudelleen, jos haluat poistaa merkinnän.",
   },
   {
     heading: "Aikaraja",

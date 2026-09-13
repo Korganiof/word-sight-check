@@ -11,9 +11,14 @@ import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 // (typing the sentence out would measure typing speed). 15 sentences ≈ 60
 // words: a fluent reader clears them with time to spare, a slow reader is cut
 // off — that is what the timer is for, so unreached sentences count as wrong.
+//
+// There is no "check" step: once as many boundaries are marked as the sentence
+// has, it moves on by itself after a short grace period (a wrong tap can still
+// be undone). "Seuraava" skips a sentence the reader is unsure about. Like the
+// paper task, no correctness feedback is given.
 const ITEM_COUNT = DEV_FAST ? 2 : 15;
 const TOTAL_TIME_MS = DEV_FAST ? 30_000 : 90_000;
-const FEEDBACK_MS = 600;
+const COMMIT_DELAY_MS = 500;
 
 /** Character positions at which a new word starts (excluding position 0). */
 function boundaryPositions(sentence: string): Set<number> {
@@ -37,11 +42,9 @@ export function WordChainExercise() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [splits, setSplits] = useState<Set<number>>(new Set());
-  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
 
   const correctRef = useRef(0);
   const doneRef = useRef(false);
-  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentItem = items[currentIndex];
   const expected = useMemo(() => boundaryPositions(currentItem.originalSentence), [currentItem]);
@@ -49,55 +52,52 @@ export function WordChainExercise() {
   const finish = useCallback((correct: number) => {
     if (doneRef.current) return;
     doneRef.current = true;
-    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
     saveWordChainsResult({ correct, total: items.length });
     goToNext();
   }, [items.length, goToNext]);
 
-  const handleCheck = useCallback(() => {
-    if (feedback !== null || doneRef.current) return;
-    const correct = sameSet(splits, expected);
-    if (correct) correctRef.current += 1;
-    setFeedback(correct ? "correct" : "incorrect");
+  // Score the current sentence as marked and move on (or finish).
+  const advance = useCallback((marked: Set<number>) => {
+    if (doneRef.current) return;
+    if (sameSet(marked, expected)) correctRef.current += 1;
+    if (currentIndex < items.length - 1) {
+      setSplits(new Set());
+      setCurrentIndex(i => i + 1);
+    } else {
+      finish(correctRef.current);
+    }
+  }, [expected, currentIndex, items.length, finish]);
 
-    feedbackTimerRef.current = setTimeout(() => {
-      feedbackTimerRef.current = null;
-      if (currentIndex < items.length - 1) {
-        setSplits(new Set());
-        setFeedback(null);
-        setCurrentIndex(i => i + 1);
-      } else {
-        finish(correctRef.current);
-      }
-    }, FEEDBACK_MS);
-  }, [feedback, splits, expected, currentIndex, items.length, finish]);
+  // Auto-advance once every boundary is marked; un-tapping within the grace
+  // period cancels it (the effect cleanup clears the timer).
+  useEffect(() => {
+    if (splits.size === 0 || splits.size !== expected.size) return;
+    const id = setTimeout(() => advance(splits), COMMIT_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [splits, expected, advance]);
 
-  // Time's up: credit a correct but not-yet-checked answer, then score
-  // everything reached against the full set.
+  // Time's up: credit a correct sentence still in its grace period, then
+  // score everything reached against the full set.
   const handleTimeout = () => {
-    const pending = feedback === null && sameSet(splits, expected) ? 1 : 0;
+    const pending = sameSet(splits, expected) ? 1 : 0;
     finish(correctRef.current + pending);
   };
 
   const remainingMs = useCountdown({ durationMs: TOTAL_TIME_MS, onExpire: handleTimeout, intervalMs: 100 });
 
-  useEffect(() => () => {
-    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
-  }, []);
-
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        handleCheck();
+        advance(splits);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [handleCheck]);
+  }, [advance, splits]);
 
   const toggleSplit = (pos: number) => {
-    if (feedback !== null || doneRef.current) return;
+    if (doneRef.current) return;
     setSplits(prev => {
       const next = new Set(prev);
       if (next.has(pos)) next.delete(pos);
@@ -107,8 +107,6 @@ export function WordChainExercise() {
   };
 
   const chars = currentItem.chainedSentence.split("");
-  const barColor =
-    feedback === "correct" ? "#4f7a3a" : feedback === "incorrect" ? "#a6442a" : "#C69A2B";
 
   const isLow = remainingMs < 30_000;
   const timeProgress = (remainingMs / TOTAL_TIME_MS) * 100;
@@ -166,11 +164,12 @@ export function WordChainExercise() {
             </p>
             <p className="text-sm text-[#755e4d] mb-8">
               Napauta sanan viimeistä kirjainta, niin sen perään tulee sanaraja.
-              Napauta uudelleen, jos haluat poistaa sen.
+              Kun kaikki rajat ovat paikoillaan, lause vaihtuu itsestään.
             </p>
 
-            <div className="bg-[#f9ede4] rounded-xl px-4 py-8 mb-8 select-none">
-              <p className="flex flex-wrap items-center justify-center leading-relaxed">
+            {/* Fixed-size slots between letters so marking never shifts the text. */}
+            <div className="bg-[#f9ede4] rounded-xl px-4 py-8 mb-6 min-h-[9.5rem] flex items-center select-none">
+              <p className="w-full flex flex-wrap items-center justify-center leading-relaxed">
                 {chars.map((ch, i) => {
                   const pos = i + 1;
                   const isLast = i === chars.length - 1;
@@ -180,18 +179,17 @@ export function WordChainExercise() {
                       <button
                         type="button"
                         onClick={() => toggleSplit(pos)}
-                        disabled={isLast || feedback !== null}
+                        disabled={isLast}
                         aria-pressed={isLast ? undefined : split}
                         aria-label={isLast ? ch : `${ch} — sanaraja ${split ? "merkitty" : "ei merkitty"}`}
-                        className="px-[3px] py-1 rounded-sm text-2xl font-bold text-[#241a11] tracking-tight touch-manipulation transition-colors hover:bg-[#f9e4d6] disabled:hover:bg-transparent"
+                        className="px-[2px] py-1 rounded-sm text-2xl font-bold text-[#241a11] tracking-tight touch-manipulation transition-colors hover:bg-[#f9e4d6] disabled:hover:bg-transparent"
                       >
                         {ch}
                       </button>
                       {!isLast && (
                         <span
                           aria-hidden="true"
-                          className={`inline-block w-[2px] h-7 rounded-full transition-all ${split ? "mx-2 opacity-100" : "mx-0 opacity-0"}`}
-                          style={{ backgroundColor: barColor }}
+                          className={`inline-block w-[2px] h-7 mx-[1px] rounded-full bg-[#C69A2B] transition-opacity ${split ? "opacity-100" : "opacity-0"}`}
                         />
                       )}
                     </span>
@@ -200,17 +198,22 @@ export function WordChainExercise() {
               </p>
             </div>
 
-            <button
-              onClick={handleCheck}
-              disabled={splits.size === 0 || feedback !== null}
-              className="w-full bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Tarkista
-            </button>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-xs text-[#755e4d]">
+                {splits.size} / {expected.size} sanarajaa merkitty
+              </p>
+              <button
+                type="button"
+                onClick={() => advance(splits)}
+                className="text-sm font-semibold text-[#785a00] hover:text-[#241a11] transition-colors"
+              >
+                Seuraava →
+              </button>
+            </div>
           </div>
 
           <p className="text-center text-sm text-[#755e4d] mt-6">
-            Enter tarkistaa vastauksen.
+            Enter siirtää seuraavaan lauseeseen.
           </p>
         </div>
       </div>

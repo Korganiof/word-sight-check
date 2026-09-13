@@ -1,9 +1,9 @@
 export interface ReadingCompPassage {
   id: string;
   title: string;
-  // Each paragraph is plain Finnish prose with inline error markers of the
-  // form [[wrongWord|correctWord]]. The wrongWord is what the user sees;
-  // correctWord is shown in the result page as "what you missed".
+  // Plain Finnish prose with inline markers of the form
+  // [[wrongWord|intendedWord]]. The wrongWord is what the user sees; the
+  // intendedWord documents the substitution and is never shown to the user.
   paragraphs: string[];
 }
 

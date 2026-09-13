@@ -22,7 +22,7 @@ export const clearWordSearchResult = (): void => store.clear();
 // Original text written for LukiSeula.
 export const wordSearchPassage = `Suomalaiset metsät kuuluvat maailman puhtaimpiin ja laajimpiin. Yli kaksi kolmasosaa Suomen pinta-alasta on metsää, ja metsissä elää rikas eläin- ja kasvillisuus. Keväällä luonto herää talviunestaan, kun muuttolinnut palaavat etelästä tuoden mukanaan kesän ensimerkit. Näyttävimmistä muuttolinnuista joutsenet lentävät kauniissa parvissa pohjoista kohti. Metsässä voi aistia kevään saapumisen jo ennen kuin lumi on kokonaan sulanut – ilma tuoksuu kostealta maalta ja kuusen pihkalta.
 
-Kesällä suomalaiset viettävät aikaansa mökeillään järvien rannoilla. Mökkeily on syvälle juurtunut osa suomalaista elämäntapaa ja kesän odotusta. Mökin ympäristössä voi marjastaa, kalastaa ja nauttia luonnon rauhasta. Mustikkaa löytyy metsistä runsaasti, ja kokenut marjastaja voi kerätä usean kilon päivässä. Sienestäjät liikkuvat aamuvarhaisella metsässä, sillä sienet kasvavat parhaiten sateisen jakson jälkeen. Suomessa tunnetuimpia ruokasieniä ovat kantarelli, haaparouskut ja tatit.
+Kesällä suomalaiset viettävät aikaansa mökeillään järvien rannoilla. Mökkeily on syvälle juurtunut osa suomalaista elämäntapaa ja kesän odotusta. Mökin ympäristössä voi marjastaa, kalastaa ja nauttia luonnon rauhasta. Mustikkaa löytyy metsistä runsaasti, ja kokenut marjastaja voi kerätä usean kilon päivässä. Sienestäjät liikkuvat aamuvarhaisella metsässä, sillä sienet kasvavat parhaiten sateisen jakson jälkeen. Suomessa tunnetuimpia ruokasieniä ovat kanttarelli, haaparouskut ja tatit.
 
 Syksyllä metsä muuttuu upeaksi värimaisemaksi. Ruska-aika on yksi suomalaisista luonnonilmiöistä, jolloin lehtipuut muuttavat lehtensä keltaisiksi, oransseiksi ja punaisiksi ennen niiden putoamista. Kaamos saapuu Pohjois-Suomeen loka-marraskuussa, kun aurinko ei enää nouse lainkaan horisontin yläpuolelle. Tähtiharrastajille tämä on parasta aikaa, sillä revontulet voivat syttyä taivaalle milloin tahansa yöllä.
 
@@ -36,7 +36,7 @@ export const wordSearchTargets: WordSearchTarget[] = [
   { word: "KASVILLISUUS" },
   { word: "MUUTTOLINNUT" },
   { word: "SIENESTÄJÄT" },
-  { word: "KANTARELLI" },
+  { word: "KANTTARELLI" },
   { word: "VÄRIMAISEMAKSI" },
   { word: "LUONNONILMIÖISTÄ" },
   { word: "REVONTULET" },

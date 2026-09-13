@@ -23,8 +23,15 @@ dyslexia). Timers follow NMI norms where applicable:
 - Sanarajojen hahmottaminen (Tekninen 2): 15 sentences ≈ 60 words / 1.5 min
   (NMI uses ~100 words with a pen; tapping boundaries is the browser
   equivalent — do not turn this into a typing task, typing speed is a confound)
-- Luetun ymmärtäminen: one ~165-word passage with 12 wrong-word
-  substitutions / 4 min. Every substitution must be decidable from the text.
+- Luetun ymmärtäminen: one ~250-word story with 12 semantic substitutions /
+  4 min. NMI (Panula 2013, p. 112, citing Holopainen ym. 2004, 9–10): a Finnish
+  literary text (~4 pages) in which 52 words are swapped for common words of
+  the same word class that do not fit the sentence, paragraph or wider text by
+  meaning; no time limit in principle; 9th-grade norm mean ≈ 33–37/52 and the support-need cut-off is 25/52
+  ≈ 48 % (Panula 2013, tables 12 & 29) — our 50 % `selvia` line matches it.
+  Substitutions are real, correctly inflected words that contradict the
+  sentence — never case/inflection errors (those read as broken Finnish,
+  not as a comprehension probe), never words that merely *could* differ.
 - NMI cutoff for "tuen tarpeen selvittely": persentiili 12 %
 
 Keep this in mind when tweaking content volume or timer durations — they are
@@ -139,8 +146,9 @@ summary. The report deliberately does not reveal which items were missed
   between items
 - Content rules: pseudowords must not be inflected real words; minimal-pair
   sentences must be grammatical with the correct option in place (mind
-  consonant gradation); syllable splits follow Finnish hyphenation; every
-  reading-comp substitution must be detectable from the text
+  consonant gradation); syllable splits follow Finnish hyphenation; reading-comp
+  substitutions are semantic contradictions in correct inflection, decidable
+  from the text
 
 ## Dev helpers
 

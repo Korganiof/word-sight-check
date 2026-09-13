@@ -53,7 +53,7 @@ export default function Home() {
 
             <div className="relative z-10 max-w-3xl flex flex-col items-center gap-7">
               <span className="inline-block px-4 py-1.5 bg-[#785a00]/10 text-[#785a00] rounded-full text-xs font-bold tracking-[0.16em] uppercase">
-                Seulontatyökalu · Harrasteprojekti
+                Seulontatyökalu · Yli 15-vuotiaille
               </span>
 
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-[#28180b] leading-[1.02] text-balance">
@@ -61,8 +61,9 @@ export default function Home() {
               </h1>
 
               <p className="text-lg md:text-xl text-[#4e4636] max-w-2xl leading-relaxed text-balance">
-                Lyhyt seulonta, joka antaa viitteitä siitä, liittyykö lukemiseesi haasteita.
-                Kartoitat omat vahvuutesi ja kehityskohteesi viidellä lyhyellä tehtävällä.
+                Lyhyt seulonta yli 15-vuotiaille nuorille ja aikuisille. Se antaa viitteitä
+                siitä, liittyykö lukemiseesi haasteita — kartoitat omat vahvuutesi ja
+                kehityskohteesi viidellä lyhyellä tehtävällä.
               </p>
 
               {/* Disclaimer — kept above the fold */}
@@ -186,7 +187,7 @@ export default function Home() {
               cols={2}
               icon={<Brain className="w-5 h-5" />}
               title="Luetun ymmärtäminen"
-              desc="Luet lyhyen tekstin, johon on piilotettu sanoja, jotka eivät sovi yhteyteen tai ovat väärässä muodossa — ja merkitset ne. Mittaa luetun ymmärtämistä ja tarkkuutta: huomaatko, kun teksti ei täsmää."
+              desc="Luet lyhyen tarinan, johon on vaihdettu sanoja, jotka eivät sovi lauseen merkitykseen — ja merkitset ne. Mittaa luetun ymmärtämistä: huomaatko, kun teksti ei täsmää. Sama tehtävätyyppi kuin NMI:n nuorten ja aikuisten lukiseulassa."
             />
           </div>
         </section>
