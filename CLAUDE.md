@@ -88,7 +88,9 @@ types.ts              — TypeScript types for the exercise
 ```
 
 A thin page wrapper in `src/pages/<Name>ExercisePage.tsx` shows an
-`ExerciseReadyScreen` with instructions, then renders the feature component.
+`ExerciseReadyScreen` with instructions (optionally a `demo` warm-up that
+gates the start button, as reading comp does), then renders the feature
+component.
 
 Battery exercises save their result and call `goToNext()` from
 `useScreeningFlow` — the order lives in `src/lib/flow.ts`. Supplementary

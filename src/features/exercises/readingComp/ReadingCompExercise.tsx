@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import { readingCompPassages } from "./readingCompItems.fi";
-import type { ReadingCompToken } from "./types";
+import { parseParagraph } from "./parse";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
 import { scoreMarking } from "@/lib/levels";
@@ -9,37 +9,6 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
 
 const DURATION_MS = DEV_FAST ? 30_000 : 240_000;
-
-const TOKEN_RE = /\[\[([^|\]]+)\|([^\]]+)\]\]|\S+|\s+/g;
-
-function parseParagraph(text: string, paragraphIndex: number): ReadingCompToken[] {
-  const tokens: ReadingCompToken[] = [];
-  let wordCounter = 0;
-  let match: RegExpExecArray | null;
-  TOKEN_RE.lastIndex = 0;
-  while ((match = TOKEN_RE.exec(text)) !== null) {
-    const [whole, wrong, correct] = match;
-    if (wrong !== undefined && correct !== undefined) {
-      tokens.push({
-        kind: "word",
-        id: `p${paragraphIndex}-w${wordCounter++}`,
-        text: wrong,
-        isError: true,
-        correctForm: correct,
-      });
-    } else if (/^\s+$/.test(whole)) {
-      tokens.push({ kind: "whitespace", text: whole });
-    } else {
-      tokens.push({
-        kind: "word",
-        id: `p${paragraphIndex}-w${wordCounter++}`,
-        text: whole,
-        isError: false,
-      });
-    }
-  }
-  return tokens;
-}
 
 export function ReadingCompExercise() {
   const goToNext = useScreeningFlow();

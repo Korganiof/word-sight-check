@@ -324,7 +324,10 @@ meaning; the user taps them. Instruction: *Lue tarina rauhassa. Siihen on
 vaihdettu 12 sanaa, jotka eivät sovi lauseen merkitykseen — sana on oikeaa
 suomea, mutta se tekee lauseesta järjettömän. Napauta jokaista sanaa, joka ei
 sovi. Sinun ei tarvitse tietää, mikä sana siinä kuuluisi olla.* Button [Olen
-valmis].
+valmis]. Its ready screen carries an interactive warm-up: two practice
+sentences rendered like the exercise; tapping a fitting word explains why it
+fits, tapping the misfit marks it gold and shows the intended word. "Aloita
+harjoitus" stays disabled until both are solved.
 
 **Lisä — Sanojen muodostaminen tavuista** (`/exercise/syllables`). Syllables
 of a word flash one at a time (1.5 s each, very large) then disappear; the

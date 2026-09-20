@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 interface Step {
   heading: string;
   text: string;
@@ -9,6 +11,11 @@ interface ExerciseReadyScreenProps {
   steps: Step[];
   onStart: () => void;
   startLabel?: string;
+  /** Optional interactive warm-up rendered between the steps and the button. */
+  demo?: ReactNode;
+  /** When false, the start button is disabled and `startHint` explains why. */
+  canStart?: boolean;
+  startHint?: string;
 }
 
 export function ExerciseReadyScreen({
@@ -17,6 +24,9 @@ export function ExerciseReadyScreen({
   steps,
   onStart,
   startLabel = "Aloita harjoitus",
+  demo,
+  canStart = true,
+  startHint,
 }: ExerciseReadyScreenProps) {
   return (
     <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col items-center justify-center px-6 py-12">
@@ -44,12 +54,18 @@ export function ExerciseReadyScreen({
           ))}
         </div>
 
+        {demo && <div className="mb-8">{demo}</div>}
+
         <button
           onClick={onStart}
-          className="w-full bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold py-4 rounded-lg transition-colors text-base"
+          disabled={!canStart}
+          className="w-full bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold py-4 rounded-lg transition-colors text-base disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#C69A2B]"
         >
           {startLabel}
         </button>
+        {!canStart && startHint && (
+          <p className="text-center text-sm text-[#755e4d] mt-3">{startHint}</p>
+        )}
       </div>
     </div>
   );

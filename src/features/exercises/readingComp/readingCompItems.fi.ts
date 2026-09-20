@@ -28,3 +28,11 @@ export const readingCompPassages: ReadingCompPassage[] = [
     ],
   },
 ];
+
+// Practice sentences for the ready screen: one obvious category error and one
+// logical contradiction, so the user has done the task once before the timed
+// part starts. Same markup; the intended word IS shown here, once.
+export const readingCompPractice: string[] = [
+  "Aamulla Liisa söi aamiaiseksi lautasellisen [[kenkiä|puuroa]].",
+  "Kello soi seitsemältä, ja Pekka nousi sängystä ja meni [[nukkumaan|suihkuun]].",
+];
