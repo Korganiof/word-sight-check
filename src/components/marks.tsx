@@ -128,6 +128,7 @@ export function LetterTape({ text, marked, onToggle, disabled, preview = false }
       setPerRow(Math.ceil(chars.length / rows));
     };
     measure();
+    if (typeof ResizeObserver === "undefined") return; // jsdom
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();

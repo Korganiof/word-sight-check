@@ -26,10 +26,11 @@ export default function ReadingCompExercisePage() {
   if (!ready) {
     return (
       <ExerciseReadyScreen
+        part={5}
         title="Luetun ymmärtäminen"
         subtitle="Löydätkö tekstin väärät sanat?"
         steps={STEPS}
-        demo={<ReadingCompDemo sentences={readingCompPractice} onSolvedChange={setSolved} />}
+        aside={<ReadingCompDemo sentences={readingCompPractice} onSolvedChange={setSolved} />}
         canStart={solved >= readingCompPractice.length}
         startHint="Ratkaise ensin molemmat harjoituslauseet, niin voit aloittaa."
         onStart={() => setReady(true)}

@@ -24,7 +24,8 @@ describe("ReadingCompDemo", () => {
 
     fireEvent.click(screen.getByText("kenkiä"));
     expect(screen.getByText(/vaikkapa ”puuroa”/)).toBeInTheDocument();
-    expect(screen.getByText("kenkiä")).toHaveAttribute("aria-pressed", "true");
+    // The mark sits on the word's <button>; the text is in its inner span.
+    expect(screen.getByText("kenkiä").closest("button")).toHaveAttribute("aria-pressed", "true");
     expect(onSolvedChange).toHaveBeenLastCalledWith(1);
 
     fireEvent.click(screen.getByText("nukkumaan"));

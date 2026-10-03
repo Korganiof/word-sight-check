@@ -3,11 +3,26 @@ import { spellingErrorItems as allItems } from "./spellingErrorItems.fi";
 import { saveSpellingErrorsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
 import { scoreMarking } from "@/lib/levels";
-import { formatMmSs, shuffleArray } from "@/lib/utils";
+import { shuffleArray } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
+import { ExerciseShell, TimerPill, TimeLine, Counter } from "@/components/shell";
+import { GridWord } from "@/components/marks";
+import { Button } from "@/components/Button";
+import { Sheet } from "@/components/primitives";
 
 const DURATION_MS = DEV_FAST ? 30_000 : 210_000;
+
+// The 100 words are read in groups: 4 columns × 5 rows on desktop, 2 × 5 on
+// phones, with a wider gap between groups so the eye keeps its place.
+const GROUP_DESKTOP = 20;
+const GROUP_PHONE = 10;
+
+function chunk<T>(arr: readonly T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
 
 export function SpellingErrorsExercise() {
   const goToNext = useScreeningFlow();
@@ -55,91 +70,51 @@ export function SpellingErrorsExercise() {
     });
   };
 
-  const formattedTime = formatMmSs(remainingMs);
-  const timeProgress = ((DURATION_MS - remainingMs) / DURATION_MS) * 100;
-  const isLow = remainingMs < 20_000;
+  // Groups of 20 made of two halves of 10: on desktop the halves run together
+  // (4 columns, 8 px gap), on phones each half is its own 2-column group.
+  const groups = useMemo(() => chunk(items, GROUP_DESKTOP).map((g) => chunk(g, GROUP_PHONE)), [items]);
 
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-        <div className="text-right">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Aikaa jäljellä
-          </p>
-          <p
-            className="text-xl font-mono font-bold tabular-nums"
-            style={{ color: isLow ? "#ef4444" : "#241a11" }}
-          >
-            {formattedTime}
-          </p>
-        </div>
-      </nav>
-
-      {/* Progress */}
-      <div className="px-6 pb-2 max-w-3xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 4 — Etsi kirjoitusvirheet
-          </p>
-          <p className="text-xs text-[#755e4d]">{markedIds.size} merkittyä</p>
-        </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-none"
-            style={{
-              width: `${Math.min(100, Math.max(0, timeProgress))}%`,
-              backgroundColor: isLow ? "#ef4444" : "#C69A2B",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 px-6 py-6 max-w-3xl mx-auto w-full">
-        <div
-          className="bg-white rounded-xl p-6 mb-5"
-          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-        >
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-2">
-            Ohje
-          </p>
-          <p className="text-sm text-[#755e4d] leading-relaxed">
+    <ExerciseShell
+      part={4}
+      right={<TimerPill remainingMs={remainingMs} />}
+      line={<TimeLine durationMs={DURATION_MS} remainingMs={remainingMs} />}
+      width="work"
+      dock={
+        <>
+          <Counter value={markedIds.size} unit="merkittyä" />
+          <Button variant="secondary" onClick={finish} className="w-[148px] md:h-14 md:w-[220px]">
+            Valmis
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-3.5 md:gap-7">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-12">
+          <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Etsi kirjoitusvirheet</h1>
+          <p className="m-0 text-body-sm text-ink md:max-w-[540px] md:text-body">
             Klikkaa kaikki sanat, joissa on kirjoitusvirhe. Voit poistaa valinnan
-            klikkaamalla uudelleen. Paina <strong>Valmis</strong>, kun olet valmis —
+            klikkaamalla uudelleen. Paina <strong className="font-bold">Valmis</strong>, kun olet valmis —
             tai odota aika loppuun.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-6">
-          {items.map((item) => {
-            const isMarked = markedIds.has(item.id);
-            return (
-              <button
-                key={item.id}
-                onClick={() => toggleMark(item.id)}
-                aria-pressed={isMarked}
-                className={`px-4 py-3 rounded-lg text-base font-semibold transition-colors text-center ${
-                  isMarked
-                    ? "bg-[#C69A2B] text-white"
-                    : "bg-white text-[#241a11] hover:bg-[#f9e4d6]"
-                }`}
-                style={{ boxShadow: "0 2px 12px rgba(47,36,27,0.04)" }}
-              >
-                {item.word}
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          onClick={finish}
-          className="w-full bg-[#4A3728] hover:bg-[#2F241B] text-white font-semibold py-3 rounded-lg transition-colors"
-        >
-          Valmis
-        </button>
+        <Sheet as="section" aria-label="Sanalista" className="flex flex-col gap-[18px] p-2.5 md:gap-6 md:p-6">
+          {groups.map((halves, i) => (
+            <div key={i} className="flex flex-col gap-[18px] md:gap-2">
+              {halves.map((half, j) => (
+                <div key={j} className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                  {half.map((item) => (
+                    <GridWord key={item.id} pressed={markedIds.has(item.id)} onToggle={() => toggleMark(item.id)}>
+                      {item.word}
+                    </GridWord>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </Sheet>
       </div>
-    </div>
+    </ExerciseShell>
   );
 }

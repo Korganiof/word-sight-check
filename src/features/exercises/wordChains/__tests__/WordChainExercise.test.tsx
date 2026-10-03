@@ -39,6 +39,9 @@ const advanceTimers = (ms: number) => act(() => { vi.advanceTimersByTime(ms); })
 describe("WordChainExercise", () => {
   beforeEach(() => {
     sessionStorage.clear();
+    // jsdom has no ResizeObserver; the letter tape only uses it to pick its
+    // row length, which does not matter here.
+    vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
     vi.useFakeTimers({
       toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date", "performance"],
     });
@@ -46,6 +49,7 @@ describe("WordChainExercise", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   it("scores unreached sentences as wrong when time runs out", () => {

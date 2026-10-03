@@ -27,6 +27,7 @@ export default function WordChainExercisePage() {
   if (!ready) {
     return (
       <ExerciseReadyScreen
+        part={3}
         title="Sanaketjujen erottaminen"
         subtitle="Missä kohtaa yksi sana loppuu ja toinen alkaa?"
         steps={STEPS}

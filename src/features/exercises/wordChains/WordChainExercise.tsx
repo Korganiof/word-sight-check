@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { wordChainItems as allWordChainItems } from "./wordChainItems.fi";
 import { saveWordChainsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
-import { formatMmSs, shuffleArray } from "@/lib/utils";
+import { shuffleArray } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
+import { ExerciseShell, TimerPill, TimeLine, Counter, Keycap } from "@/components/shell";
+import { LetterTape, ItemRail } from "@/components/marks";
+import { Button } from "@/components/Button";
+import { Sheet } from "@/components/primitives";
 
 // NMI Tekninen 2 has the reader mark word boundaries in ~100 words of chained
 // text with a pen in 90 s. Tapping letters is the closest browser equivalent
@@ -106,118 +111,46 @@ export function WordChainExercise() {
     });
   };
 
-  const chars = currentItem.chainedSentence.split("");
-
-  const isLow = remainingMs < 30_000;
-  const timeProgress = (remainingMs / TOTAL_TIME_MS) * 100;
-  const itemProgress = ((currentIndex + 1) / items.length) * 100;
-
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-        <span
-          className="font-mono font-bold text-lg tabular-nums"
-          style={{ color: isLow ? "#ef4444" : "#241a11" }}
-        >
-          {formatMmSs(remainingMs)}
-        </span>
-      </nav>
-
-      {/* Progress bars */}
-      <div className="px-6 pb-2 max-w-2xl mx-auto w-full space-y-1.5">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 3 — Sanarajojen hahmottaminen
-          </p>
-          <p className="text-xs text-[#755e4d]">Lause {currentIndex + 1} / {items.length}</p>
-        </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full">
-          <div
-            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
-            style={{ width: `${itemProgress}%` }}
-          />
-        </div>
-        <div className="h-0.5 bg-[#f9e4d6] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-none"
-            style={{
-              width: `${timeProgress}%`,
-              backgroundColor: isLow ? "#ef4444" : "#d2c5b0",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
-        <div className="w-full max-w-2xl">
-
-          <div
-            className="bg-white rounded-xl p-8"
-            style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-          >
-            <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-2">
-              Sanaketjujen erottaminen
+    <ExerciseShell
+      part={3}
+      right={<TimerPill remainingMs={remainingMs} />}
+      line={<TimeLine durationMs={TOTAL_TIME_MS} remainingMs={remainingMs} />}
+      width="work"
+      center
+      dock={
+        <>
+          <Counter value={splits.size} unit={`/ ${expected.size} sanarajaa merkitty`} compact />
+          <div className="flex items-center gap-5">
+            <p className="m-0 hidden items-center gap-2.5 text-[15px] leading-[22px] text-ink-2 md:flex">
+              <Keycap small>Enter</Keycap>
+              <span>siirtää seuraavaan lauseeseen.</span>
             </p>
-            <p className="text-sm text-[#755e4d] mb-8">
-              Napauta sanan viimeistä kirjainta, niin sen perään tulee sanaraja.
-              Kun kaikki rajat ovat paikoillaan, lause vaihtuu itsestään.
-            </p>
-
-            {/* Fixed-size slots between letters so marking never shifts the text. */}
-            <div className="bg-[#f9ede4] rounded-xl px-4 py-8 mb-6 min-h-[9.5rem] flex items-center select-none">
-              <p className="w-full flex flex-wrap items-center justify-center leading-relaxed">
-                {chars.map((ch, i) => {
-                  const pos = i + 1;
-                  const isLast = i === chars.length - 1;
-                  const split = splits.has(pos);
-                  return (
-                    <span key={i} className="flex items-center">
-                      <button
-                        type="button"
-                        onClick={() => toggleSplit(pos)}
-                        disabled={isLast}
-                        aria-pressed={isLast ? undefined : split}
-                        aria-label={isLast ? ch : `${ch} — sanaraja ${split ? "merkitty" : "ei merkitty"}`}
-                        className="px-[2px] py-1 rounded-sm text-2xl font-bold text-[#241a11] tracking-tight touch-manipulation transition-colors hover:bg-[#f9e4d6] disabled:hover:bg-transparent"
-                      >
-                        {ch}
-                      </button>
-                      {!isLast && (
-                        <span
-                          aria-hidden="true"
-                          className={`inline-block w-[2px] h-7 mx-[1px] rounded-full bg-[#C69A2B] transition-opacity ${split ? "opacity-100" : "opacity-0"}`}
-                        />
-                      )}
-                    </span>
-                  );
-                })}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-xs text-[#755e4d]">
-                {splits.size} / {expected.size} sanarajaa merkitty
-              </p>
-              <button
-                type="button"
-                onClick={() => advance(splits)}
-                className="text-sm font-semibold text-[#785a00] hover:text-[#241a11] transition-colors"
-              >
-                Seuraava →
-              </button>
-            </div>
+            <Button variant="tertiary" onClick={() => advance(splits)} className="h-[52px] px-5">
+              Seuraava
+              <ArrowRight aria-hidden="true" />
+            </Button>
           </div>
-
-          <p className="text-center text-sm text-[#755e4d] mt-6">
-            Enter siirtää seuraavaan lauseeseen.
+        </>
+      }
+    >
+      <div className="flex flex-col gap-3.5 md:gap-7">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-12">
+          <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanaketjujen erottaminen</h1>
+          <p className="m-0 text-body-sm text-ink md:max-w-[520px] md:text-body">
+            Napauta sanan viimeistä kirjainta, niin sen perään tulee sanaraja.
+            Kun kaikki rajat ovat paikoillaan, lause vaihtuu itsestään.
           </p>
         </div>
-      </div>
 
-    </div>
+        {/* The sentence is keyed so a new one never inherits the old tape's measurement. */}
+        <Sheet className="px-4 pb-2 pt-5 md:px-8 md:pb-2 md:pt-7">
+          <ItemRail label={`Lause ${currentIndex + 1} / ${items.length}`} current={currentIndex} total={items.length} />
+          <div className="select-none py-9 md:py-16" key={currentItem.id}>
+            <LetterTape text={currentItem.chainedSentence} marked={splits} onToggle={toggleSplit} />
+          </div>
+        </Sheet>
+      </div>
+    </ExerciseShell>
   );
 }

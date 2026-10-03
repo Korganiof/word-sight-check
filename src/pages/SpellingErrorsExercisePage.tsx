@@ -23,6 +23,7 @@ export default function SpellingErrorsExercisePage() {
   if (!ready) {
     return (
       <ExerciseReadyScreen
+        part={4}
         title="Etsi kirjoitusvirheet"
         subtitle="Huomaatko, missä sanoissa on kirjoitusvirhe?"
         steps={STEPS}

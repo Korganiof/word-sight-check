@@ -1,12 +1,16 @@
-import React, { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { readingCompPassages } from "./readingCompItems.fi";
 import { parseParagraph } from "./parse";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
 import { scoreMarking } from "@/lib/levels";
-import { formatMmSs } from "@/lib/utils";
+import { splitTrailingPunctuation } from "@/lib/text";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
+import { ExerciseShell, TimerPill, TimeLine, Counter } from "@/components/shell";
+import { WordToggle, WordProse } from "@/components/marks";
+import { Button } from "@/components/Button";
+import { Sheet, Label } from "@/components/primitives";
 
 const DURATION_MS = DEV_FAST ? 30_000 : 240_000;
 
@@ -66,123 +70,62 @@ export function ReadingCompExercise() {
     });
   };
 
-  const formattedTime = formatMmSs(remainingMs);
-  const timeProgress = ((DURATION_MS - remainingMs) / DURATION_MS) * 100;
-  const isLow = remainingMs < 30_000;
-
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-        <div className="text-right">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">Aikaa jäljellä</p>
-          <p
-            className="text-xl font-mono font-bold tabular-nums"
-            style={{ color: isLow ? "#ef4444" : "#241a11" }}
-          >
-            {formattedTime}
-          </p>
-        </div>
-      </nav>
-
-      {/* Progress */}
-      <div className="px-6 pb-2 max-w-3xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 5 — Luetun ymmärtäminen
-          </p>
-          <p className="text-xs text-[#755e4d]">{markedIds.size} merkittyä</p>
-        </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-none"
-            style={{
-              width: `${Math.min(100, Math.max(0, timeProgress))}%`,
-              backgroundColor: isLow ? "#ef4444" : "#C69A2B",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 px-6 py-6 max-w-3xl mx-auto w-full flex flex-col gap-5">
-
-        {/* Instructions */}
-        <div
-          className="bg-white rounded-xl p-5"
-          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-        >
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-2">
-            Ohje
-          </p>
-          <p className="text-sm text-[#755e4d] leading-relaxed">
-            Lue tarina rauhassa. Siihen on vaihdettu <strong>12 sanaa</strong>, jotka eivät
+    <ExerciseShell
+      part={5}
+      right={<TimerPill remainingMs={remainingMs} />}
+      line={<TimeLine durationMs={DURATION_MS} remainingMs={remainingMs} />}
+      width="work-wide"
+      dock={
+        <>
+          <Counter value={markedIds.size} unit="merkittyä" />
+          <Button variant="secondary" onClick={finish} disabled={isFinished} className="md:h-14 md:w-[220px]">
+            Olen valmis
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-3.5 md:flex-row md:items-start md:gap-12">
+        {/* Title + instruction: a 340 px aside on desktop, stacked on phones. */}
+        <aside className="flex flex-col gap-3 md:w-[340px] md:flex-shrink-0 md:gap-[18px]">
+          <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Luetun ymmärtäminen</h1>
+          <p className="m-0 text-body-sm text-ink md:text-body">
+            Lue tarina rauhassa. Siihen on vaihdettu <strong className="font-bold">12 sanaa</strong>, jotka eivät
             sovi lauseen merkitykseen — sana on oikeaa suomea, mutta se tekee lauseesta
             järjettömän. Napauta jokaista sanaa, joka ei sovi. Sinun ei tarvitse tietää, mikä
             sana siinä kuuluisi olla. Napauta uudelleen, jos haluat poistaa merkinnän.
           </p>
-        </div>
+        </aside>
 
-        {/* Text passage */}
-        <div
-          className="bg-white rounded-xl p-6 flex-1"
-          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-        >
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-3">
-            Teksti
-          </p>
-          <h2 className="text-xl font-bold text-[#241a11] tracking-tight mb-4">
+        <Sheet as="article" className="min-w-0 flex-1 rounded-sheet-sm px-[18px] pb-5 pt-[18px] md:rounded-sheet md:px-12 md:pb-10 md:pt-9">
+          <Label className="mb-2 md:mb-2.5">Teksti</Label>
+          <h2 className="m-0 mb-2 font-ui text-[22px] font-extrabold leading-7 tracking-[-0.02em] text-ink md:mb-[18px] md:text-[28px] md:leading-[34px]">
             {passage.title}
           </h2>
 
-          <div className="space-y-4">
-            {paragraphs.map((tokens, pIdx) => (
-              <p key={pIdx} className="leading-relaxed text-[#241a11] text-base md:text-lg">
-                {tokens.map((t, tIdx) => {
-                  if (t.kind === "whitespace") {
-                    return <React.Fragment key={tIdx}>{t.text}</React.Fragment>;
-                  }
-                  const isMarked = markedIds.has(t.id);
-                  let style: React.CSSProperties = { cursor: "pointer" };
-                  if (isMarked) {
-                    style = {
-                      ...style,
-                      backgroundColor: "#C69A2B",
-                      color: "#ffffff",
-                      borderRadius: "3px",
-                      padding: "0 2px",
-                    };
-                  }
-                  return (
-                    <span
-                      key={t.id}
-                      style={style}
-                      className={isMarked ? "" : "hover:bg-[#f9e4d6] rounded-sm transition-colors"}
-                      onClick={() => toggleMark(t.id)}
-                    >
-                      {t.text}
-                    </span>
-                  );
-                })}
-              </p>
-            ))}
-          </div>
-        </div>
-
-        <button
-          onClick={finish}
-          disabled={isFinished}
-          className="self-center px-8 py-3 rounded-xl font-bold text-white transition-all active:scale-95 disabled:opacity-50"
-          style={{ background: "#C69A2B" }}
-          onMouseOver={(e) => (e.currentTarget.style.background = "#785a00")}
-          onMouseOut={(e) => (e.currentTarget.style.background = "#C69A2B")}
-        >
-          Olen valmis
-        </button>
+          {paragraphs.map((tokens, pIdx) => (
+            <WordProse key={pIdx} className="mb-3 last:mb-0 md:mb-[18px]">
+              {tokens.map((t) => {
+                // The word gap is the toggle's own margin (see WordToggle), so
+                // whitespace tokens render nothing.
+                if (t.kind === "whitespace") return null;
+                const { word, trail } = splitTrailingPunctuation(t.text);
+                return (
+                  <WordToggle
+                    key={t.id}
+                    trail={trail}
+                    pressed={markedIds.has(t.id)}
+                    onToggle={() => toggleMark(t.id)}
+                    disabled={isFinished}
+                  >
+                    {word}
+                  </WordToggle>
+                );
+              })}
+            </WordProse>
+          ))}
+        </Sheet>
       </div>
-
-    </div>
+    </ExerciseShell>
   );
 }
