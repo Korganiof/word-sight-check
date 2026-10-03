@@ -1,5 +1,24 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+// The custom type scale in tailwind.config.ts (`text-body`, `text-label` …)
+// must be declared here, otherwise tailwind-merge treats those classes as
+// text *colours* and drops them when a `text-ink` follows.
+const FONT_SIZES = [
+  "display", "display-sm",
+  "title", "title-lg", "title-sm", "title-xs",
+  "h1", "h1-sm", "h2", "h2-sm", "h3", "h3-sm", "h4",
+  "lead", "lead-sm", "body", "body-sm", "reading", "reading-sm",
+  "caption", "label", "button", "counter", "counter-sm", "tape", "tape-sm",
+];
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [{ text: FONT_SIZES }],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

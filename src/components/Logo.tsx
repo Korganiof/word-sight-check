@@ -39,7 +39,7 @@ export function Logo({ link = true, markOnly = false, className }: LogoProps) {
       <span
         className={cn(
           "font-ui text-[18px] font-extrabold tracking-[-0.02em] leading-none text-ink md:text-[19px]",
-          markOnly && "sr-only",
+          markOnly && "sr-only md:not-sr-only",
         )}
       >
         LukiSeula

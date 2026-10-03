@@ -1,257 +1,269 @@
 import { useNavigate } from "react-router-dom";
 import {
+  ArrowRight,
+  BookOpen,
   Clock,
   EyeOff,
-  CheckCircle,
-  AlertTriangle,
-  GraduationCap,
-  ShieldCheck,
+  Gift,
+  Info,
+  Lock,
+  SeparatorVertical,
   SpellCheck,
-  Gauge,
-  AlignLeft,
-  PenLine,
-  Brain,
-  ArrowRight,
-  BarChart3,
-  ExternalLink,
+  TextSearch,
+  Timer,
+  UserCheck,
+  WholeWord,
 } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { Button } from "@/components/Button";
+import { Badge } from "@/components/shell";
+import { IconTile, Label, ResourceLink, Sheet, SiteFooter } from "@/components/primitives";
+import { LevelBar, LevelChip } from "@/components/LevelChip";
+import { cn } from "@/lib/utils";
+
+const CONTAINER = "mx-auto w-full max-w-home px-gutter md:px-8";
+
+const PARTS = [
+  {
+    icon: <WholeWord />,
+    title: "Sanantunnistus",
+    desc: "Erottelet todellisia suomen kielen sanoja keksityistä pseudosanoista pelkän kirjoitusasun perusteella. Tehtävä mittaa, kuinka automaattisesti tunnistat sanamuotoja — keskeinen dekoodaustaidon mittari lukivaikeustutkimuksessa.",
+  },
+  {
+    icon: <TextSearch />,
+    title: "Lukunopeus ja hahmottaminen",
+    desc: "Etsit annettuja sanoja pidemmästä tekstistä aikarajan puitteissa. Tehtävä mittaa lukunopeutta ja visuaalista tarkkaavaisuutta — suomen säännöllisessä ortografiassa juuri nopeus erottaa sujuvan ja työlään lukijan toisistaan.",
+  },
+  {
+    icon: <SeparatorVertical />,
+    title: "Sanarajojen hahmottaminen",
+    desc: "Lauseessa kaikki sanat on kirjoitettu yhteen ilman välejä — tunnistat, mistä yksi sana loppuu ja toinen alkaa. Mittaa sanahahmojen automaattista tunnistusta lukemisen aikana.",
+  },
+  {
+    icon: <SpellCheck />,
+    title: "Kirjoitusvirheiden tunnistus",
+    desc: "Käyt läpi sanalistan ja merkitset sanat, joissa on kirjoitusvirhe. Mittaa oikeinkirjoitus­tarkkuutta ja kirjoitettujen sanahahmojen hallintaa.",
+  },
+  {
+    icon: <BookOpen />,
+    title: "Luetun ymmärtäminen",
+    desc: "Luet lyhyen tarinan, johon on vaihdettu sanoja, jotka eivät sovi lauseen merkitykseen — ja merkitset ne. Mittaa luetun ymmärtämistä: huomaatko, kun teksti ei täsmää. Sama tehtävätyyppi kuin NMI:n nuorten ja aikuisten lukiseulassa.",
+  },
+];
+
+const FACTS = [
+  { icon: <Clock />, label: "10–15 min" },
+  { icon: <UserCheck />, label: "Yli 15-vuotiaille" },
+  { icon: <EyeOff />, label: "Anonyymi" },
+  { icon: <Gift />, label: "Ilmainen" },
+];
+
+const RESOURCES = [
+  { href: "https://www.lukimat.fi", label: "Lukimat.fi", desc: "harjoituksia ja tietoa lukivaikeudesta" },
+  {
+    href: "https://www.eoliitto.fi/oppimisvaikeudet/",
+    label: "Erilaisten oppijain liitto",
+    desc: "neuvontaa ja vertaistukea oppimisvaikeuksiin",
+  },
+  { href: "https://www.nmi.fi", label: "Niilo Mäki Instituutti", desc: "tutkimustietoa oppimisvaikeuksista" },
+  {
+    href: "https://www.kuntoutussaatio.fi/toiminta/oppimisen-tuki/",
+    label: "Kuntoutussäätiö — oppimisen tuki",
+    desc: "tietoa ja tukea oppimisen vaikeuksiin",
+  },
+];
 
 export default function Home() {
   const navigate = useNavigate();
+  const start = () => navigate("/consent");
 
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans text-[#28180b]">
-      {/* ─── Floating glass nav ─── */}
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl rounded-2xl bg-white/75 backdrop-blur-xl flex justify-between items-center px-6 py-3.5 z-50 shadow-[0_8px_24px_-4px_rgba(120,90,0,0.08)]">
-        <div className="text-xl font-bold tracking-tight text-[#28180b]">LukiSeula</div>
-        <div className="hidden md:flex items-center gap-7 text-sm font-medium">
-          <a className="text-[#785a00] border-b-2 border-[#c69a2b] pb-0.5 transition-colors" href="#">
+    <div className="min-h-screen bg-paper text-ink">
+      {/* ─── Nav ─── */}
+      <nav id="top" aria-label="Päävalikko" className={cn(CONTAINER, "grid h-16 grid-cols-[1fr_auto] items-center md:h-[76px] md:grid-cols-[1fr_auto_1fr]")}>
+        <Logo />
+        <div className="hidden items-center gap-9 md:flex">
+          <a
+            href="#top"
+            aria-current="page"
+            className="rounded-mark px-0.5 py-2 font-ui text-[15px] font-bold leading-5 text-ink no-underline shadow-[inset_0_-2px_0_#C69A2B] hover:text-ink"
+          >
             Etusivu
           </a>
-          <a className="text-[#4e4636] hover:text-[#28180b] transition-colors" href="#mita-mittaa">
+          <a href="#mita-mittaa" className="ls-t rounded-mark px-0.5 py-2 font-ui text-[15px] font-bold leading-5 text-ink-2 no-underline hover:text-ink">
             Mitä seulonta mittaa?
           </a>
-          <a className="text-[#4e4636] hover:text-[#28180b] transition-colors" href="#lisatietoa">
+          <a href="#lisatietoa" className="ls-t rounded-mark px-0.5 py-2 font-ui text-[15px] font-bold leading-5 text-ink-2 no-underline hover:text-ink">
             Lisätietoa ja tukea
           </a>
         </div>
-        <button
-          onClick={() => navigate("/consent")}
-          className="bg-[#c69a2b] hover:bg-[#b8902a] text-white px-5 py-2 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(120,90,0,0.15),0_8px_24px_-8px_rgba(120,90,0,0.35)]"
-        >
-          Aloita seulonta
-        </button>
+        <div className="flex justify-end">
+          <Button size="sm" onClick={start}>
+            Aloita seulonta
+          </Button>
+        </div>
       </nav>
 
-      <main className="pt-28 pb-20">
-        {/* ─── Hero card ─── */}
-        <section className="max-w-6xl mx-auto px-6 mb-12">
-          <div className="relative overflow-hidden bg-[#fff1e9] rounded-[2rem] p-8 md:p-16 flex flex-col items-center text-center gap-7">
-            {/* background ornaments */}
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-[#c69a2b]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-[#f8dac5]/30 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 max-w-3xl flex flex-col items-center gap-7">
-              <span className="inline-block px-4 py-1.5 bg-[#785a00]/10 text-[#785a00] rounded-full text-xs font-bold tracking-[0.16em] uppercase">
-                Seulontatyökalu · Yli 15-vuotiaille
+      <main>
+        {/* ─── Hero ─── */}
+        <section className={cn(CONTAINER, "flex flex-col gap-10 pb-10 pt-4 md:flex-row md:items-center md:justify-between md:gap-[60px] md:pb-14 md:pt-10")}>
+          <div className="flex flex-col items-start md:w-[560px] md:flex-shrink-0">
+            <Badge className="mb-5 md:mb-6">Seulontatyökalu · Yli 15-vuotiaille</Badge>
+            <h1 className="m-0 flex flex-col items-start font-ui text-display-sm text-ink md:text-display">
+              <span>Lukihäiriön</span>
+              <span className="-ml-2.5 mt-1 rounded-[10px] bg-gold-wash px-2.5 pb-0.5 shadow-mark-lg md:-ml-[17px] md:mt-[5px] md:rounded-[17px] md:px-[17px] md:pb-1">
+                seulonta
               </span>
-
-              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-[#28180b] leading-[1.02] text-balance">
-                Lukihäiriön seulonta
-              </h1>
-
-              <p className="text-lg md:text-xl text-[#4e4636] max-w-2xl leading-relaxed text-balance">
-                Lyhyt seulonta yli 15-vuotiaille nuorille ja aikuisille. Se antaa viitteitä
-                siitä, liittyykö lukemiseesi haasteita — kartoitat omat vahvuutesi ja
-                kehityskohteesi viidellä lyhyellä tehtävällä.
-              </p>
-
-              {/* Disclaimer — kept above the fold */}
-              <div className="bg-[#ffe3cf]/70 rounded-xl px-5 py-4 max-w-xl flex items-start gap-3 text-left">
-                <AlertTriangle className="w-5 h-5 text-[#785a00] flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-[#4e4636] leading-relaxed">
-                  <strong className="text-[#28180b]">Tämä seulonta ei diagnosoi lukihäiriötä.</strong>{" "}
-                  Tulokset ovat vain suuntaa antavia. Jos ne viittaavat haasteisiin, käänny
-                  erikoisopettajan, psykologin tai terveydenhuollon ammattilaisen puoleen.
-                </p>
-              </div>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap justify-center gap-3">
-                <button
-                  onClick={() => navigate("/consent")}
-                  className="bg-[#c69a2b] hover:bg-[#b8902a] text-white px-7 py-3.5 rounded-xl text-base font-bold flex items-center gap-2 transition-all active:scale-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(120,90,0,0.15),0_8px_24px_-8px_rgba(120,90,0,0.35)]"
-                >
-                  Aloita seulonta
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-                <a
-                  href="#mita-on-lukihairio"
-                  className="bg-[#fbddc7]/60 hover:bg-[#fbddc7] text-[#28180b] px-7 py-3.5 rounded-xl text-base font-semibold transition-colors"
-                >
-                  Lue lisää
-                </a>
-              </div>
-
-              {/* Meta */}
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-[#4e4636] pt-2">
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-[18px] h-[18px]" />
-                  10–15 min
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <GraduationCap className="w-[18px] h-[18px]" />
-                  Yli 15-vuotiaille
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <EyeOff className="w-[18px] h-[18px]" />
-                  Anonyymi
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-[18px] h-[18px]" />
-                  Ilmainen
-                </span>
-              </div>
+            </h1>
+            <p className="mb-7 mt-6 max-w-[520px] text-lead-sm text-ink md:mb-8 md:mt-7 md:text-lead">
+              Lyhyt seulonta yli 15-vuotiaille nuorille ja aikuisille. Se antaa viitteitä siitä,
+              liittyykö lukemiseesi haasteita — kartoitat omat vahvuutesi ja kehityskohteesi
+              viidellä lyhyellä tehtävällä.
+            </p>
+            <div className="mb-5 flex w-full flex-col items-stretch gap-3 md:mb-6 md:w-auto md:flex-row md:items-center">
+              <Button size="hero" onClick={start} className="w-full md:w-auto">
+                Aloita seulonta
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <a
+                href="#mita-on-lukihairio"
+                className="ls-t order-last inline-flex h-[60px] items-center justify-center rounded-tile px-6 font-ui text-[18px] font-bold leading-none tracking-[-0.005em] text-gold-ink no-underline hover:bg-gold-tint hover:text-gold-ink-deep active:bg-gold-wash md:order-none"
+              >
+                Lue lisää
+              </a>
             </div>
+            {/* Disclaimer — kept above the fold */}
+            <p className="m-0 flex max-w-[560px] items-start gap-2.5 text-[15px] leading-6 text-ink">
+              <Info className="mt-[3px] h-[18px] w-[18px] flex-shrink-0 text-gold-ink" strokeWidth={2.2} aria-hidden="true" />
+              <span>
+                <strong className="font-bold">Tämä seulonta ei diagnosoi lukihäiriötä.</strong> Tulokset ovat vain
+                suuntaa antavia.
+              </span>
+            </p>
           </div>
+
+          <HeroPreviews />
+        </section>
+
+        {/* ─── Facts strip ─── */}
+        <section aria-label="Seulonta lyhyesti" className={CONTAINER}>
+          <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 md:grid-cols-4 md:gap-0 md:overflow-hidden md:rounded-sheet md:border md:border-line md:bg-surface md:shadow-sheet">
+            {FACTS.map((f, i) => (
+              <li
+                key={f.label}
+                className={cn(
+                  "flex min-h-[44px] items-center gap-2.5 rounded-key border border-line bg-surface px-3 py-2 md:gap-4 md:rounded-none md:border-0 md:px-7 md:py-6",
+                  i > 0 && "md:border-l md:border-line",
+                )}
+              >
+                <IconTile icon={f.icon} size={36} className="md:hidden" />
+                <IconTile icon={f.icon} size={48} className="hidden md:inline-flex" />
+                <span className="font-ui text-[15px] font-extrabold leading-5 tracking-[-0.015em] tabular-nums md:text-[20px] md:leading-[26px]">
+                  {f.label}
+                </span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ─── Mitä on lukihäiriö? ─── */}
-        <section id="mita-on-lukihairio" className="max-w-6xl mx-auto px-6 mb-24">
-          <div className="bg-[#ffeadc] px-8 py-12 md:p-16 rounded-[2rem] max-w-4xl mx-auto text-left">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#28180b] mb-6 flex items-center gap-3">
-              <ShieldCheck className="w-9 h-9 text-[#785a00]" />
-              Mitä on lukihäiriö?
-            </h2>
-            <div className="text-base md:text-lg text-[#4e4636] leading-relaxed space-y-4">
-              <p>
-                <strong className="text-[#28180b]">
-                  Lukivaikeus (lukihäiriö eli dysleksia) on yleisin oppimisvaikeus
-                </strong>{" "}
-                — arviolta 5–10 % suomalaisista kokee sen vaikutuksia. Se on neurobiologinen ja usein
-                perinnöllinen ominaisuus, joka vaikuttaa keskeisesti lukemisen ja kirjoittamisen
-                sujuvuuteen sekä tarkkuuteen.
-              </p>
-              <p>
-                Vaikka haasteet voivat näkyä hitaana lukemisena, toistuvina kirjoitusvirheinä tai
-                luetun ymmärtämisen vaikeuksina, on tärkeä muistaa, ettei lukivaikeus ole
-                yhteydessä henkilön älykkyyteen. Oikeanlaisilla keinoilla, ymmärryksellä ja tuella
-                jokainen voi löytää omat vahvuutensa ja menestyä oppijana.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Mitä seulonta mittaa? (Bento) ─── */}
-        <section id="mita-mittaa" className="max-w-6xl mx-auto px-6 mb-24">
-          <div className="mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#28180b] mb-2">
-              Mitä seulonta mittaa?
-            </h2>
-            <div className="h-1 w-20 bg-[#c69a2b] rounded-full" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            {/* Sanantunnistus (wide) */}
-            <BentoCard
-              cols={3}
-              size="lg"
-              icon={<SpellCheck className="w-5 h-5" />}
-              title="Sanantunnistus"
-              desc="Erottelet todellisia suomen kielen sanoja keksityistä pseudosanoista pelkän kirjoitusasun perusteella. Tehtävä mittaa, kuinka automaattisesti tunnistat sanamuotoja — keskeinen dekoodaustaidon mittari lukivaikeustutkimuksessa."
-            />
-            {/* Lukunopeus (wide) */}
-            <BentoCard
-              cols={3}
-              size="lg"
-              icon={<Gauge className="w-5 h-5" />}
-              title="Lukunopeus ja hahmottaminen"
-              desc="Etsit annettuja sanoja pidemmästä tekstistä aikarajan puitteissa. Tehtävä mittaa lukunopeutta ja visuaalista tarkkaavaisuutta — suomen säännöllisessä ortografiassa juuri nopeus erottaa sujuvan ja työlään lukijan toisistaan."
-            />
-            {/* Sanarajat */}
-            <BentoCard
-              cols={2}
-              icon={<AlignLeft className="w-5 h-5" />}
-              title="Sanarajojen hahmottaminen"
-              desc="Lauseessa kaikki sanat on kirjoitettu yhteen ilman välejä — tunnistat, mistä yksi sana loppuu ja toinen alkaa. Mittaa sanahahmojen automaattista tunnistusta lukemisen aikana."
-            />
-            {/* Kirjoitusvirheet */}
-            <BentoCard
-              cols={2}
-              icon={<PenLine className="w-5 h-5" />}
-              title="Kirjoitusvirheiden tunnistus"
-              desc="Käyt läpi sanalistan ja merkitset sanat, joissa on kirjoitusvirhe. Mittaa oikeinkirjoitus­tarkkuutta ja kirjoitettujen sanahahmojen hallintaa."
-            />
-            {/* Luetun ymmärtäminen */}
-            <BentoCard
-              cols={2}
-              icon={<Brain className="w-5 h-5" />}
-              title="Luetun ymmärtäminen"
-              desc="Luet lyhyen tarinan, johon on vaihdettu sanoja, jotka eivät sovi lauseen merkitykseen — ja merkitset ne. Mittaa luetun ymmärtämistä: huomaatko, kun teksti ei täsmää. Sama tehtävätyyppi kuin NMI:n nuorten ja aikuisten lukiseulassa."
-            />
-          </div>
-        </section>
-
-        {/* ─── Saat välittömän yhteenvedon (banner) ─── */}
-        <section className="max-w-6xl mx-auto px-6 mb-24">
-          <div className="bg-[#705a49] text-white rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-            <div className="relative z-10 flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <BarChart3 className="w-6 h-6 text-[#ffdf9d]" />
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-                  Saat välittömän yhteenvedon
-                </h2>
-              </div>
-              <p className="text-white/85 text-base md:text-lg max-w-xl leading-relaxed">
-                Seulonnan lopuksi saat yhteenvedon tuloksistasi osa-alueittain sekä
-                vinkkejä siitä, mistä hakea lisätietoa tai tukea.
-              </p>
-            </div>
-            <div className="relative z-10">
-              <button
-                onClick={() => navigate("/consent")}
-                className="bg-white text-[#705a49] hover:bg-[#ffdf9d] transition-all px-8 py-4 rounded-xl font-black text-base tracking-wide shadow-xl active:scale-95"
-              >
-                ALOITA NYT
-              </button>
-            </div>
-            {/* decorative circles */}
-            <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/5 rounded-full pointer-events-none" />
-            <div className="absolute -right-40 -top-20 w-72 h-72 bg-[#ffdf9d]/5 rounded-full pointer-events-none" />
-          </div>
-        </section>
-
-        {/* ─── Citation + secondary disclaimer ─── */}
-        <section className="max-w-3xl mx-auto px-6">
-          <div className="text-center space-y-3">
-            <p className="text-sm text-[#4e4636] leading-relaxed">
-              Perustuu suomalaiseen lukivaikeustutkimukseen —{" "}
-              <a
-                href="https://helda.helsinki.fi/items/1a192f9a-1368-4b3d-a826-7f07c37181d1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#785a00] hover:text-[#28180b] transition-colors underline decoration-[#d2c5b0] hover:decoration-[#c69a2b] decoration-1 underline-offset-[3px]"
-              >
-                Panula, 2013, Helsingin yliopisto
-              </a>
-              .
+        <section id="mita-on-lukihairio" className={cn(CONTAINER, "grid scroll-mt-6 gap-y-5 pt-[72px] md:grid-cols-[5fr_7fr] md:gap-x-[60px] md:pt-32")}>
+          <h2 className="m-0 font-ui text-h1-sm text-ink md:text-h1">Mitä on lukihäiriö?</h2>
+          <div className="flex max-w-[620px] flex-col gap-5">
+            <p className="m-0 text-lead-sm md:text-lead">
+              <strong className="font-bold">Lukivaikeus (lukihäiriö eli dysleksia) on yleisin oppimisvaikeus</strong>{" "}
+              — arviolta 5–10 % suomalaisista kokee sen vaikutuksia. Se on neurobiologinen ja usein
+              perinnöllinen ominaisuus, joka vaikuttaa keskeisesti lukemisen ja kirjoittamisen
+              sujuvuuteen sekä tarkkuuteen.
             </p>
-            <p className="text-xs text-[#4e4636]/70 max-w-xl mx-auto leading-relaxed">
-              LukiSeula on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella. Ei
-              kliininen eikä ammatillinen työkalu — tulokset ovat vain suuntaa antavia.
+            <p className="m-0 text-lead-sm md:text-lead">
+              Vaikka haasteet voivat näkyä hitaana lukemisena, toistuvina kirjoitusvirheinä tai
+              luetun ymmärtämisen vaikeuksina, on tärkeä muistaa, ettei lukivaikeus ole
+              yhteydessä henkilön älykkyyteen. Oikeanlaisilla keinoilla, ymmärryksellä ja tuella
+              jokainen voi löytää omat vahvuutensa ja menestyä oppijana.
             </p>
           </div>
         </section>
 
-        {/* ─── Tietosuoja ─── */}
-        <section id="tietosuoja" className="max-w-3xl mx-auto px-6 mt-16 scroll-mt-28">
-          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-[0_4px_16px_-4px_rgba(120,90,0,0.06)]">
-            <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-[#785a00] mb-3">
-              Tietosuoja
-            </h2>
+        {/* ─── Mitä seulonta mittaa? ─── */}
+        <section id="mita-mittaa" className={cn(CONTAINER, "flex scroll-mt-6 flex-col gap-6 pt-[72px] md:gap-10 md:pt-32")}>
+          <h2 className="m-0 font-ui text-h1-sm text-ink md:text-h1">Mitä seulonta mittaa?</h2>
+          <Sheet as="ol" className="m-0 flex list-none flex-col overflow-hidden p-0">
+            {PARTS.map((p, i) => (
+              <li
+                key={p.title}
+                className={cn(
+                  "grid grid-cols-[44px_1fr] items-center gap-x-4 px-5 py-6 md:grid-cols-[64px_380px_minmax(0,1fr)] md:gap-x-7 md:px-9 md:py-7",
+                  i > 0 && "border-t border-line",
+                )}
+              >
+                <IconTile icon={p.icon} size={44} className="md:hidden" />
+                <IconTile icon={p.icon} size={56} className="hidden md:inline-flex" />
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-caption text-ink-2 tabular-nums">Osa {i + 1}</span>
+                  <h3 className="m-0 font-ui text-h3-sm text-ink md:text-h3">{p.title}</h3>
+                </div>
+                <p className="col-span-2 m-0 mt-3 max-w-[560px] text-body-sm md:col-span-1 md:mt-0 md:text-body">
+                  {p.desc}
+                </p>
+              </li>
+            ))}
+          </Sheet>
+        </section>
+
+        {/* ─── Banner ─── */}
+        <section className={cn(CONTAINER, "pt-[72px] md:pt-32")}>
+          <div className="on-dark flex flex-col gap-8 rounded-hero bg-brown px-[22px] py-8 text-white md:flex-row md:items-center md:justify-between md:gap-[60px] md:p-[72px]">
+            <div className="flex max-w-[540px] flex-col items-start">
+              <h2 className="m-0 font-ui text-[32px] font-extrabold leading-[38px] tracking-[-0.03em] text-white md:text-[44px] md:leading-[50px]">
+                Saat välittömän yhteenvedon
+              </h2>
+              <p className="mb-7 mt-4 max-w-[520px] text-[17px] leading-7 text-[#F3E9DC] md:mb-8 md:mt-5 md:text-[18px] md:leading-[30px]">
+                Seulonnan lopuksi saat yhteenvedon tuloksistasi osa-alueittain sekä vinkkejä
+                siitä, mistä hakea lisätietoa tai tukea.
+              </p>
+              <Button onClick={start}>
+                Aloita nyt
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            </div>
+            <div
+              role="img"
+              aria-label="Esimerkki yhteenvedosta"
+              className="w-full flex-shrink-0 rounded-sheet bg-surface px-[22px] pb-3 pt-5 text-ink md:w-[400px] md:px-[26px] md:pt-6"
+            >
+              <Label className="mb-1.5">Yhteenveto</Label>
+              <ul aria-hidden="true" className="m-0 list-none p-0">
+                {(
+                  [
+                    ["Sanantunnistus", "sujuu"],
+                    ["Lukunopeus ja hahmottaminen", "sujuu"],
+                    ["Sanarajojen hahmottaminen", "jonkin"],
+                  ] as const
+                ).map(([title, level], i) => (
+                  <li key={title} className={cn("flex flex-col gap-2 py-3.5", i > 0 && "border-t border-line")}>
+                    <span className="font-ui text-[16px] font-extrabold leading-[22px] text-ink">{title}</span>
+                    <span className="flex items-center justify-between gap-3">
+                      <LevelChip level={level} dense />
+                      <LevelBar level={level} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── Tietosuoja + Lisätietoa ─── */}
+        <section className={cn(CONTAINER, "grid items-start gap-y-12 pt-[72px] md:grid-cols-[5fr_7fr] md:gap-x-[60px] md:pt-32")}>
+          <div id="tietosuoja" className="flex scroll-mt-6 flex-col items-start">
+            <div className="mb-5 flex items-center gap-3.5 md:mb-6">
+              <IconTile icon={<Lock />} size={40} />
+              <h2 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Tietosuoja</h2>
+            </div>
             {/* Keep this in sync with what the app actually does — it must be
                 revisited if analytics (e.g. PostHog) are ever added. */}
-            <p className="text-sm text-[#4e4636] leading-relaxed">
+            <p className="m-0 max-w-[440px] text-body">
               LukiSeula ei kerää henkilötietoja, ei käytä evästeitä eikä lähetä tuloksia
               minnekään. Sivusto ei lataa mitään kolmansien osapuolten palveluista. Vastauksesi
               ja tuloksesi säilyvät vain selaimesi istuntomuistissa ja katoavat, kun suljet
@@ -259,105 +271,164 @@ export default function Home() {
               tulossivulta.
             </p>
           </div>
+          <div id="lisatietoa" className="flex scroll-mt-6 flex-col gap-5 md:gap-6">
+            <h2 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Lisätietoa ja tukea</h2>
+            <Sheet as="ul" className="m-0 flex list-none flex-col divide-y divide-line overflow-hidden p-0">
+              {RESOURCES.map(r => (
+                <li key={r.href}>
+                  <ResourceLink href={r.href} title={r.label} description={r.desc} />
+                </li>
+              ))}
+            </Sheet>
+          </div>
         </section>
 
-        {/* ─── Resources ─── */}
-        <section id="lisatietoa" className="max-w-5xl mx-auto px-6 mt-20 scroll-mt-28">
-          <h2 className="text-center text-sm font-bold uppercase tracking-[0.18em] text-[#785a00] mb-8">
-            Lisätietoa ja tukea
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                href: "https://www.lukimat.fi",
-                label: "Lukimat.fi",
-                desc: "harjoituksia ja tietoa lukivaikeudesta",
-              },
-              {
-                href: "https://www.eoliitto.fi/oppimisvaikeudet/",
-                label: "Erilaisten oppijain liitto",
-                desc: "neuvontaa ja vertaistukea oppimisvaikeuksiin",
-              },
-              {
-                href: "https://www.nmi.fi",
-                label: "Niilo Mäki Instituutti",
-                desc: "tutkimustietoa oppimisvaikeuksista",
-              },
-              {
-                href: "https://www.kuntoutussaatio.fi/toiminta/oppimisen-tuki/",
-                label: "Kuntoutussäätiö — oppimisen tuki",
-                desc: "tietoa ja tukea oppimisen vaikeuksiin",
-              },
-            ].map((r) => (
-              <a
-                key={r.href}
-                href={r.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-start gap-4 bg-white hover:bg-[#ffe3cf] rounded-2xl p-5 transition-all shadow-[0_4px_16px_-4px_rgba(120,90,0,0.06)]"
-              >
-                <div className="mt-0.5 w-9 h-9 shrink-0 bg-[#785a00]/5 rounded-xl flex items-center justify-center text-[#785a00] group-hover:scale-110 transition-transform">
-                  <ExternalLink className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="font-bold text-[#28180b] text-sm">{r.label}</div>
-                  <div className="text-xs text-[#4e4636] leading-relaxed mt-1">{r.desc}</div>
-                </div>
-              </a>
-            ))}
+        {/* ─── Credit + secondary disclaimer ─── */}
+        <section className={cn(CONTAINER, "pt-[72px] md:pt-24")}>
+          <div className="flex flex-col justify-between gap-6 rounded-sheet-lg bg-well px-6 py-7 md:flex-row md:gap-[60px] md:px-14 md:py-11">
+            <div className="flex max-w-[600px] flex-col gap-3">
+              <p className="m-0 flex items-center gap-2.5 font-ui text-label uppercase text-brown">
+                <Info className="h-[18px] w-[18px]" strokeWidth={2.2} aria-hidden="true" />
+                Huomio
+              </p>
+              <p className="m-0 text-body">
+                <strong className="font-bold">Tämä seulonta ei diagnosoi lukihäiriötä.</strong> Tulokset ovat vain
+                suuntaa antavia. Jos ne viittaavat haasteisiin, käänny erikoisopettajan, psykologin
+                tai terveydenhuollon ammattilaisen puoleen.
+              </p>
+            </div>
+            <div className="flex max-w-[400px] flex-col gap-3 text-body-sm text-ink-2">
+              <p className="m-0">
+                Perustuu suomalaiseen lukivaikeustutkimukseen —{" "}
+                <a
+                  href="https://helda.helsinki.fi/items/1a192f9a-1368-4b3d-a826-7f07c37181d1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold-ink underline decoration-1 underline-offset-[3px] hover:text-gold-ink-deep"
+                >
+                  Panula, 2013, Helsingin yliopisto
+                </a>
+                .
+              </p>
+              <p className="m-0">
+                LukiSeula on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella. Ei
+                kliininen eikä ammatillinen työkalu — tulokset ovat vain suuntaa antavia.
+              </p>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* ─── Footer ─── */}
-      <footer className="bg-[#fff1e9] w-full py-12 px-6 mt-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
-          <div className="text-base font-bold tracking-tight text-[#28180b]">LukiSeula</div>
-          <div className="flex flex-wrap justify-center gap-x-7 gap-y-2 text-[#4e4636] text-xs uppercase tracking-[0.14em] font-medium">
-            <a className="hover:text-[#785a00] transition-colors" href="#tietosuoja">
-              Tietosuoja
-            </a>
-          </div>
-          <div className="text-[#4e4636]/80 text-xs">© {new Date().getFullYear()} LukiSeula · Harrasteprojekti</div>
-        </div>
-      </footer>
+      <SiteFooter className="mt-[72px] md:mt-24" />
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────
-   BentoCard — local helper for the measurement grid
+   Hero previews — two overlapping product windows (Osa 3 and Osa 5), built
+   from the same visual language as the real exercises but static, with
+   non-test sentences. Sized for the hero (24 px tape cells), so they do not
+   reuse the full-size LetterTape component.
    ───────────────────────────────────────────── */
-function BentoCard({
-  cols,
-  size = "md",
-  icon,
-  title,
-  desc,
-}: {
-  cols: 2 | 3;
-  size?: "md" | "lg";
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-}) {
-  const colSpan = cols === 3 ? "md:col-span-3" : "md:col-span-2";
-  const padding = size === "lg" ? "p-8" : "p-7";
-  const iconBox = size === "lg" ? "w-12 h-12 mb-6" : "w-11 h-11 mb-5";
-  const titleSize = size === "lg" ? "text-xl" : "text-lg";
-  const descSize = size === "lg" ? "text-base" : "text-sm";
 
+const PREVIEW_TAPE = "Kissanukkuusohvalla";
+const PREVIEW_MARKED = new Set([5]); // after "Kissa"
+const PREVIEW_HOVER = 11; // boundary preview after "nukkuu"
+
+function MiniRail({ part, cellClass }: { part: number; cellClass: string }) {
+  return (
+    <span className="flex items-center gap-3">
+      <span className="font-ui text-[11px] font-extrabold uppercase leading-none tracking-[0.1em] text-gold-ink tabular-nums">
+        Osa {part} / 5
+      </span>
+      <span aria-hidden="true" className="flex gap-1">
+        {[1, 2, 3, 4, 5].map(n => (
+          <span
+            key={n}
+            className={cn("h-[5px] rounded-sm", cellClass, n < part ? "bg-brown" : n === part ? "bg-gold" : "bg-line")}
+          />
+        ))}
+      </span>
+    </span>
+  );
+}
+
+function HeroPreviews() {
+  const chars = Array.from(PREVIEW_TAPE);
   return (
     <div
-      className={`${colSpan} ${padding} group bg-white rounded-3xl hover:bg-[#ffe3cf] transition-all duration-300 shadow-[0_4px_16px_-4px_rgba(120,90,0,0.06)]`}
+      role="img"
+      aria-label="Esimerkkinäkymä seulonnan tehtävistä: sanaketjun erottaminen ja väärän sanan merkitseminen tekstistä"
+      className="pointer-events-none relative w-full select-none md:grid md:h-[356px] md:w-[580px] md:flex-shrink-0"
     >
-      <div
-        className={`${iconBox} bg-[#785a00]/5 rounded-2xl flex items-center justify-center text-[#785a00] group-hover:scale-110 transition-transform`}
-      >
-        {icon}
+      {/* Osa 3 window */}
+      <div aria-hidden="true" className="md:col-start-1 md:row-start-1 md:justify-self-start md:self-start">
+        <div className="w-full overflow-hidden rounded-sheet border border-line bg-surface shadow-float md:w-[520px]">
+          <div className="flex h-[52px] items-center justify-between border-b border-line px-5">
+            <MiniRail part={3} cellClass="w-5" />
+            <span className="inline-flex h-7 items-center gap-1.5 rounded-pill bg-recessed pl-2 pr-2.5 text-ink">
+              <Timer className="h-3.5 w-3.5" strokeWidth={2.4} />
+              <span className="font-ui text-[13px] font-extrabold leading-none tabular-nums tracking-[0.01em]">1:23</span>
+            </span>
+          </div>
+          <div className="flex h-[3px] gap-1">
+            <span className="h-[3px] flex-1 bg-time" />
+            <span className="h-[3px] flex-1 bg-time" />
+            <span className="h-[3px] flex-1 bg-time" />
+          </div>
+          <div className="flex flex-col gap-4 p-5 md:p-6">
+            <span className="font-ui text-[16px] font-extrabold leading-[22px] tracking-[-0.01em]">Sanaketjujen erottaminen</span>
+            <div className="flex justify-center md:justify-start">
+              {chars.map((ch, i) => {
+                const pos = i + 1;
+                const marked = PREVIEW_MARKED.has(pos);
+                const hover = pos === PREVIEW_HOVER;
+                return (
+                  <span
+                    key={i}
+                    className={cn(
+                      "relative box-border h-11 w-4 text-center font-mono text-[20px] font-semibold leading-[44px] text-ink md:h-[60px] md:w-6 md:text-[30px] md:leading-[60px]",
+                      i === 0 && "rounded-l-key",
+                      i === chars.length - 1 && "rounded-r-key",
+                      marked ? "z-[2] bg-gold-wash" : hover ? "z-[2] bg-well" : "z-[1] bg-recessed",
+                    )}
+                  >
+                    {ch}
+                    {(marked || hover) && (
+                      <span
+                        className={cn(
+                          "absolute -right-0.5 bottom-1.5 top-1.5 w-1 rounded-sm bg-gold-ink md:bottom-2 md:top-2",
+                          hover && !marked && "opacity-35",
+                        )}
+                      />
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex h-12 items-center justify-between border-t border-line px-5 md:px-6">
+            <span className="text-[14px] leading-5 text-ink-2 tabular-nums">
+              <strong className="font-ui font-extrabold text-ink">1 / 2</strong> sanarajaa merkitty
+            </span>
+            <span className="flex items-center gap-1.5 font-ui text-[14px] font-extrabold leading-none text-gold-ink">
+              Seuraava
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.4} />
+            </span>
+          </div>
+        </div>
       </div>
-      <h3 className={`${titleSize} font-bold mb-2 tracking-tight text-[#28180b]`}>{title}</h3>
-      <p className={`${descSize} text-[#4e4636] leading-relaxed`}>{desc}</p>
+
+      {/* Osa 5 snippet */}
+      <div aria-hidden="true" className="relative z-[2] -mt-5 ml-auto w-[88%] md:col-start-1 md:row-start-1 md:mt-0 md:w-auto md:justify-self-end md:self-end">
+        <div className="flex w-full flex-col gap-2.5 rounded-sheet-sm border border-line bg-surface px-[22px] pb-[22px] pt-5 shadow-float md:w-[340px]">
+          <MiniRail part={5} cellClass="w-4" />
+          <p className="m-0 text-[17px] leading-8 text-ink">
+            Aamulla Liisa söi aamiaiseksi lautasellisen{" "}
+            <span className="ls-mark -mx-0.5 rounded-mark px-[5px] py-0.5">kenkiä</span>.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
