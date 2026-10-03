@@ -3,8 +3,11 @@ import { syllableItems as allSyllableItems } from "./syllableItems.fi";
 import type { SyllableResult } from "./types";
 import { saveSyllablesResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
-import { shuffleArray } from "@/lib/utils";
+import { cn, shuffleArray } from "@/lib/utils";
 import { ExerciseEndScreen } from "@/components/ExerciseEndScreen";
+import { ExerciseShell, ItemLine } from "@/components/shell";
+import { Button } from "@/components/Button";
+import { Sheet } from "@/components/primitives";
 
 const ITEM_COUNT = DEV_FAST ? 2 : 12;
 const MS_PER_SYLLABLE = 1500;
@@ -90,121 +93,93 @@ export function SyllableExercise() {
     );
   }
 
-  const progress = ((currentIndex + 1) / items.length) * 100;
-
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
+    <ExerciseShell
+      width="narrow"
+      center
+      right={
+        // One text node so the label reads as a unit ("Sana 3 / 12").
+        <div className="flex h-9 items-center rounded-pill bg-recessed px-3.5 font-ui text-[15px] font-bold leading-none text-ink tabular-nums md:h-10 md:px-4 md:text-[16px]">
+          {`Sana ${currentIndex + 1} / ${items.length}`}
+        </div>
+      }
+      line={<ItemLine current={currentIndex} total={items.length} />}
+    >
+      <div className="flex flex-col gap-6 md:gap-7">
+        <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanojen muodostaminen tavuista</h1>
 
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-      </nav>
-
-      {/* Progress */}
-      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Sanojen muodostaminen tavuista
+        <Sheet className="flex flex-col gap-6 p-6 md:p-10">
+          <p className="m-0 text-center font-ui text-[17px] font-bold leading-none text-ink-2">
+            {phase === "showing"
+              ? `Tavu ${syllableIndex + 1} / ${currentItem.syllables.length}`
+              : "Kirjoita sana"}
           </p>
-          <p className="text-xs text-[#755e4d]">Sana {currentIndex + 1} / {items.length}</p>
-        </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full">
-          <div
-            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
-        <div className="w-full max-w-xl">
-
-          <div
-            className="bg-white rounded-xl"
-            style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-          >
-            {/* Phase label */}
-            <div className="px-6 pt-6 pb-2 text-center">
-              <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-                {phase === "showing"
-                  ? `Tavu ${syllableIndex + 1} / ${currentItem.syllables.length}`
-                  : "Kirjoita sana"}
-              </p>
-            </div>
-
-            {/* Syllable display */}
-            <div className="min-h-36 flex items-center justify-center px-6 py-8">
-              {phase === "showing" ? (
-                <span
-                  key={`${currentIndex}-${syllableIndex}`}
-                  className="text-6xl font-bold text-[#241a11] tracking-tight"
-                  style={{ animation: `syllable-flash ${MS_PER_SYLLABLE}ms ease-in-out forwards` }}
-                >
-                  {currentItem.syllables[syllableIndex]}
-                </span>
-              ) : (
-                <p className="text-[#755e4d] text-sm italic">Tavut piilotettu</p>
-              )}
-            </div>
-
-            {/* Input section */}
-            {phase !== "showing" && (
-              <div className="px-6 pb-6 space-y-4">
-                <label htmlFor="syllable-input" className="block text-sm font-semibold text-[#241a11]">
-                  Kirjoita sana:
-                </label>
-                <input
-                  id="syllable-input"
-                  ref={inputRef}
-                  type="text"
-                  name={`syllable-input-${currentIndex}`}
-                  value={inputValue}
-                  onChange={e => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  disabled={phase === "feedback"}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                  data-lpignore="true"
-                  data-form-type="other"
-                  placeholder="Kirjoita tähän..."
-                  className="w-full rounded-lg bg-[#fff8f5] px-4 py-3 text-base text-[#241a11] outline-none transition-colors placeholder:text-[#755e4d]/60"
-                  style={{ border: "1.5px solid #f9e4d6" }}
-                  onFocus={e => (e.currentTarget.style.borderColor = "#C69A2B")}
-                  onBlur={e => (e.currentTarget.style.borderColor = "#f9e4d6")}
-                />
-
-                {feedback && (
-                  <div
-                    className="text-center text-sm font-semibold py-2 rounded-lg"
-                    style={{
-                      background: feedback === "correct" ? "#e6ebd8" : "#f1d8ce",
-                      color: feedback === "correct" ? "#4f7a3a" : "#a6442a",
-                    }}
-                  >
-                    {feedback === "correct" ? "Oikein" : `Oikea sana: ${currentItem.correctWord}`}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleSubmit}
-                  disabled={!inputValue.trim() || phase === "feedback"}
-                  className="w-full bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Tarkista
-                </button>
-              </div>
+          {/* Stage */}
+          <div className="flex min-h-[160px] items-center justify-center md:min-h-[200px]">
+            {phase === "showing" ? (
+              <span
+                key={`${currentIndex}-${syllableIndex}`}
+                className="font-text text-[46px] font-bold leading-[54px] text-ink md:text-[84px] md:leading-[92px]"
+                style={{ animation: `syllable-flash ${MS_PER_SYLLABLE}ms ease-in-out forwards` }}
+              >
+                {currentItem.syllables[syllableIndex]}
+              </span>
+            ) : (
+              <p className="m-0 text-caption text-ink-2">Tavut piilotettu</p>
             )}
           </div>
 
-          <p className="text-center text-sm text-[#755e4d] mt-6">
-            Katso tavut tarkasti. Muodosta niistä sana ja kirjoita se, kun tavut katoavat.
-          </p>
-        </div>
-      </div>
+          {phase !== "showing" && (
+            <div className="flex flex-col gap-4 border-t border-line pt-6">
+              <label htmlFor="syllable-input" className="font-ui text-[16px] font-bold leading-none text-ink">
+                Kirjoita sana:
+              </label>
+              <input
+                id="syllable-input"
+                ref={inputRef}
+                type="text"
+                name={`syllable-input-${currentIndex}`}
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={phase === "feedback"}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                data-lpignore="true"
+                data-form-type="other"
+                placeholder="Kirjoita tähän..."
+                className="ls-t h-14 w-full rounded-btn border border-line bg-recessed px-4 font-text text-[19px] text-ink placeholder:text-ink-2 disabled:text-ink-2"
+              />
 
-    </div>
+              {feedback && (
+                <p
+                  className={cn(
+                    "m-0 rounded-key px-4 py-2.5 text-center font-ui text-[15px] font-bold",
+                    feedback === "correct" ? "bg-level-good-bg text-level-good" : "bg-level-clear-bg text-level-clear",
+                  )}
+                >
+                  {feedback === "correct" ? "Oikein" : `Oikea sana: ${currentItem.correctWord}`}
+                </p>
+              )}
+
+              <Button
+                onClick={handleSubmit}
+                disabled={!inputValue.trim() || phase === "feedback"}
+                className="w-full"
+              >
+                Tarkista
+              </Button>
+            </div>
+          )}
+        </Sheet>
+
+        <p className="m-0 text-center text-caption text-ink-2">
+          Katso tavut tarkasti. Muodosta niistä sana ja kirjoita se, kun tavut katoavat.
+        </p>
+      </div>
+    </ExerciseShell>
   );
 }

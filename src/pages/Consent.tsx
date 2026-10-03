@@ -1,152 +1,153 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, type ReactNode } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Bot, EyeOff, Info, Stethoscope, UserCheck } from "lucide-react";
 import { markScreeningStarted } from "@/lib/screeningSession";
-import { PageFooter } from "@/components/PageFooter";
-import { Stethoscope, EyeOff, Info, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
+import { ExerciseShell } from "@/components/shell";
+import { Button, LinkButton } from "@/components/Button";
+import { IconTile, Sheet } from "@/components/primitives";
+
+// The three cards are exactly what the checkbox asserts (ei diagnoosi ·
+// harrasteprojekti · anonyymi); the two notes below are advisory only.
+const CONDITIONS: Array<{ icon: ReactNode; title: string; text: string }> = [
+  {
+    icon: <Stethoscope />,
+    title: "Tämä EI ole diagnoosi",
+    text: "Tämä työkalu tarjoaa vain alustavaa, suuntaa antavaa tietoa. Virallisen diagnoosin saamiseksi tarvitaan aina ammattilaisen, kuten erikoisopettajan tai psykologin tekemä tutkimus.",
+  },
+  {
+    icon: <Bot />,
+    title: "Harrasteprojekti, rakennettu tekoälyllä",
+    text: "LukiSeula on yksityishenkilön harrasteprojekti, joka on toteutettu tekoälyn avustuksella. Se ei ole kliininen, ammatillinen eikä tieteellisesti validoitu arviointiväline — vaan harjoitusluonteinen kokeilu.",
+  },
+  {
+    icon: <EyeOff />,
+    title: "Käyttö on anonyymia",
+    text: "Emme kerää henkilötietoja. Tuloksesi säilyvät vain tämän istunnon ajan, eikä niitä voida yhdistää sinuun henkilökohtaisesti.",
+  },
+];
+
+const NOTES: Array<{ icon: ReactNode; title: string; text: string }> = [
+  {
+    icon: <UserCheck />,
+    title: "Suunniteltu vähintään 15-vuotiaille",
+    text: "Tehtävät on mitoitettu nuorille ja aikuisille — noin 9. luokasta ylöspäin. Nuoremmille lapsille lukemisen arviointi kannattaa tehdä koulussa erityisopettajan kanssa, jolla on ikätasolle sopivat välineet.",
+  },
+  {
+    icon: <Info />,
+    title: "Hakeudu tarvittaessa tutkimuksiin",
+    text: "Jos kartoituksen tulokset herättävät huolta, suosittelemme ottamaan yhteyttä terveydenhuollon tai oppilaitoksesi asiantuntijoihin lisätutkimuksia varten.",
+  },
+];
 
 export default function Consent() {
   const navigate = useNavigate();
   const [agreed, setAgreed] = useState(false);
 
+  const proceed = () => {
+    if (!agreed) return;
+    markScreeningStarted();
+    navigate("/start");
+  };
+
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-      </nav>
-
-      {/* Progress indicator */}
-      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
-        <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-1">
-          Valmistelu
-        </p>
-        <div className="h-1 bg-[#f9e4d6] rounded-full">
-          <div className="h-1 bg-[#C69A2B] rounded-full w-0" />
+    <ExerciseShell
+      logoLink
+      width="shell"
+      right={
+        <Link
+          to="/"
+          className="ls-t inline-flex h-10 items-center gap-2 rounded-key px-3 font-ui text-[15px] font-bold text-gold-ink hover:bg-gold-tint hover:text-gold-ink-deep"
+        >
+          <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2.2} aria-hidden="true" />
+          Etusivulle
+        </Link>
+      }
+      dockPhoneOnly
+      dock={
+        <div className="flex w-full items-center justify-between gap-3 py-3">
+          <LinkButton to="/" variant="tertiary" className="px-4">
+            Peruuta
+          </LinkButton>
+          <Button onClick={proceed} disabled={!agreed} className="flex-1 px-6">
+            Jatka tehtävään
+            <ArrowRight aria-hidden="true" />
+          </Button>
         </div>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 flex items-start justify-center px-6 py-8">
-        <div className="w-full max-w-2xl">
-
-          <h1 className="text-3xl font-bold text-[#241a11] tracking-tight mb-2">
-            Suostumus ja ymmärrys
-          </h1>
-          <p className="text-[#755e4d] mb-8 leading-relaxed">
+      }
+    >
+      <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-20 md:py-6">
+        <div className="flex flex-col md:w-[680px] md:flex-shrink-0">
+          <h1 className="m-0 font-ui text-h1-sm text-ink md:text-h1">Suostumus ja ymmärrys</h1>
+          <p className="mb-8 mt-3 max-w-[600px] text-lead-sm text-ink md:mb-10 md:mt-4 md:text-lead">
             Ennen kuin aloitamme luku- ja kirjoitusvalmiuksien kartoituksen, pyydämme
             sinua lukemaan ja hyväksymään seuraavat ehdot.
           </p>
 
-          {/* Info blocks */}
-          <div className="space-y-4 mb-8">
-            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Suunniteltu vähintään 15-vuotiaille</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Tehtävät on mitoitettu nuorille ja aikuisille — noin 9. luokasta ylöspäin.
-                  Nuoremmille lapsille lukemisen arviointi kannattaa tehdä koulussa erityisopettajan
-                  kanssa, jolla on ikätasolle sopivat välineet.
-                </p>
-              </div>
-            </div>
+          <section className="flex flex-col gap-3">
+            <h2 className="m-0 font-ui text-[15px] font-extrabold leading-5 text-gold-ink">
+              Ehdot, jotka hyväksyt
+            </h2>
+            <Sheet as="ul" className="m-0 flex list-none flex-col p-0 md:rounded-sheet">
+              {CONDITIONS.map((c, i) => (
+                <li
+                  key={c.title}
+                  className={`flex items-start gap-4 px-5 py-5 md:gap-[18px] md:px-7 md:py-6 ${i > 0 ? "border-t border-line" : ""}`}
+                >
+                  <IconTile icon={c.icon} size={48} className="rounded-[14px]" />
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <h3 className="m-0 font-ui text-h4 text-ink">{c.title}</h3>
+                    <p className="m-0 text-body text-ink">{c.text}</p>
+                  </div>
+                </li>
+              ))}
+            </Sheet>
+          </section>
 
-            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <Stethoscope className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Tämä EI ole diagnoosi</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Tämä työkalu tarjoaa vain alustavaa, suuntaa antavaa tietoa. Virallisen
-                  diagnoosin saamiseksi tarvitaan aina ammattilaisen, kuten erikoisopettajan
-                  tai psykologin tekemä tutkimus.
-                </p>
-              </div>
-            </div>
+          <section className="mt-8 flex flex-col gap-3.5 md:px-2">
+            <h2 className="m-0 font-ui text-[15px] font-extrabold leading-5 text-ink-2">Hyvä tietää</h2>
+            <ul className="m-0 flex list-none flex-col gap-[18px] p-0">
+              {NOTES.map(n => (
+                <li key={n.title} className="flex items-start gap-4">
+                  <IconTile icon={n.icon} size={40} muted />
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <h3 className="m-0 font-ui text-[17px] font-extrabold leading-6 text-ink">{n.title}</h3>
+                    <p className="m-0 max-w-[560px] text-body-sm text-ink-2">{n.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
 
-            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Harrasteprojekti, rakennettu tekoälyllä</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  LukiSeula on yksityishenkilön harrasteprojekti, joka on toteutettu tekoälyn
-                  avustuksella. Se ei ole kliininen, ammatillinen eikä tieteellisesti validoitu
-                  arviointiväline — vaan harjoitusluonteinen kokeilu.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <EyeOff className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Käyttö on anonyymia</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Emme kerää henkilötietoja. Tuloksesi säilyvät vain tämän istunnon ajan,
-                  eikä niitä voida yhdistää sinuun henkilökohtaisesti.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#ffffff] rounded-xl p-5 flex gap-4" style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}>
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <Info className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Hakeudu tarvittaessa tutkimuksiin</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Jos kartoituksen tulokset herättävät huolta, suosittelemme ottamaan yhteyttä
-                  terveydenhuollon tai oppilaitoksesi asiantuntijoihin lisätutkimuksia varten.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Checkbox */}
-          <label className="flex items-start gap-3 cursor-pointer mb-8 bg-[#fff1e8] rounded-xl p-4">
+        <Sheet
+          as="aside"
+          className="flex flex-col gap-6 p-6 md:sticky md:top-6 md:w-[400px] md:flex-shrink-0 md:p-7"
+        >
+          <label className="flex cursor-pointer items-start gap-3.5">
             <input
               type="checkbox"
               checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-1 w-4 h-4 rounded accent-[#C69A2B] flex-shrink-0"
+              onChange={e => setAgreed(e.target.checked)}
+              className="mt-px h-[26px] w-[26px] flex-shrink-0 cursor-pointer rounded-[6px] border-2 border-control accent-brown"
             />
-            <span className="text-sm text-[#241a11] leading-relaxed">
+            <span className="text-body text-ink">
               Ymmärrän, että tämä ei ole <strong>diagnoosi</strong>, että kyseessä on{" "}
               <strong>tekoälyavusteinen harrasteprojekti</strong> ja että käyttökertani on{" "}
               <strong>anonyymi</strong>. Hyväksyn nämä ehdot ja haluan jatkaa seulonnan tekemistä.
             </span>
           </label>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => { if (agreed) { markScreeningStarted(); navigate("/start"); } }}
-              disabled={!agreed}
-              className="flex items-center justify-center gap-2 bg-[#C69A2B] text-white font-semibold px-8 py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#785a00]"
-            >
+          <div className="hidden flex-col gap-2 border-t border-line pt-6 md:flex">
+            <Button onClick={proceed} disabled={!agreed} className="h-[60px] w-full">
               Jatka tehtävään
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => navigate("/")}
-              className="px-8 py-3 rounded-lg font-semibold text-[#755e4d] bg-[#f9e4d6] hover:bg-[#f3dfd1] transition-colors"
-            >
+              <ArrowRight aria-hidden="true" />
+            </Button>
+            <LinkButton to="/" variant="tertiary" className="h-[52px] w-full">
               Peruuta
-            </button>
+            </LinkButton>
           </div>
-
-        </div>
+        </Sheet>
       </div>
-
-      <PageFooter />
-
-    </div>
+    </ExerciseShell>
   );
 }

@@ -3,8 +3,10 @@ import { minimalPairItems as allMinimalPairItems } from "./minimalPairItems.fi";
 import { saveMinimalPairsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
 import { TWO_AFC_THRESHOLDS } from "@/lib/levels";
-import { shuffleArray } from "@/lib/utils";
+import { cn, shuffleArray } from "@/lib/utils";
 import { ExerciseEndScreen } from "@/components/ExerciseEndScreen";
+import { ExerciseShell, ItemLine, ItemPill } from "@/components/shell";
+import { Sheet } from "@/components/primitives";
 
 const ITEM_COUNT = DEV_FAST ? 2 : 15;
 const ITEM_DURATION_MS = DEV_FAST ? 2000 : 6000;
@@ -20,7 +22,6 @@ export function MinimalPairExercise() {
 
   const currentItem = items[currentIndex];
   const total = items.length;
-  const progressPct = Math.min(100, ((currentIndex + 1) / total) * 100);
 
   const advance = useCallback(() => {
     setSelectedAnswer(null);
@@ -65,94 +66,61 @@ export function MinimalPairExercise() {
   const options = [currentItem.optionA, currentItem.optionB];
 
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
+    <ExerciseShell
+      width="narrow"
+      center
+      right={<ItemPill label="Lause" current={currentIndex + 1} total={total} />}
+      line={<ItemLine current={currentIndex} total={total} />}
+    >
+      <div className="flex flex-col gap-6 md:gap-7">
+        <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanojen pituuden erottaminen</h1>
 
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-      </nav>
-
-      {/* Progress */}
-      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Pituuserojen tunnistaminen
+        <Sheet className="flex flex-col items-center gap-6 px-6 py-8 md:gap-8 md:px-10 md:py-12">
+          <p className="m-0 text-center font-ui text-[17px] font-bold leading-none text-ink-2">
+            Valitse lauseeseen sopiva sana
           </p>
-          <p className="text-xs text-[#755e4d]">Kysymys {currentIndex + 1} / {total}</p>
-        </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full">
-          <div
-            className="h-1 bg-[#C69A2B] rounded-full transition-all duration-300"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-      </div>
 
-      {/* Item countdown bar */}
-      <div className="px-6 pt-2 max-w-2xl mx-auto w-full">
-        <div className="h-0.5 bg-[#f9e4d6] rounded-full overflow-hidden">
-          <div
-            key={currentIndex}
-            className="h-full bg-[#d2c5b0] rounded-full"
-            style={{
-              animation: `drain ${ITEM_DURATION_MS}ms linear forwards`,
-              animationPlayState: selectedAnswer !== null ? "paused" : "running",
-            }}
-          />
-        </div>
-      </div>
+          <p className="m-0 max-w-[600px] text-center font-text text-[24px] font-bold leading-[34px] text-ink md:text-[32px] md:leading-[44px]">
+            {currentItem.sentence}
+          </p>
 
-      {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
-        <div className="w-full max-w-2xl">
-
-          <div
-            className="bg-white rounded-xl p-8"
-            style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-          >
-            <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-6">
-              Valitse lauseeseen sopiva sana
-            </p>
-
-            <p className="text-2xl font-bold text-[#241a11] leading-relaxed mb-8">
-              {currentItem.sentence}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              {options.map((option) => {
-                const isSelected = selectedAnswer === option;
-
-                let buttonClass =
-                  "flex-1 h-20 rounded-xl text-2xl font-bold transition-colors ";
-
-                if (selectedAnswer !== null) {
-                  if (isSelected) {
-                    buttonClass += "bg-[#C69A2B] text-white";
-                  } else {
-                    buttonClass += "bg-[#f9ede4] text-[#755e4d]";
-                  }
-                } else {
-                  buttonClass +=
-                    "bg-[#f9e4d6] text-[#241a11] hover:bg-[#C69A2B] hover:text-white cursor-pointer";
-                }
-
-                return (
-                  <button
-                    key={option}
-                    className={buttonClass}
-                    onClick={() => handleSelect(option)}
-                    disabled={selectedAnswer !== null}
-                  >
-                    {option}
-                  </button>
-                );
-              })}
-            </div>
+          {/* Per-item countdown: the only continuously moving element here. */}
+          <div aria-hidden="true" className="h-1.5 w-[220px] overflow-hidden rounded-[3px] bg-well md:w-[360px]">
+            <div
+              key={currentIndex}
+              className="ml-auto h-full rounded-[3px] bg-time"
+              style={{
+                animation: `drain ${ITEM_DURATION_MS}ms linear forwards`,
+                animationPlayState: selectedAnswer !== null ? "paused" : "running",
+              }}
+            />
           </div>
+        </Sheet>
 
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
+          {options.map((option) => {
+            const answered = selectedAnswer !== null;
+            const isSelected = selectedAnswer === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleSelect(option)}
+                disabled={answered}
+                aria-pressed={answered ? isSelected : undefined}
+                className={cn(
+                  "ls-t box-border flex h-16 items-center justify-center rounded-answer border-2 px-3 font-ui text-[18px] font-extrabold leading-none md:h-[92px] md:text-[22px]",
+                  !answered && "border-brown bg-surface text-ink hover:bg-recessed active:bg-brown active:text-white",
+                  answered && isSelected && "border-brown bg-brown text-white",
+                  answered && !isSelected && "border-well bg-well text-ink-2",
+                )}
+              >
+                {option}
+              </button>
+            );
+          })}
         </div>
       </div>
-
-    </div>
+    </ExerciseShell>
   );
 }

@@ -141,7 +141,7 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   // Both keys share one neutral style so neither reads as the recommended answer.
   const keyClass = cn(
     "ls-t box-border flex flex-1 basis-0 items-center justify-center gap-3.5 rounded-answer border-2 border-brown bg-surface px-4 font-ui font-extrabold leading-none tracking-[-0.01em] text-ink",
-    "hover:bg-recessed active:bg-brown active:text-white disabled:cursor-not-allowed disabled:opacity-60",
+    "hover:bg-recessed active:bg-brown active:text-white",
     isDesktop ? "h-[92px] text-[22px]" : "h-16 text-[18px]",
   );
 
