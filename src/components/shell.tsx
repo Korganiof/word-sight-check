@@ -215,6 +215,8 @@ interface ExerciseShellProps extends AppBarProps {
   line?: ReactNode;
   /** Contents of the docked bottom bar; omit for no bar. */
   dock?: ReactNode;
+  /** Show the docked bar on phones only (ready screens dock their CTA there). */
+  dockPhoneOnly?: boolean;
   /** Desktop content width class, e.g. `max-w-work`. */
   width?: "work" | "work-wide" | "narrow" | "shell";
   /** Vertically centre the content in <main> (Osa 1, Osa 3). */
@@ -239,6 +241,7 @@ export function ExerciseShell({
   right,
   line,
   dock,
+  dockPhoneOnly = false,
   width = "work",
   center = false,
   children,
@@ -259,7 +262,12 @@ export function ExerciseShell({
         </div>
       </main>
       {dock && (
-        <footer className="relative z-[2] flex min-h-dock-sm flex-shrink-0 justify-center border-t border-line bg-surface shadow-up md:h-dock print:hidden">
+        <footer
+          className={cn(
+            "relative z-[2] flex min-h-dock-sm flex-shrink-0 justify-center border-t border-line bg-surface shadow-up md:h-dock print:hidden",
+            dockPhoneOnly && "md:hidden",
+          )}
+        >
           <div
             className={cn(
               "flex w-full items-center justify-between gap-4 px-gutter md:gap-6 md:px-0",
