@@ -1,0 +1,101 @@
+/* LukiSeula design tokens for Tailwind v4 (CSS-first config).
+   Import after tailwindcss in your main stylesheet:
+     @import "tailwindcss";
+     @import "./design/handoff/tokens/tailwind.theme.css";
+   If you are on Tailwind v3, use tailwind.config.tokens.js instead. */
+
+@theme {
+  /* surfaces */
+  --color-paper: #FAF6F0;
+  --color-surface: #FFFFFF;
+  --color-recessed: #F5EEE4;
+  --color-well: #ECE2D4;
+  --color-line: #E5D9C9;
+  --color-line-strong: #CDBBA4;
+  --color-control: #A08A72;
+
+  /* ink */
+  --color-ink: #241A11;
+  --color-ink-2: #64503F;
+  --color-brown: #4A3728;
+  --color-brown-deep: #2F241B;
+  --color-time: #8C7660;
+
+  /* gold */
+  --color-gold: #C69A2B;
+  --color-gold-hover: #B68B1F;
+  --color-gold-press: #AC841B;
+  --color-gold-ink: #785A00;
+  --color-gold-ink-deep: #5C4500;
+  --color-gold-wash: #F2DA93;
+  --color-gold-tint: #FAF0D2;
+
+  /* levels */
+  --color-level-good: #35612A;
+  --color-level-good-bg: #E3EDD8;
+  --color-level-some: #6E5200;
+  --color-level-some-bg: #F8EBC4;
+  --color-level-clear: #8A3B22;
+  --color-level-clear-bg: #F6E2D9;
+  --color-level-none: #64503F;
+  --color-level-none-bg: #EFE8DD;
+
+  /* type */
+  --font-ui: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --font-text: 'Atkinson Hyperlegible Next', 'Manrope', system-ui, sans-serif;
+  --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-display: 84px;        --text-display--line-height: 84px;     --text-display--letter-spacing: -0.04em;  --text-display--font-weight: 800;
+  --text-display-sm: 50px;     --text-display-sm--line-height: 52px;  --text-display-sm--letter-spacing: -0.04em; --text-display-sm--font-weight: 800;
+  --text-title: 56px;          --text-title--line-height: 60px;       --text-title--letter-spacing: -0.035em;   --text-title--font-weight: 800;
+  --text-title-sm: 34px;       --text-title-sm--line-height: 40px;    --text-title-sm--letter-spacing: -0.035em; --text-title-sm--font-weight: 800;
+  --text-h1: 48px;             --text-h1--line-height: 54px;          --text-h1--letter-spacing: -0.03em;       --text-h1--font-weight: 800;
+  --text-h1-sm: 32px;          --text-h1-sm--line-height: 38px;       --text-h1-sm--letter-spacing: -0.03em;    --text-h1-sm--font-weight: 800;
+  --text-h2: 32px;             --text-h2--line-height: 38px;          --text-h2--letter-spacing: -0.025em;      --text-h2--font-weight: 800;
+  --text-h2-sm: 24px;          --text-h2-sm--line-height: 30px;       --text-h2-sm--letter-spacing: -0.025em;   --text-h2-sm--font-weight: 800;
+  --text-h3: 22px;             --text-h3--line-height: 28px;          --text-h3--letter-spacing: -0.02em;       --text-h3--font-weight: 800;
+  --text-h4: 19px;             --text-h4--line-height: 26px;          --text-h4--letter-spacing: -0.015em;      --text-h4--font-weight: 800;
+  --text-lead: 19px;           --text-lead--line-height: 32px;
+  --text-body: 17px;           --text-body--line-height: 28px;
+  --text-reading: 20px;        --text-reading--line-height: 40px;
+  --text-reading-sm: 19px;     --text-reading-sm--line-height: 40px;
+  --text-caption: 15px;        --text-caption--line-height: 22px;
+  --text-label: 12px;          --text-label--line-height: 16px;       --text-label--letter-spacing: 0.12em;     --text-label--font-weight: 800;
+  --text-button: 17px;         --text-button--line-height: 1;         --text-button--font-weight: 700;
+  --text-counter: 26px;        --text-counter--line-height: 1;        --text-counter--font-weight: 800;
+  --text-tape: 48px;           --text-tape--line-height: 1;           --text-tape--font-weight: 600;
+  --text-tape-sm: 36px;        --text-tape-sm--line-height: 1;        --text-tape-sm--font-weight: 600;
+
+  /* radii */
+  --radius-mark: 6px;
+  --radius-chip: 8px;
+  --radius-key: 12px;
+  --radius-btn: 14px;
+  --radius-tile: 16px;
+  --radius-answer: 18px;
+  --radius-sheet-sm: 20px;
+  --radius-sheet: 24px;
+  --radius-sheet-lg: 28px;
+  --radius-hero: 32px;
+  --radius-pill: 999px;
+
+  /* elevation */
+  --shadow-sheet: 0 1px 2px rgba(47, 36, 27, 0.04), 0 8px 24px rgba(47, 36, 27, 0.05);
+  --shadow-float: 0 2px 4px rgba(47, 36, 27, 0.04), 0 24px 64px rgba(47, 36, 27, 0.08);
+  --shadow-up: 0 -8px 24px rgba(47, 36, 27, 0.05);
+  --shadow-mark: inset 0 -3px 0 #785A00;
+
+  /* motion */
+  --ease-ls: cubic-bezier(0.2, 0, 0, 1);
+
+  /* layout */
+  --spacing-appbar: 64px;
+  --spacing-appbar-sm: 56px;
+  --spacing-dock: 84px;
+  --spacing-dock-sm: 76px;
+  --container-shell: 1160px;
+  --container-work: 960px;
+  --container-work-wide: 1080px;
+  --container-read: 680px;
+  --container-measure: 640px;
+}

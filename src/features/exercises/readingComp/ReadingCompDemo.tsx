@@ -74,7 +74,7 @@ export function ReadingCompDemo({ sentences, onSolvedChange }: ReadingCompDemoPr
                 <p className="m-0 flex items-start gap-2.5 text-[16px] leading-[26px] text-level-good">
                   <CircleCheck className="mt-[3px] h-5 w-5 flex-shrink-0" strokeWidth={2.2} aria-hidden="true" />
                   <span>
-                    <strong className="font-bold">Juuri näin.</strong> ”{error.text}” on oikeaa suomea, mutta se ei sovi
+                    <strong className="font-bold">Juuri näin.</strong> ”{splitTrailingPunctuation(error.text).word}” on oikeaa suomea, mutta se ei sovi
                     lauseeseen — siinä voisi olla vaikkapa ”{error.correctForm}”.
                   </span>
                 </p>

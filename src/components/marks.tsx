@@ -98,8 +98,13 @@ interface LetterTapeProps {
   preview?: boolean;
 }
 
+// Cell width is the only tunable (HANDOFF § 7.5: 34 px desktop, 25 px phones).
+// On desktop a long sentence narrows its cells down to MIN_CELL before it is
+// allowed to wrap, so the common case stays on one row.
 const CELL = { desktop: 34, phone: 25 };
+const MIN_CELL = { desktop: 26, phone: 22 };
 const GLYPH_W = 17;
+const FONT_RATIO = 48 / 34;
 
 /**
  * One row of fixed-width cells; a boundary is a 4 px gold-ink bar drawn over
@@ -110,22 +115,28 @@ const GLYPH_W = 17;
 export function LetterTape({ text, marked, onToggle, disabled, preview = false }: LetterTapeProps) {
   const chars = Array.from(text);
   const ref = useRef<HTMLDivElement>(null);
-  const [perRow, setPerRow] = useState<number>(chars.length);
+  const [layout, setLayout] = useState<{ perRow: number; cell: number }>({
+    perRow: chars.length,
+    cell: CELL.desktop,
+  });
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const measure = () => {
       const phone = window.innerWidth < 768;
-      const cell = phone ? CELL.phone : CELL.desktop;
-      const fits = Math.floor(el.clientWidth / cell);
-      if (fits >= chars.length) {
-        setPerRow(chars.length);
+      const full = phone ? CELL.phone : CELL.desktop;
+      const min = phone ? MIN_CELL.phone : MIN_CELL.desktop;
+      const width = el.clientWidth;
+      // One row: use the full cell, or narrow it down to the minimum.
+      const oneRow = Math.min(full, Math.floor(width / chars.length));
+      if (oneRow >= min) {
+        setLayout({ perRow: chars.length, cell: oneRow });
         return;
       }
-      const fitsWrapped = Math.max(4, Math.floor((el.clientWidth - GLYPH_W) / cell));
+      const fitsWrapped = Math.max(4, Math.floor((width - GLYPH_W) / full));
       const rows = Math.ceil(chars.length / fitsWrapped);
-      setPerRow(Math.ceil(chars.length / rows));
+      setLayout({ perRow: Math.ceil(chars.length / rows), cell: full });
     };
     measure();
     if (typeof ResizeObserver === "undefined") return; // jsdom
@@ -133,6 +144,9 @@ export function LetterTape({ text, marked, onToggle, disabled, preview = false }
     ro.observe(el);
     return () => ro.disconnect();
   }, [chars.length]);
+
+  const { perRow, cell } = layout;
+  const cellStyle = { width: cell, fontSize: Math.round(cell * FONT_RATIO) };
 
   const rows: string[][] = [];
   for (let i = 0; i < chars.length; i += perRow) rows.push(chars.slice(i, i + perRow));
@@ -166,13 +180,13 @@ export function LetterTape({ text, marked, onToggle, disabled, preview = false }
                   />
                 );
                 const cellClass = cn(
-                  "ls-t group relative box-border h-[88px] w-[25px] border-0 p-0 text-center font-mono text-[36px] font-semibold leading-[88px] text-ink md:h-[104px] md:w-[34px] md:text-[48px] md:leading-[104px]",
+                  "ls-t group relative box-border h-[88px] border-0 p-0 text-center font-mono font-semibold leading-[88px] text-ink md:h-[104px] md:leading-[104px]",
                   radius,
                   isMarked ? "z-[2] bg-gold-wash" : "z-[1] bg-recessed",
                 );
                 if (preview || isLastChar) {
                   return (
-                    <span key={idx} className={cn(cellClass, "cursor-default")}>
+                    <span key={idx} className={cn(cellClass, "cursor-default")} style={cellStyle}>
                       {ch}
                       {bar}
                     </span>
@@ -183,6 +197,7 @@ export function LetterTape({ text, marked, onToggle, disabled, preview = false }
                     key={idx}
                     type="button"
                     className={cn(cellClass, !disabled && !isMarked && "hover:bg-well", disabled ? "cursor-default" : "cursor-pointer")}
+                    style={cellStyle}
                     aria-pressed={isMarked}
                     aria-label={`${ch} — sanaraja ${isMarked ? "merkitty" : "ei merkitty"}`}
                     onClick={() => onToggle(pos)}

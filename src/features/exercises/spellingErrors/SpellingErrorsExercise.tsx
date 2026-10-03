@@ -70,8 +70,9 @@ export function SpellingErrorsExercise() {
     });
   };
 
-  // Groups of 20 made of two halves of 10: on desktop the halves run together
-  // (4 columns, 8 px gap), on phones each half is its own 2-column group.
+  // Groups of 20 made of two halves of 10: on desktop the halves dissolve
+  // (`md:contents`) into one 4-column grid, on phones each half is its own
+  // 2-column group.
   const groups = useMemo(() => chunk(items, GROUP_DESKTOP).map((g) => chunk(g, GROUP_PHONE)), [items]);
 
   return (
@@ -101,9 +102,9 @@ export function SpellingErrorsExercise() {
 
         <Sheet as="section" aria-label="Sanalista" className="flex flex-col gap-[18px] p-2.5 md:gap-6 md:p-6">
           {groups.map((halves, i) => (
-            <div key={i} className="flex flex-col gap-[18px] md:gap-2">
+            <div key={i} className="flex flex-col gap-[18px] md:grid md:grid-cols-4 md:gap-2">
               {halves.map((half, j) => (
-                <div key={j} className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                <div key={j} className="grid grid-cols-2 gap-2 md:contents">
                   {half.map((item) => (
                     <GridWord key={item.id} pressed={markedIds.has(item.id)} onToggle={() => toggleMark(item.id)}>
                       {item.word}

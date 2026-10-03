@@ -1,0 +1,100 @@
+/* LukiSeula design tokens — CSS custom properties.
+   Source of truth for the values in HANDOFF.md. Every text/background pair listed in HANDOFF.md § Colour
+   passes WCAG AA (4.5:1) — do not introduce new text colours without checking. */
+
+:root {
+  /* ---- surfaces ---- */
+  --ls-paper: #FAF6F0;        /* app canvas; also iOS overscroll colour */
+  --ls-surface: #FFFFFF;      /* work sheets, app bar, docked bar, cards */
+  --ls-recessed: #F5EEE4;     /* soft keys, letter tape, inset panels, hover on link rows */
+  --ls-well: #ECE2D4;         /* hover on soft keys, note blocks, disabled fill */
+  --ls-line: #E5D9C9;         /* 1 px hairlines, empty segments — never text */
+  --ls-line-strong: #CDBBA4;  /* keycap edge — never text */
+  --ls-control: #A08A72;      /* unchecked checkbox border (3.3:1 non-text) */
+
+  /* ---- ink ---- */
+  --ls-ink: #241A11;          /* all body and heading text */
+  --ls-ink-2: #64503F;        /* captions, counters, hints (7.1:1 on paper) */
+  --ls-brown: #4A3728;        /* secondary button, dark band, low-time pill */
+  --ls-brown-deep: #2F241B;   /* brown hover, focus ring, last time segment */
+  --ls-time: #8C7660;         /* remaining-time segments (decorative) */
+
+  /* ---- gold ---- */
+  --ls-gold: #C69A2B;         /* primary CTA fill (with INK text), item progress, current step */
+  --ls-gold-hover: #B68B1F;
+  --ls-gold-press: #AC841B;
+  --ls-gold-ink: #785A00;     /* labels, tertiary text, the mark underline */
+  --ls-gold-ink-deep: #5C4500;/* tertiary hover text, counter icon */
+  --ls-gold-wash: #F2DA93;    /* highlighter fill behind marked words / letters */
+  --ls-gold-tint: #FAF0D2;    /* hover before marking, badges, icon tiles */
+
+  /* ---- levels (results) ---- */
+  --ls-good: #35612A;   --ls-good-bg: #E3EDD8;   /* Sujuu hyvin */
+  --ls-some: #6E5200;   --ls-some-bg: #F8EBC4;   /* Jonkin verran haasteita */
+  --ls-clear: #8A3B22;  --ls-clear-bg: #F6E2D9;  /* Selviä haasteita */
+  --ls-none: #64503F;   --ls-none-bg: #EFE8DD;   /* Harjoitusta ei tehty */
+
+  /* ---- type ---- */
+  --ls-font-ui: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --ls-font-text: 'Atkinson Hyperlegible Next', 'Manrope', system-ui, sans-serif;
+  --ls-font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---- radii ---- */
+  --ls-r-mark: 6px;      /* highlighter ink behind a word */
+  --ls-r-chip: 8px;      /* target chips */
+  --ls-r-key: 12px;      /* grid word cells, small buttons, keycaps (10) */
+  --ls-r-btn: 14px;      /* buttons */
+  --ls-r-tile: 16px;     /* icon tiles, hero CTA, tape ends, answer keys (18) */
+  --ls-r-sheet-sm: 20px; /* text sheets on 390 */
+  --ls-r-sheet: 24px;    /* sheets on 390 (22) and text sheets on 1440 */
+  --ls-r-sheet-lg: 28px; /* sheets, result blocks on 1440 */
+  --ls-r-hero: 32px;     /* dark banner */
+  --ls-r-pill: 999px;
+
+  /* ---- elevation (always #2F241B, never above 8 %) ---- */
+  --ls-shadow-sheet: 0 1px 2px rgba(47, 36, 27, 0.04), 0 8px 24px rgba(47, 36, 27, 0.05);
+  --ls-shadow-float: 0 2px 4px rgba(47, 36, 27, 0.04), 0 24px 64px rgba(47, 36, 27, 0.08);
+  --ls-shadow-up: 0 -8px 24px rgba(47, 36, 27, 0.05);
+  --ls-mark-line: inset 0 -3px 0 var(--ls-gold-ink); /* the pen line under a highlighter mark */
+
+  /* ---- motion ---- */
+  --ls-dur-fast: 120ms;  /* hover, press, a mark appearing (colour only) */
+  --ls-dur-base: 180ms;  /* screen enter: fade in + 8 px rise */
+  --ls-dur-exit: 120ms;  /* screen exit: fade out, no movement */
+  --ls-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- layout ---- */
+  --ls-appbar-h: 64px;   /* 56 on phones */
+  --ls-dock-h: 84px;     /* 76 on phones */
+  --ls-gutter: 16px;     /* phone side gutter */
+}
+
+/* Base rules that every screen relies on */
+html { background: var(--ls-paper); }
+body {
+  margin: 0;
+  background: var(--ls-paper);
+  color: var(--ls-ink);
+  font-family: var(--ls-font-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: var(--ls-gold-ink); }
+a:hover { color: var(--ls-gold-ink-deep); }
+button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+
+/* One focus style everywhere: 3 px brown-deep ring, 2 px gap. On dark (brown) surfaces use gold-wash. */
+:focus-visible { outline: 3px solid var(--ls-brown-deep); outline-offset: 2px; }
+.on-dark :focus-visible { outline-color: var(--ls-gold-wash); }
+
+/* Highlighter mark — the one mark language for words, grid cells and tape letters */
+.ls-mark { background: var(--ls-gold-wash); box-shadow: var(--ls-mark-line); }
+
+/* Transitions are colour-only, short, and off under reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  .ls-t { transition: background-color var(--ls-dur-fast) var(--ls-ease), box-shadow var(--ls-dur-fast) var(--ls-ease),
+                      color var(--ls-dur-fast) var(--ls-ease), opacity var(--ls-dur-fast) var(--ls-ease); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+}

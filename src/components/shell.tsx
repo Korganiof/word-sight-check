@@ -255,7 +255,7 @@ export function ExerciseShell({
           className={cn(
             "mx-auto w-full px-gutter pb-10 pt-6 md:px-0 md:pb-14 md:pt-10",
             WIDTH[width],
-            center && "my-auto",
+            center && "md:my-auto",
           )}
         >
           {children}

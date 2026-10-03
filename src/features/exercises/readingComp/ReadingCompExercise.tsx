@@ -109,6 +109,8 @@ export function ReadingCompExercise() {
                 // The word gap is the toggle's own margin (see WordToggle), so
                 // whitespace tokens render nothing.
                 if (t.kind === "whitespace") return null;
+                // A dash standing on its own is not a word to judge.
+                if (!/\p{L}/u.test(t.text)) return <span key={t.id} className="mr-[0.34em]">{t.text}</span>;
                 const { word, trail } = splitTrailingPunctuation(t.text);
                 return (
                   <WordToggle

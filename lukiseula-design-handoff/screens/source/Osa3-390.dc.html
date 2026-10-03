@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Osa 3 — Sanaketjujen erottaminen (390)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&amp;family=Atkinson+Hyperlegible+Mono:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#FAF6F0;color:#241A11;font-family:'Atkinson Hyperlegible Next','Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:#785A00}a:hover{color:#5C4500}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+.ls-f:focus-visible{outline:3px solid #2F241B;outline-offset:2px}
+.ls-fd:focus-visible{outline:3px solid #F2DA93;outline-offset:2px}
+.ls-gold:hover{background:#B68B1F!important}.ls-gold:active{background:#AC841B!important}
+.ls-brown:hover{background:#2F241B!important}
+.ls-ghost:hover{background:#FAF0D2!important}
+.ls-key:hover{background:#F5EEE4!important}.ls-key:active{background:#4A3728!important;color:#FFFFFF!important}
+.ls-soft[aria-pressed="false"]:hover{background:#ECE2D4!important}
+.ls-word{outline:none}
+.ls-word[aria-pressed="false"]:hover .ls-ink{background:#FAF0D2!important}
+.ls-word:focus-visible .ls-ink{outline:3px solid #2F241B;outline-offset:2px}
+.ls-cell[aria-pressed="false"]:hover{background:#ECE2D4!important}
+.ls-cell[aria-pressed="false"]:hover .ls-bar{opacity:.35!important}
+.ls-row:hover{background:#F5EEE4!important}
+@media (prefers-reduced-motion:no-preference){.ls-t{transition:background-color .12s ease,box-shadow .12s ease,opacity .12s ease,color .12s ease}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #FAF6F0; color: #241A11;">
+<header style="height: 56px; flex-shrink: 0; box-sizing: border-box; background: #FFFFFF; border-bottom: 1px solid #E5D9C9; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;"><div style="display: flex; align-items: center; gap: 12px;"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true" style="flex-shrink: 0;"><rect width="32" height="32" rx="9" fill="#FAF0D2"></rect><circle cx="14.5" cy="14.5" r="7.75" fill="#FFFFFF" stroke="#C69A2B" stroke-width="2.5"></circle><path d="M20.4 20.4 25.2 25.2" stroke="#C69A2B" stroke-width="3.2" stroke-linecap="round"></path><rect x="10" y="10.6" width="5.6" height="2" rx="1" fill="#4A3728"></rect><rect x="16.8" y="10.6" width="2.4" height="2" rx="1" fill="#4A3728"></rect><rect x="9.4" y="13.8" width="3.4" height="2" rx="1" fill="#4A3728"></rect><rect x="14" y="13.8" width="5.8" height="2" rx="1" fill="#4A3728"></rect><rect x="10.4" y="17" width="5" height="2" rx="1" fill="#4A3728"></rect></svg><div style="display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 12px; line-height: 1; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #785A00; font-variant-numeric: tabular-nums; white-space: nowrap;">Osa 3 / 5</span><span aria-hidden="true" style="display: flex; gap: 4px;"><span style="width: 18px; height: 4px; border-radius: 2px; background: #4A3728;"></span><span style="width: 18px; height: 4px; border-radius: 2px; background: #4A3728;"></span><span style="width: 18px; height: 4px; border-radius: 2px; background: #C69A2B;"></span><span style="width: 18px; height: 4px; border-radius: 2px; background: #E5D9C9;"></span><span style="width: 18px; height: 4px; border-radius: 2px; background: #E5D9C9;"></span></span></div></div><div style="display: flex; align-items: center; gap: 8px;"><div role="timer" aria-label="Aikaa jäljellä" class="ls-t" style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 10px; border-radius: 999px; background: {{ timerBg }}; color: {{ timerFg }};"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><line x1="10" x2="14" y1="2" y2="2"></line><line x1="12" x2="15" y1="14" y2="11"></line><circle cx="12" cy="14" r="8"></circle></svg><span style="font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 0.01em;">{{ timerText }}</span></div></div></header><div aria-hidden="true" style="display: flex; gap: 4px; height: 4px; flex-shrink: 0; background: #FAF6F0;"><sc-for list="{{ timeSegs }}" as="s" hint-placeholder-count="3"><span class="ls-t" style="flex-grow: 1; height: 4px; background: {{ s.bg }};"></span></sc-for></div><main style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 12px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px;"><div style="padding: 0 4px; display: flex; flex-direction: column; gap: 14px;"><h1 style="font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 24px; line-height: 30px; font-weight: 800; letter-spacing: -0.025em; color: #241A11; margin: 0; text-wrap: balance;">Sanaketjujen erottaminen</h1><p style="font-size: 16px; line-height: 26px; color: #241A11; margin: 0; max-width: 100%; text-wrap: pretty;">Napauta sanan viimeistä kirjainta, niin sen perään tulee sanaraja. Kun kaikki rajat ovat paikoillaan, lause vaihtuu itsestään.</p></div><section style="box-sizing: border-box; background: #FFFFFF; border: 1px solid #E5D9C9; border-radius: 22px; box-shadow: 0 1px 2px rgba(47, 36, 27, 0.04), 0 8px 24px rgba(47, 36, 27, 0.05); padding: 18px 8px 4px; margin-top: 4px;"><div style="padding: 0 8px;"><div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;"><span style="font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 15px; line-height: 1; font-weight: 700; color: #64503F; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;">Lause {{ n }} / 15</span><span aria-hidden="true" style="display: flex; gap: 4px;"><sc-for list="{{ sentRail }}" as="s" hint-placeholder-count="15"><span style="width: 10px; height: 6px; border-radius: 3px; background: {{ s.bg }};"></span></sc-for></span></div></div><div style="display: flex; justify-content: center; padding: 36px 0 32px;"><div style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px;"><div style="display: flex; align-items: center;"><sc-for list="{{ row1 }}" as="l" hint-placeholder-count="13"><button type="button" class="ls-cell ls-f ls-t" aria-pressed="{{ l.on }}" onClick="{{ l.tap }}" style="position: relative; z-index: {{ l.z }}; box-sizing: border-box; width: {{ l.w }}px; height: 88px; padding: 0; border: 0; border-radius: {{ l.rad }}; background: {{ l.bg }}; color: #241A11; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 36px; line-height: 88px; font-weight: 600; text-align: center; cursor: pointer;">{{ l.ch }}<span class="ls-bar ls-t" style="position: absolute; top: 12px; bottom: 12px; right: -2px; width: 4px; border-radius: 2px; background: #785A00; opacity: {{ l.bar }}; pointer-events: none;"></span></button></sc-for><sc-if value="{{ hasRow2 }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 17px; height: 88px; color: #64503F;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg></span></sc-if></div><sc-if value="{{ hasRow2 }}" hint-placeholder-val="{{ true }}"><div style="display: flex; align-items: center;"><sc-for list="{{ row2 }}" as="l" hint-placeholder-count="13"><button type="button" class="ls-cell ls-f ls-t" aria-pressed="{{ l.on }}" onClick="{{ l.tap }}" style="position: relative; z-index: {{ l.z }}; box-sizing: border-box; width: {{ l.w }}px; height: 88px; padding: 0; border: 0; border-radius: {{ l.rad }}; background: {{ l.bg }}; color: #241A11; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 36px; line-height: 88px; font-weight: 600; text-align: center; cursor: pointer;">{{ l.ch }}<span class="ls-bar ls-t" style="position: absolute; top: 12px; bottom: 12px; right: -2px; width: 4px; border-radius: 2px; background: #785A00; opacity: {{ l.bar }}; pointer-events: none;"></span></button></sc-for></div></sc-if></div></div></section></main><footer style="min-height: 76px; flex-shrink: 0; box-sizing: border-box; background: #FFFFFF; border-top: 1px solid #E5D9C9; box-shadow: 0 -8px 24px rgba(47, 36, 27, 0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; position: relative; z-index: 2;"><div aria-live="polite" style="display: flex; align-items: baseline; gap: 6px;"><span style="font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 24px; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums;">{{ count }}</span><span style="font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 16px; line-height: 1; font-weight: 700; color: #64503F; font-variant-numeric: tabular-nums;">/ {{ need }}</span><span style="font-size: 15px; line-height: 1; color: #64503F;">sanarajaa merkitty</span></div><sc-if value="{{ notLast }}" hint-placeholder-val="{{ true }}"><button type="button" class="ls-ghost ls-f ls-t" onClick="{{ go }}" style="display: inline-flex; align-items: center; gap: 8px; box-sizing: border-box; height: 52px; padding: 0 14px; border: 0; border-radius: 14px; background: transparent; color: #785A00; font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1; font-weight: 800; text-decoration: none; cursor: pointer; white-space: nowrap;"><span>Seuraava</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></sc-if><sc-if value="{{ last }}" hint-placeholder-val="{{ false }}"><a href="Osa4-390.dc.html" class="ls-ghost ls-f ls-t" style="display: inline-flex; align-items: center; gap: 8px; box-sizing: border-box; height: 52px; padding: 0 14px; border: 0; border-radius: 14px; background: transparent; color: #785A00; font-family: 'Manrope', 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1; font-weight: 800; text-decoration: none; cursor: pointer; white-space: nowrap;"><span>Seuraava</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></sc-if></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"lowTime":{"editor":"boolean","default":false,"section":"Timer"},"cellWidth":{"editor":"range","default":25,"min":22,"max":32,"step":1,"unit":"px","section":"Letter tape"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(...args) {
+super(...args);
+this.state = { i: 0, marks: { 4: true, 10: true } };
+}
+componentWillUnmount() {
+if (this._t) { clearTimeout(this._t); }
+}
+renderVals() {
+const SENT = [{"s":"Lapsinukkuisikeästikokoyön","need":4},{"s":"Hesöivätyhdessäiltapalaa","need":3},{"s":"Kirjaolipöydälläauki","need":3},{"s":"Lapsetleikkivätpuistossa","need":2}];
+const st = this.state || {};
+const i = Math.min(st.i || 0, SENT.length - 1);
+const marks = st.marks || {};
+const cur = SENT[i];
+const chars = Array.from(cur.s);
+const last = i === SENT.length - 1;
+const self = this;
+const cellW = this.props.cellWidth ?? 25;
+const go = function () {
+if (self._t) { clearTimeout(self._t); self._t = null; }
+if (!last) { self.setState({ i: i + 1, marks: {} }); }
+};
+const letters = chars.map(function (ch, idx) {
+const on = !!marks[idx];
+const end = idx === chars.length - 1;
+return { ch: ch, on: on, w: cellW, bg: on ? '#F2DA93' : '#F5EEE4', z: on ? 2 : 1, bar: on ? 1 : 0,
+rad: idx === 0 ? '16px 0 0 16px' : (end ? '0 16px 16px 0' : '0'),
+tap: function () {
+if (end) { return; }
+const next = Object.assign({}, marks); next[idx] = !on;
+const c = Object.keys(next).filter(function (k) { return next[k]; }).length;
+if (self._t) { clearTimeout(self._t); self._t = null; }
+self.setState({ marks: next });
+if (c === cur.need && !last) { self._t = setTimeout(go, 500); }
+} };
+});
+const rowsN = Math.ceil(letters.length / 13);
+const perRow = Math.ceil(letters.length / rowsN);
+const shape = function (arr) { return arr.map(function (l, k) { return Object.assign({}, l, { rad: k === 0 ? '14px 0 0 14px' : (k === arr.length - 1 ? '0 14px 14px 0' : '0') }); }); };
+const row1 = shape(letters.slice(0, perRow));
+const row2 = shape(letters.slice(perRow));
+const hasRow2 = row2.length > 0;
+const count = Object.keys(marks).filter(function (k) { return marks[k]; }).length;
+const n = 3 + i;
+const sentRail = [];
+for (let k = 1; k <= 15; k++) { sentRail.push({ bg: k < n ? '#C69A2B' : (k === n ? '#4A3728' : '#E5D9C9') }); }
+const low = this.props.lowTime ?? false;
+const leftSegs = low ? 1 : 3;
+const timeSegs = [];
+for (let k = 0; k < 3; k++) { timeSegs.push({ bg: k < leftSegs ? (low ? '#2F241B' : '#8C7660') : '#E5D9C9' }); }
+const timerText = low ? '0:24' : '1:23';
+const timerBg = low ? '#4A3728' : '#F5EEE4';
+const timerFg = low ? '#FFFFFF' : '#241A11';
+return { letters: letters, count: count, need: cur.need, n: n, sentRail: sentRail, go: go, notLast: !last, last: last,
+timeSegs: timeSegs, timerText: timerText, timerBg: timerBg, timerFg: timerFg, row1: row1, row2: row2, hasRow2: hasRow2 };
+}
+}
+</script>
+</body>
+</html>

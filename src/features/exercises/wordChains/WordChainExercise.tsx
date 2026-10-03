@@ -136,7 +136,7 @@ export function WordChainExercise() {
     >
       <div className="flex flex-col gap-3.5 md:gap-7">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-12">
-          <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanaketjujen erottaminen</h1>
+          <h1 className="m-0 font-ui text-h2-sm text-ink md:flex-shrink-0 md:whitespace-nowrap md:text-h2">Sanaketjujen erottaminen</h1>
           <p className="m-0 text-body-sm text-ink md:max-w-[520px] md:text-body">
             Napauta sanan viimeistä kirjainta, niin sen perään tulee sanaraja.
             Kun kaikki rajat ovat paikoillaan, lause vaihtuu itsestään.
