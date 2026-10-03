@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { CircleCheck, Download, Signpost } from "lucide-react";
 import { loadSession } from "@/lib/metrics";
 import { loadScreeningStartedAt } from "@/lib/screeningSession";
-import { PageFooter } from "@/components/PageFooter";
 import { loadWordSearchResult } from "@/lib/wordsearch";
 import {
   loadWordChainsResult,
   loadSpellingErrorsResult,
   loadReadingCompResult,
 } from "@/lib/exerciseResults";
-import { LEVEL_META, TWO_AFC_THRESHOLDS, scoreMarking, scoreToLevel, type Level } from "@/lib/levels";
+import { TWO_AFC_THRESHOLDS, scoreMarking, scoreToLevel, type Level } from "@/lib/levels";
 import {
   AREA_STATIC,
   DESCRIPTIONS,
@@ -21,75 +20,86 @@ import {
   buildInterpretation,
   shouldFlagSupportNeed,
 } from "@/lib/finalResultsCopy";
+import { AppBar } from "@/components/shell";
+import { Button, LinkButton } from "@/components/Button";
+import { LevelChip, LevelBar } from "@/components/LevelChip";
+import {
+  IconTile,
+  Label,
+  NoteBlock,
+  NumberedStep,
+  ResourceLink,
+  Sheet,
+  SiteFooter,
+} from "@/components/primitives";
+import "./finalResults.print.css";
+
+const NEXT_STEPS = [
+  "Jos huoli on voimakas tai lukeminen kuormittaa arjessa, varaa aika erikoisopettajalle, oppilaitoksesi opinto-ohjaajalle tai terveydenhuoltoon.",
+  "Keskustele havainnoistasi luotetun henkilön — opettajan, läheisen tai työterveyden — kanssa.",
+  "Tutustu alla oleviin tukisivuihin. Sieltä löytyy sekä taustatietoa että konkreettisia harjoitteita.",
+];
+
+const METHOD = [
+  {
+    title: "Sanantunnistus",
+    text: "Dekoodaustaito — todellisten sanojen ja pseudosanojen erottaminen mittaa automaattista sanamuotojen tunnistusta. Toimii kirjallisena vastineena NMI:n sanelukirjoitus-osiolle.",
+  },
+  {
+    title: "Lukunopeus ja hahmottaminen",
+    text: "Visuaalinen sanamuotojen tunnistus ja valikoiva tarkkaavaisuus. Suomen säännöllisessä ortografiassa pelkkä tarkkuus saavuttaa katon aikuisiässä — lukunopeus erottaa lukivaikeuksia herkemmin.",
+  },
+  {
+    title: "Sanarajat, kirjoitusvirheet ja luetun ymmärtäminen",
+    text: "Nämä kolme vastaavat Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan (Holopainen ym. 2004) ydinmittareita — Tekninen 2, Tekninen 1 ja Luetun ymmärtäminen. Aikarajat vastaavat NMI:n normeja; tehtävien laajuus on sovitettu selaimessa tehtäväksi. Tuen tarpeen selvittelyn raja-arvo perustuu näihin kolmeen.",
+  },
+];
 
 // ─────────────────────────────────────────────────────────────
-// Atoms — using inline hex (matches existing Home.tsx / ExerciseList.tsx style)
+// Pieces
 // ─────────────────────────────────────────────────────────────
-function Chip({ level }: { level: Level }) {
-  const m = LEVEL_META[level];
+
+function SectionTitle({ children, aside }: { children: string; aside?: string }) {
   return (
-    <div
-      className="inline-flex items-center gap-2 px-2.5 py-1 rounded"
-      style={{ background: m.soft, color: m.color }}
-    >
-      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: m.color }} />
-      <span className="text-[11px] font-bold uppercase tracking-[0.08em]">{m.label}</span>
+    <div className="flex items-baseline justify-between gap-4">
+      <h2 className="m-0 font-ui text-h2-sm text-ink">{children}</h2>
+      {aside && <span className="text-caption text-ink-2">{aside}</span>}
     </div>
   );
 }
 
-function SegmentedBar({ level }: { level: Level }) {
-  const m = LEVEL_META[level];
-  const segs = 12;
-  const fill = Math.round(m.ratio * segs);
+function MetaList({ items, className = "" }: { items: Array<[string, string]>; className?: string }) {
   return (
-    <div className="flex gap-[3px]">
-      {Array.from({ length: segs }).map((_, i) => (
-        <div
-          key={i}
-          className="flex-1 h-2 rounded-[1px]"
-          style={{ background: i < fill ? m.color : "#f9e4d6" }}
-        />
+    <dl className={`m-0 ${className}`}>
+      {items.map(([k, v]) => (
+        <div key={k} className="flex flex-col gap-1">
+          <dt className="text-caption text-ink-2">{k}</dt>
+          <dd className="m-0 font-ui text-[19px] font-extrabold leading-[26px] tabular-nums text-ink">{v}</dd>
+        </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
-function DossierRow({ area, index }: { area: SkillArea; index: number }) {
+function DetailRow({ area, index }: { area: SkillArea; index: number }) {
   const num = String(index + 1).padStart(2, "0");
   return (
-    <div
-      className="grid gap-6 py-7"
-      style={{ gridTemplateColumns: "60px 1fr" }}
-    >
-      <div
-        className="text-4xl font-extralight leading-none tabular-nums"
-        style={{ color: "#755e4d", letterSpacing: "-0.02em" }}
-      >
-        {num}
+    <li className="report-row grid grid-cols-[32px_minmax(0,1fr)] gap-x-4 gap-y-2.5 p-5 md:grid-cols-[48px_minmax(0,1fr)_auto] md:gap-x-6 md:gap-y-3 md:px-8 md:py-7 [&+&]:border-t [&+&]:border-line">
+      <div className="pt-px">
+        <span className="font-ui text-caption font-extrabold tabular-nums text-ink-2">{num}</span>
       </div>
-
-      <div>
-        <div className="text-[11px] font-bold uppercase tracking-[0.12em] mb-2" style={{ color: "#785a00" }}>
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <span className="text-caption text-ink-2">
           {area.part} · {area.sub}
-        </div>
-
-        <div className="flex items-baseline justify-between gap-4 mb-3.5">
-          <h3 className="m-0 text-2xl font-bold leading-tight" style={{ color: "#241a11", letterSpacing: "-0.02em" }}>
-            {area.label}
-          </h3>
-          <Chip level={area.level} />
-        </div>
-
-        <div className="mb-3.5">
-          <SegmentedBar level={area.level} />
-        </div>
-
-        <p className="m-0 text-[15px] leading-[1.6] max-w-[560px]" style={{ color: "#755e4d" }}>
-          {area.description}
-        </p>
+        </span>
+        <h3 className="m-0 font-ui text-h2-sm text-ink">{area.label}</h3>
       </div>
-    </div>
+      <div className="col-start-2 flex flex-wrap items-center gap-3 md:col-start-3 md:flex-col md:items-end md:gap-3.5">
+        <LevelChip level={area.level} />
+        <LevelBar level={area.level} />
+      </div>
+      <p className="col-start-2 m-0 max-w-[620px] text-body text-ink md:col-span-2">{area.description}</p>
+    </li>
   );
 }
 
@@ -97,7 +107,6 @@ function DossierRow({ area, index }: { area: SkillArea; index: number }) {
 // Page
 // ─────────────────────────────────────────────────────────────
 export default function FinalResults() {
-  const navigate = useNavigate();
   const [areas, setAreas] = useState<SkillArea[]>([]);
   const [startedAt] = useState<number>(() => loadScreeningStartedAt() ?? Date.now());
 
@@ -142,284 +151,224 @@ export default function FinalResults() {
 
   const handlePrint = () => window.print();
 
+  const meta: Array<[string, string]> = [
+    ["Osa-alueita tehty", `${completed} / ${areas.length || 5}`],
+    ["Kesto", `${durationMin} min`],
+    ["Raportin tyyppi", "Suuntaa antava"],
+  ];
+
+  const actions = (
+    <>
+      <Button onClick={handlePrint} className="w-full px-5">
+        <Download aria-hidden="true" />
+        Tallenna PDF
+      </Button>
+      <LinkButton to="/" variant="outline" className="h-[52px] w-full px-5 text-[16px]">
+        Takaisin etusivulle
+      </LinkButton>
+    </>
+  );
+
   return (
-    <div className="min-h-screen font-sans flex flex-col" style={{ background: "#fff8f5" }}>
-
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between print:hidden">
-        <span className="text-lg font-bold tracking-tight" style={{ color: "#241a11" }}>LukiSeula</span>
-        <button
-          onClick={() => navigate("/")}
-          className="text-sm transition-colors hover:text-[#241a11]"
-          style={{ color: "#755e4d" }}
-        >
-          Etusivulle
-        </button>
-      </nav>
-
-      <div className="flex-1 w-full max-w-2xl mx-auto px-8 sm:px-16 py-14 print:py-8">
-
-        {/* Masthead */}
-        <div className="flex items-baseline justify-between pb-6">
-          <div className="text-sm font-bold" style={{ color: "#241a11" }}>LukiSeula</div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#785a00" }}>
+    <div className="report flex min-h-screen flex-col bg-paper text-ink">
+      <AppBar
+        logoLink
+        right={
+          <span className="font-ui text-[14px] font-semibold leading-5 tabular-nums text-ink-2">
             Raportti · {dateStr}
-          </div>
-        </div>
+          </span>
+        }
+      />
 
-        <div className="h-0.5 mb-9" style={{ background: "#2F241B" }} />
-
-        {/* Title */}
-        <div className="mb-10">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#785a00" }}>
-            Seulonnan tulokset
-          </div>
-          <h1 className="m-0 text-5xl sm:text-6xl font-bold leading-[1.05]" style={{ color: "#241a11", letterSpacing: "-0.03em", textWrap: "balance" as const }}>
-            Lukutaidon<br />koonti.
-          </h1>
-        </div>
-
-        {/* Meta row — alternating bg bands, no lines */}
-        <div className="grid grid-cols-3 mb-10" style={{ background: "#ffffff" }}>
-          {[
-            ["Osa-alueita tehty", `${completed} / ${areas.length || 5}`],
-            ["Kesto", `${durationMin} min`],
-            ["Raportin tyyppi", "Suuntaa antava"],
-          ].map(([k, v], i) => (
-            <div key={k} className="p-6" style={{ background: i % 2 === 1 ? "#f9ede4" : "#ffffff" }}>
-              <div className="text-[10px] font-bold uppercase tracking-[0.14em] mb-2" style={{ color: "#785a00" }}>{k}</div>
-              <div className="text-[22px] font-semibold tabular-nums" style={{ color: "#241a11", letterSpacing: "-0.02em" }}>{v}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Summary */}
-        <div className="p-8 mb-8" style={{ background: "#f9ede4" }}>
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#785a00" }}>Yhteenveto</div>
-          <p className="m-0 text-xl leading-[1.45]" style={{ color: "#241a11", letterSpacing: "-0.01em", textWrap: "balance" as const }}>{summary}</p>
-          {interpretation && (
-            <p className="mt-4 mb-0 text-[15px] leading-[1.65]" style={{ color: "#4A3728" }}>{interpretation}</p>
-          )}
-        </div>
-
-        {/* NMI support-need flag */}
-        {supportNeedFlag && (
-          <div className="p-6 mb-8 border-l-4" style={{ background: "#f1d8ce", borderColor: "#a6442a" }}>
-            <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-2" style={{ color: "#a6442a" }}>
-              Tuen tarpeen selvittely
-            </div>
-            <p className="m-0 text-[15px] leading-[1.65]" style={{ color: "#241a11" }}>
-              <strong>Tuen tarpeen selvittely on vähintään suositeltavaa.</strong> Useammalla niistä osa-alueista,
-              joita käytetään tieteellisessä lukiseulassa (sanarajat, kirjoitusvirheet, luetun ymmärtäminen),
-              esiintyi selviä haasteita. Tämä kaava vastaa Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan
-              (Holopainen ym. 2004) ohjaavaa raja-arvoa, jota myös Panulan (2013) väitöstutkimus käyttää.
-            </p>
-            <p className="mt-3 mb-0 text-xs leading-[1.6] italic" style={{ color: "#755e4d" }}>
-              LukiSeulan katkaisupiste on heuristinen, ei kliinisesti normeerattu. Tuloksia ei tule tulkita
-              diagnoosina — ammattilaisen arvio tuo selkeyttä.
-            </p>
-          </div>
-        )}
-
-        {/* Strengths / challenges split */}
-        {(strengths.length > 0 || challenges.length > 0) && (
-          <div className="grid md:grid-cols-2 gap-4 mb-10">
-            <div className="p-6" style={{ background: "#e6ebd8" }}>
-              <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#4f7a3a" }}>
-                Missä sujui hyvin
-              </div>
-              {strengths.length === 0 ? (
-                <p className="m-0 text-sm italic leading-[1.5]" style={{ color: "#755e4d" }}>
-                  Ei sujuneita osa-alueita tällä kertaa — se ei tarkoita mitään yksittäisenä tuloksena.
-                </p>
-              ) : (
-                <ul className="m-0 p-0 list-none space-y-1.5">
-                  {strengths.map(a => (
-                    <li key={a.key} className="text-[15px] leading-[1.5]" style={{ color: "#241a11" }}>
-                      {a.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className="p-6" style={{ background: "#f1d8ce" }}>
-              <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: "#a6442a" }}>
-                Missä oli haasteita
-              </div>
-              {challenges.length === 0 ? (
-                <p className="m-0 text-sm italic leading-[1.5]" style={{ color: "#755e4d" }}>
-                  Ei selviä haasteita tällä kertaa.
-                </p>
-              ) : (
-                <ul className="m-0 p-0 list-none space-y-1.5">
-                  {challenges.map(a => (
-                    <li key={a.key} className="text-[15px] leading-[1.5]" style={{ color: "#241a11" }}>
-                      {a.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Section header */}
-        <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "#785a00" }}>Tarkemmat tulokset</div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "#755e4d" }}>{areas.length} kohtaa</div>
-        </div>
-        <div className="h-px mb-2" style={{ background: "#241a11" }} />
-
-        {/* Rows — alternating bg */}
-        <div className="-mx-5">
-          {areas.map((area, i) => (
-            <div key={area.key} className="px-5" style={{ background: i % 2 === 0 ? "#fff8f5" : "#f9ede4" }}>
-              <DossierRow area={area} index={i} />
-            </div>
-          ))}
-        </div>
-
-        {/* Menetelmä — what each area measures */}
-        <div className="mt-12">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
-            Menetelmä — mitä osa-alueet mittaavat
-          </div>
-          <dl className="m-0 space-y-5">
-            <div>
-              <dt className="text-[15px] font-semibold mb-1" style={{ color: "#241a11" }}>
-                Sanantunnistus
-              </dt>
-              <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
-                Dekoodaustaito — todellisten sanojen ja pseudosanojen erottaminen mittaa
-                automaattista sanamuotojen tunnistusta. Toimii kirjallisena vastineena NMI:n
-                sanelukirjoitus-osiolle.
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[15px] font-semibold mb-1" style={{ color: "#241a11" }}>
-                Lukunopeus ja hahmottaminen
-              </dt>
-              <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
-                Visuaalinen sanamuotojen tunnistus ja valikoiva tarkkaavaisuus.
-                Suomen säännöllisessä ortografiassa pelkkä tarkkuus saavuttaa katon
-                aikuisiässä — lukunopeus erottaa lukivaikeuksia herkemmin.
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[15px] font-semibold mb-1" style={{ color: "#241a11" }}>
-                Sanarajat, kirjoitusvirheet ja luetun ymmärtäminen
-              </dt>
-              <dd className="m-0 text-[15px] leading-[1.6]" style={{ color: "#755e4d" }}>
-                Nämä kolme vastaavat Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan
-                (Holopainen ym. 2004) ydinmittareita — Tekninen 2, Tekninen 1 ja Luetun
-                ymmärtäminen. Aikarajat vastaavat NMI:n normeja; tehtävien laajuus on sovitettu selaimessa tehtäväksi.
-                Tuen tarpeen selvittelyn raja-arvo perustuu näihin kolmeen.
-              </dd>
-            </div>
-          </dl>
-        </div>
-
-        {/* Disclaimer */}
-        <div className="mt-12 p-6" style={{ background: "#f9e4d6" }}>
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: "#785a00" }}>Huomio</div>
-          <p className="m-0 text-sm leading-[1.6]" style={{ color: "#755e4d" }}>
-            <strong style={{ color: "#241a11" }}>Tämä seulonta ei diagnosoi lukihäiriötä.</strong>{" "}
-            Tulokset ovat vain suuntaa antavia. Jos ne herättävät huolta, käänny erikoisopettajan,
-            psykologin tai terveydenhuollon ammattilaisen puoleen. LukiSeula on yksityishenkilön
-            tekoälyn avustuksella rakentama harrasteprojekti — ei kliininen eikä tieteellisesti
-            validoitu arviointiväline.
-          </p>
-        </div>
-
-        {/* Next steps — concrete actions */}
-        <div className="mt-12">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
-            Mitä voit tehdä seuraavaksi
-          </div>
-          <ol className="m-0 p-0 list-none space-y-4">
-            {[
-              "Jos huoli on voimakas tai lukeminen kuormittaa arjessa, varaa aika erikoisopettajalle, oppilaitoksesi opinto-ohjaajalle tai terveydenhuoltoon.",
-              "Keskustele havainnoistasi luotetun henkilön — opettajan, läheisen tai työterveyden — kanssa.",
-              "Tutustu alla oleviin tukisivuihin. Sieltä löytyy sekä taustatietoa että konkreettisia harjoitteita.",
-            ].map((text, i) => (
-              <li key={i} className="grid gap-4" style={{ gridTemplateColumns: "32px 1fr" }}>
-                <div className="text-lg font-bold tabular-nums leading-[1.5]" style={{ color: "#C69A2B" }}>
-                  {i + 1}.
-                </div>
-                <p className="m-0 text-[15px] leading-[1.6]" style={{ color: "#241a11" }}>{text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        {/* Resources — stacked editorial bands */}
-        <div className="mt-12">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: "#785a00" }}>
-            Tukisivuja ja lisätietoa
-          </div>
-          <div className="-mx-5 flex flex-col gap-px">
-            {RESOURCES.map((r, i) => (
-              <a
-                key={r.href}
-                href={r.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-5 py-5 no-underline transition-colors group"
-                style={{ background: i % 2 === 0 ? "#f9ede4" : "#fff8f5" }}
-                onMouseOver={(e) => (e.currentTarget.style.background = "#f9e4d6")}
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.background = i % 2 === 0 ? "#f9ede4" : "#fff8f5")
-                }
-              >
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="flex-1">
-                    <div
-                      className="text-[17px] font-bold mb-1"
-                      style={{ color: "#241a11", letterSpacing: "-0.01em" }}
-                    >
-                      {r.label}
-                    </div>
-                    <div className="text-sm leading-[1.55]" style={{ color: "#755e4d" }}>
-                      {r.desc}
-                    </div>
-                  </div>
-                  <div
-                    className="text-lg leading-none pt-1 ml-2"
-                    style={{ color: "#C69A2B" }}
-                    aria-hidden="true"
-                  >
-                    ↗
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 mt-12 print:hidden">
-          <button
-            onClick={handlePrint}
-            className="flex-1 text-white font-semibold py-4 rounded-lg transition-colors"
-            style={{ background: "#C69A2B" }}
-            onMouseOver={e => (e.currentTarget.style.background = "#785a00")}
-            onMouseOut={e => (e.currentTarget.style.background = "#C69A2B")}
-          >
-            Tallenna PDF
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="flex-1 text-white font-semibold py-4 rounded-lg transition-colors"
-            style={{ background: "#4A3728" }}
-            onMouseOver={e => (e.currentTarget.style.background = "#2F241B")}
-            onMouseOut={e => (e.currentTarget.style.background = "#4A3728")}
-          >
-            Takaisin etusivulle
-          </button>
-        </div>
+      {/* Print-only masthead (the app bar is hidden in print). */}
+      <div className="report-print-head hidden">
+        <span className="report-print-wordmark">LukiSeula</span>
+        <span>Raportti · {dateStr}</span>
       </div>
 
-      <PageFooter className="mt-8 print:hidden" />
+      <main className="flex-1">
+        <div className="mx-auto flex w-full flex-col px-gutter pb-16 pt-8 md:max-w-[1224px] md:flex-row md:items-start md:gap-16 md:px-8 md:pb-24 md:pt-14">
+
+          {/* Sticky rail (desktop) */}
+          <Sheet
+            as="aside"
+            className="report-rail sticky top-6 hidden w-[296px] flex-shrink-0 flex-col gap-6 p-7 md:flex"
+          >
+            <div className="flex flex-col gap-1.5">
+              <Label>Raportti</Label>
+              <p className="m-0 font-ui text-[26px] font-extrabold leading-8 tracking-[-0.02em] tabular-nums text-ink">
+                {dateStr}
+              </p>
+            </div>
+            <MetaList items={meta} className="flex flex-col gap-4 border-y border-line py-6" />
+            <div className="report-actions flex flex-col gap-2.5">{actions}</div>
+          </Sheet>
+
+          {/* Report column */}
+          <div className="report-body flex min-w-0 flex-1 flex-col md:max-w-[800px]">
+            <header className="flex flex-col gap-3 md:gap-3.5">
+              <Label>
+                Seulonnan tulokset
+                <span className="md:hidden"> · {dateStr}</span>
+              </Label>
+              <h1 className="m-0 font-ui text-title-xs text-ink md:text-title-lg">Lukutaidon koonti.</h1>
+            </header>
+
+            {/* Meta (phone) */}
+            <MetaList items={meta} className="report-meta mt-6 grid grid-cols-3 gap-3 md:hidden" />
+
+            {/* Summary */}
+            <Sheet as="section" className="report-summary mt-8 flex flex-col p-6 md:mt-10 md:p-10">
+              <Label className="mb-4">Yhteenveto</Label>
+              <p className="m-0 mb-4 font-ui text-[24px] font-bold leading-[32px] tracking-[-0.02em] text-ink md:text-[28px] md:leading-[38px]">
+                {summary}
+              </p>
+              {interpretation && (
+                <p className="m-0 max-w-measure text-[17px] leading-[28px] text-ink md:text-[18px] md:leading-[30px]">
+                  {interpretation}
+                </p>
+              )}
+
+              {(strengths.length > 0 || challenges.length > 0) && (
+                <>
+                  <div aria-hidden="true" className="my-6 h-px bg-line md:my-8" />
+                  <div className="report-split flex flex-col gap-6 md:flex-row md:gap-8">
+                    <div className="flex min-w-0 flex-col gap-2.5 md:w-[200px] md:flex-shrink-0">
+                      <h3 className="m-0 font-ui text-caption font-extrabold text-level-good">Missä sujui hyvin</h3>
+                      {strengths.length === 0 ? (
+                        <p className="m-0 text-caption text-ink-2">
+                          Ei sujuneita osa-alueita tällä kertaa — se ei tarkoita mitään yksittäisenä tuloksena.
+                        </p>
+                      ) : (
+                        <ul className="m-0 flex list-none flex-col p-0">
+                          {strengths.map(a => (
+                            <li key={a.key} className="flex min-h-[44px] items-center gap-3">
+                              <CircleCheck
+                                className="h-5 w-5 flex-shrink-0 text-level-good"
+                                strokeWidth={2.2}
+                                aria-hidden="true"
+                              />
+                              <span className="font-ui text-[17px] font-bold leading-6 text-ink">{a.label}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    <div aria-hidden="true" className="hidden w-px bg-line md:block" />
+                    <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+                      <h3 className="m-0 font-ui text-caption font-extrabold text-level-clear">Missä oli haasteita</h3>
+                      {challenges.length === 0 ? (
+                        <p className="m-0 text-caption text-ink-2">Ei selviä haasteita tällä kertaa.</p>
+                      ) : (
+                        <ul className="m-0 flex list-none flex-col p-0">
+                          {challenges.map(a => (
+                            <li
+                              key={a.key}
+                              className="flex min-h-[30px] flex-wrap items-center justify-between gap-x-3 gap-y-1.5 py-[9px]"
+                            >
+                              <span className="font-ui text-[16px] font-bold leading-6 text-ink">{a.label}</span>
+                              <LevelChip level={a.level} dense />
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </Sheet>
+
+            {/* NMI support-need flag */}
+            {supportNeedFlag && (
+              <section className="report-support mt-6 flex gap-4 rounded-[22px] border-2 border-brown bg-surface p-5 md:flex-row md:gap-6 md:rounded-sheet-lg md:p-8">
+                <IconTile icon={<Signpost strokeWidth={2} />} size={44} dark />
+                <div className="flex min-w-0 flex-1 flex-col gap-3.5">
+                  <h3 className="m-0 font-ui text-[16px] font-extrabold leading-5 text-brown">Tuen tarpeen selvittely</h3>
+                  <p className="m-0 text-body text-ink">
+                    <strong>Tuen tarpeen selvittely on vähintään suositeltavaa.</strong> Useammalla niistä osa-alueista,
+                    joita käytetään tieteellisessä lukiseulassa (sanarajat, kirjoitusvirheet, luetun ymmärtäminen),
+                    esiintyi selviä haasteita. Tämä kaava vastaa Niilo Mäki Instituutin nuorten ja aikuisten lukiseulan
+                    (Holopainen ym. 2004) ohjaavaa raja-arvoa, jota myös Panulan (2013) väitöstutkimus käyttää.
+                  </p>
+                  <p className="m-0 text-caption leading-6 text-ink-2">
+                    LukiSeulan katkaisupiste on heuristinen, ei kliinisesti normeerattu. Tuloksia ei tule tulkita
+                    diagnoosina — ammattilaisen arvio tuo selkeyttä.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Detail rows */}
+            <section className="mt-12 flex flex-col gap-5 md:mt-16">
+              <SectionTitle aside={`${areas.length} kohtaa`}>Tarkemmat tulokset</SectionTitle>
+              <Sheet as="ol" className="report-rows m-0 flex list-none flex-col p-0">
+                {areas.map((area, i) => (
+                  <DetailRow key={area.key} area={area} index={i} />
+                ))}
+              </Sheet>
+            </section>
+
+            {/* Disclaimer */}
+            <NoteBlock className="report-note mt-8">
+              <p className="m-0 max-w-read">
+                <strong>Tämä seulonta ei diagnosoi lukihäiriötä.</strong> Tulokset ovat vain suuntaa antavia. Jos ne
+                herättävät huolta, käänny erikoisopettajan, psykologin tai terveydenhuollon ammattilaisen puoleen.
+                LukiSeula on yksityishenkilön tekoälyn avustuksella rakentama harrasteprojekti — ei kliininen eikä
+                tieteellisesti validoitu arviointiväline.
+              </p>
+            </NoteBlock>
+
+            {/* Next steps */}
+            <section className="report-steps mt-12 flex flex-col gap-5 md:mt-16">
+              <SectionTitle>Mitä voit tehdä seuraavaksi</SectionTitle>
+              <ol className="m-0 flex list-none flex-col gap-5 p-0">
+                {NEXT_STEPS.map((text, i) => (
+                  <NumberedStep key={i} n={i + 1} tone="tint">
+                    <p className="m-0 max-w-measure text-[18px] leading-[30px] text-ink">{text}</p>
+                  </NumberedStep>
+                ))}
+              </ol>
+            </section>
+
+            {/* Resources */}
+            <section className="report-links mt-12 flex flex-col gap-5 md:mt-16">
+              <SectionTitle>Tukisivuja ja lisätietoa</SectionTitle>
+              <Sheet as="ul" className="m-0 flex list-none flex-col overflow-hidden p-0">
+                {RESOURCES.map(r => (
+                  <li key={r.href} className="[&+&]:border-t [&+&]:border-line">
+                    <ResourceLink href={r.href} title={r.label} description={r.desc} showUrl />
+                  </li>
+                ))}
+              </Sheet>
+            </section>
+
+            {/* Method */}
+            <section className="report-method mt-12 flex flex-col gap-5 md:mt-16">
+              <SectionTitle>Menetelmä — mitä osa-alueet mittaavat</SectionTitle>
+              <dl className="m-0 flex flex-col gap-5">
+                {METHOD.map(m => (
+                  <div key={m.title} className="flex max-w-measure flex-col gap-1.5">
+                    <dt className="font-ui text-[17px] font-extrabold leading-6 text-ink">{m.title}</dt>
+                    <dd className="m-0 text-body-sm text-ink-2">{m.text}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+
+            {/* Actions (phone) */}
+            <div className="report-actions mt-12 flex flex-col gap-2.5 md:hidden">{actions}</div>
+          </div>
+        </div>
+      </main>
+
+      <footer className="report-credit border-t border-line">
+        <div className="mx-auto flex w-full flex-col gap-2 px-gutter py-7 text-caption leading-6 text-ink-2 md:max-w-[1224px] md:flex-row md:justify-between md:px-8">
+          <span>LukiSeula · Harrasteprojekti</span>
+          <span>Perustuu suomalaiseen lukivaikeustutkimukseen — Panula, 2013, Helsingin yliopisto.</span>
+        </div>
+      </footer>
+      <div className="report-print-foot hidden">Suuntaa antava seulonta — ei diagnoosi.</div>
+      <SiteFooter />
     </div>
   );
 }
