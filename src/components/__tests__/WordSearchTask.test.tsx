@@ -16,23 +16,22 @@ describe("WordSearchTask", () => {
     });
   });
 
-  it("renders target word in passage and allows clicking to highlight it", () => {
-    const { getAllByText } = render(
+  it("renders target word in passage and allows clicking to mark it", () => {
+    const { getByRole } = render(
       <BrowserRouter>
         <WordSearchTask text={text} targets={targets} durationMs={60000} />
       </BrowserRouter>
     );
 
-    const [, word] = getAllByText("KUULIJAT");
-    expect(word).toBeInTheDocument();
-
-    // Initially not highlighted as found (no inline background)
-    expect(word.style.backgroundColor).toBe("");
+    // Every word in the passage is a toggle button; the chip list is plain text.
+    const word = getByRole("button", { name: "KUULIJAT" });
+    expect(word).toHaveAttribute("aria-pressed", "false");
 
     fireEvent.click(word);
+    expect(word).toHaveAttribute("aria-pressed", "true");
 
-    // After click, should be highlighted as found (#C69A2B)
-    expect(word.style.backgroundColor).toBe("rgb(198, 154, 43)");
+    fireEvent.click(word);
+    expect(word).toHaveAttribute("aria-pressed", "false");
   });
 });
 

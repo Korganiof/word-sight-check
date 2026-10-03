@@ -25,6 +25,7 @@ export default function WordSearchTaskPage() {
   if (!ready) {
     return (
       <ExerciseReadyScreen
+        part={2}
         title="Sanojen etsiminen tekstistä"
         subtitle="Löydätkö piilossa olevat sanat?"
         steps={STEPS}

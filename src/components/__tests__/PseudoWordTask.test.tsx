@@ -38,19 +38,19 @@ describe('PseudoWordTask', () => {
     );
 
     expect(getByText(/Harjoituskierros 1 \/ 1/i)).toBeInTheDocument();
+    expect(getByText(/Harjoittelu/i)).toBeInTheDocument();
   });
 
   it('renders answer buttons with keyboard shortcuts', () => {
-    const { getByText, getByRole } = render(
+    const { getByRole } = render(
       <BrowserRouter>
         <PseudoWordTask items={mockItems} />
       </BrowserRouter>
     );
 
-    expect(getByRole('button', { name: /Oikea sana/i })).toBeInTheDocument();
-    expect(getByRole('button', { name: /Ei sana/i })).toBeInTheDocument();
-    expect(getByText(/\(A\)/i)).toBeInTheDocument();
-    expect(getByText(/\(L\)/i)).toBeInTheDocument();
+    // The keycaps are inside the buttons; the accessible name spells the key out.
+    expect(getByRole('button', { name: /Oikea sana \(A\)/i })).toBeInTheDocument();
+    expect(getByRole('button', { name: /Ei sana \(L\)/i })).toBeInTheDocument();
   });
 
   it('displays task instruction', () => {

@@ -1,8 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { saveWordSearchResult, type WordSearchTarget } from "@/lib/wordsearch";
-import { formatMmSs } from "@/lib/utils";
+import { splitTrailingPunctuation } from "@/lib/text";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
+import { Counter, ExerciseShell, TimeLine, TimerPill } from "@/components/shell";
+import { WordProse, WordToggle } from "@/components/marks";
+import { Button } from "@/components/Button";
+import { Label } from "@/components/primitives";
 
 interface WordSearchTaskProps {
   text: string;
@@ -52,6 +56,20 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
 
     return { tokens: tokenInfos, totalTargets: total };
   }, [text, targets]);
+
+  // Paragraphs: a whitespace token containing a line break starts a new one.
+  // Word identity stays the token index, which is what the scoring reads.
+  const paragraphs = useMemo(() => {
+    const out: number[][] = [[]];
+    tokens.forEach((tok, index) => {
+      if (tok.isWhitespace) {
+        if (tok.text.includes("\n") && out[out.length - 1].length > 0) out.push([]);
+        return;
+      }
+      out[out.length - 1].push(index);
+    });
+    return out.filter(p => p.length > 0);
+  }, [tokens]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -108,116 +126,76 @@ export function WordSearchTask({ text, targets, durationMs }: WordSearchTaskProp
     });
   };
 
-  const formattedTime = formatMmSs(remainingMs);
-  const timeProgress = durationMs > 0 ? ((durationMs - remainingMs) / durationMs) * 100 : 0;
-  const isLow = remainingMs < 30_000;
+  const targetPanel = (
+    <>
+      <Label as="h2">Tavoitesanat</Label>
+      <p className="m-0 text-[14px] leading-5 text-ink-2 md:text-caption">Klikkaa ne tekstistä.</p>
+      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0 md:gap-2">
+        {targets.map(t => (
+          <li
+            key={t.word}
+            className="flex h-7 items-center whitespace-nowrap rounded-[9px] bg-recessed px-[9px] font-ui text-[12px] font-extrabold uppercase leading-none tracking-[0.05em] text-ink md:h-8 md:px-[11px] md:text-[13px]"
+          >
+            {t.word.toUpperCase()}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-        <div className="text-right">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">Aikaa jäljellä</p>
-          <p
-            className="text-xl font-mono font-bold tabular-nums"
-            style={{ color: isLow ? "#ef4444" : "#241a11" }}
-          >
-            {formattedTime}
+    <ExerciseShell
+      part={2}
+      width="work-wide"
+      right={<TimerPill remainingMs={remainingMs} />}
+      line={<TimeLine durationMs={durationMs} remainingMs={remainingMs} />}
+      dock={
+        <>
+          <Counter value={clickedIndices.size} unit="valittua" />
+          <Button variant="secondary" onClick={finishTask} disabled={isFinished} className="h-[52px] md:h-14 md:w-[220px]">
+            Olen valmis
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-3.5 md:flex-row md:gap-12">
+        {/* Desktop aside: title, instruction, target card. */}
+        <aside className="flex flex-col gap-3.5 md:sticky md:top-0 md:w-[340px] md:flex-shrink-0 md:self-start md:gap-[18px]">
+          <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanojen etsiminen tekstistä</h1>
+          <p className="m-0 text-body-sm text-ink md:text-body">
+            Kun löydät sanan tekstistä, klikkaa sitä — se korostuu.
           </p>
-        </div>
-      </nav>
+          <section className="hidden flex-col gap-3.5 rounded-sheet-sm border border-line bg-surface p-5 shadow-sheet md:mt-1.5 md:flex">
+            {targetPanel}
+          </section>
+        </aside>
 
-      {/* Progress */}
-      <div className="px-6 pb-2 max-w-3xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest">
-            Osa 2 — Sanojen etsiminen tekstistä
-          </p>
-          <p className="text-xs text-[#755e4d]">{clickedIndices.size} valittua</p>
-        </div>
-        <div className="h-1 bg-[#f9e4d6] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-none"
-            style={{
-              width: `${Math.min(100, Math.max(0, timeProgress))}%`,
-              backgroundColor: isLow ? "#ef4444" : "#C69A2B",
-            }}
-          />
-        </div>
+        {/* Phone: the target panel sticks to the top of the scroll area. */}
+        <section className="sticky top-0 z-[3] -mx-gutter flex flex-col gap-2.5 border-y border-line bg-surface px-gutter pb-3.5 pt-3 shadow-sheet md:hidden">
+          {targetPanel}
+        </section>
+
+        <article className="min-w-0 flex-1 rounded-sheet-sm border border-line bg-surface px-[18px] pb-5 pt-[18px] shadow-sheet md:rounded-sheet md:px-12 md:pb-10 md:pt-9">
+          {paragraphs.map((indices, p) => (
+            <WordProse key={p} className={p < paragraphs.length - 1 ? "mb-3 md:mb-[18px]" : ""}>
+              {indices.map(index => {
+                const { word, trail } = splitTrailingPunctuation(tokens[index].text);
+                return (
+                  <WordToggle
+                    key={index}
+                    trail={trail}
+                    pressed={clickedIndices.has(index)}
+                    onToggle={() => handleWordClick(index)}
+                    disabled={isFinished}
+                  >
+                    {word}
+                  </WordToggle>
+                );
+              })}
+            </WordProse>
+          ))}
+        </article>
       </div>
-
-      {/* Content */}
-      <div className="flex-1 px-6 py-6 max-w-3xl mx-auto w-full flex flex-col gap-5">
-
-        {/* Instructions + target words */}
-        <div
-          className="bg-white rounded-xl p-5"
-          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-        >
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-3">
-            Tavoitesanat — klikkaa ne tekstistä
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {targets.map(t => {
-              const upper = t.word.toUpperCase();
-              return (
-                <span
-                  key={t.word}
-                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide"
-                  style={{ backgroundColor: "#f9e4d6", color: "#785a00" }}
-                >
-                  {upper}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Text passage */}
-        <div
-          className="bg-white rounded-xl p-6 flex-1"
-          style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-        >
-          <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-4">Teksti</p>
-          <p className="leading-relaxed text-[#241a11] text-base md:text-lg">
-            {tokens.map((tok, index) => {
-              if (tok.isWhitespace) return tok.text;
-
-              const isClicked = clickedIndices.has(index);
-
-              let style: React.CSSProperties = { cursor: "pointer" };
-              if (isClicked) {
-                style = { ...style, backgroundColor: "#C69A2B", color: "#ffffff", borderRadius: "3px", padding: "0 2px" };
-              }
-
-              return (
-                <span
-                  key={index}
-                  style={style}
-                  className={isClicked ? "" : "hover:bg-[#f9e4d6] rounded-sm transition-colors"}
-                  onClick={() => handleWordClick(index)}
-                >
-                  {tok.text}
-                </span>
-              );
-            })}
-          </p>
-        </div>
-
-        <button
-          onClick={finishTask}
-          disabled={isFinished}
-          className="self-center px-8 py-3 rounded-xl font-bold text-white transition-all active:scale-95 disabled:opacity-50"
-          style={{ background: "#C69A2B" }}
-          onMouseOver={e => (e.currentTarget.style.background = "#785a00")}
-          onMouseOut={e => (e.currentTarget.style.background = "#C69A2B")}
-        >
-          Olen valmis
-        </button>
-      </div>
-
-    </div>
+    </ExerciseShell>
   );
 }

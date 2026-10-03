@@ -1,120 +1,92 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Keyboard, Timer } from "lucide-react";
+import { ExerciseReadyScreen, KeyLegend, type ReadyStep } from "@/components/ExerciseReadyScreen";
+import { Label, Sheet } from "@/components/primitives";
+
+const STEPS: ReadyStep[] = [
+  {
+    heading: "Tehtävän kuvaus",
+    text: (
+      <>
+        Näet sanoja yksi kerrallaan. Tehtäväsi on päättää, onko kukin sana{" "}
+        <strong className="font-bold">oikeaa suomea</strong> vai keksitty. Ensin tulee kolme
+        harjoitussanaa, joita ei lasketa mukaan.
+      </>
+    ),
+  },
+  {
+    heading: "Näin vastaat",
+    text: "Voit käyttää joko näytön painikkeita tai näppäimistöä:",
+    extra: (
+      <KeyLegend
+        items={[
+          { key: "A", label: "Oikea sana" },
+          { key: "L", label: "Ei sana" },
+        ]}
+      />
+    ),
+  },
+  {
+    heading: "Kolme sekuntia per sana",
+    text: (
+      <>
+        Jokainen sana näkyy <strong className="font-bold">enintään kolme sekuntia</strong>. Jos et
+        ehdi vastata, sana lasketaan vääräksi — luota ensivaikutelmaan ja vastaa heti.
+      </>
+    ),
+  },
+];
+
+// A non-interactive miniature of the Osa 1 stage: the question, a sample
+// word, the 3 s bar and the two answer keys with their keycaps.
+function ExampleCard() {
+  const keyClass =
+    "box-border flex h-16 flex-1 basis-0 items-center justify-center gap-3 rounded-tile border-2 border-brown bg-surface px-3 font-ui text-[17px] font-extrabold leading-none text-ink";
+  const kbdClass =
+    "inline-flex h-[34px] min-w-[34px] items-center justify-center rounded-[10px] border border-line-strong border-b-[3px] bg-surface px-2.5 font-mono text-[15px] font-bold leading-none text-ink";
+  return (
+    <Sheet
+      as="section"
+      role="img"
+      aria-label="Esimerkki: sana ja kaksi vastauspainiketta, näppäimet A ja L"
+      className="flex flex-col gap-4 p-5 md:p-6"
+    >
+      <Label>Esimerkki</Label>
+      <div aria-hidden="true" className="flex flex-col gap-3">
+        <div className="box-border flex h-[188px] flex-col items-center justify-center gap-4 rounded-sheet-sm bg-recessed">
+          <span className="font-ui text-caption font-bold text-ink-2">Onko tämä oikea sana?</span>
+          <span className="font-text text-[52px] font-bold leading-[1.1] text-ink">talo</span>
+          <span className="flex h-[5px] w-[180px] overflow-hidden rounded-[3px] bg-well">
+            <span className="w-[70%] bg-time" />
+          </span>
+        </div>
+        <div className="flex gap-3">
+          <span className={keyClass}>
+            <kbd className={kbdClass}>A</kbd>
+            <span>Oikea sana</span>
+          </span>
+          <span className={keyClass}>
+            <kbd className={kbdClass}>L</kbd>
+            <span>Ei sana</span>
+          </span>
+        </div>
+      </div>
+    </Sheet>
+  );
+}
 
 export default function Start() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
-
-      {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
-      </nav>
-
-      {/* Progress */}
-      <div className="px-6 pb-2 max-w-2xl mx-auto w-full">
-        <p className="text-xs font-semibold text-[#785a00] uppercase tracking-widest mb-1">
-          Osa 1 / 5 — Sanantunnistus
-        </p>
-        <div className="h-1 bg-[#f9e4d6] rounded-full">
-          <div className="h-1 bg-[#C69A2B] rounded-full" style={{ width: "20%" }} />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 flex items-start justify-center px-6 py-8">
-        <div className="w-full max-w-2xl">
-
-          <h1 className="text-3xl font-bold text-[#241a11] tracking-tight mb-2">
-            Ennen kuin aloitat
-          </h1>
-          <p className="text-[#755e4d] mb-8 leading-relaxed">
-            Lue nämä ohjeet huolellisesti ennen tehtävän aloittamista.
-          </p>
-
-          <div className="space-y-4 mb-8">
-
-            <div
-              className="bg-white rounded-xl p-5 flex gap-4"
-              style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-bold text-[#785a00]">1</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Tehtävän kuvaus</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Näet sanoja yksi kerrallaan. Tehtäväsi on päättää, onko kukin sana{" "}
-                  <strong className="text-[#241a11]">oikeaa suomea</strong> vai keksitty.
-                  Ensin tulee kolme harjoitussanaa, joita ei lasketa mukaan.
-                </p>
-              </div>
-            </div>
-
-            <div
-              className="bg-white rounded-xl p-5 flex gap-4"
-              style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <Keyboard className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Näin vastaat</h3>
-                <p className="text-sm text-[#755e4d] mb-3">
-                  Voit käyttää joko näytön painikkeita tai näppäimistöä:
-                </p>
-                <div className="flex gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 text-xs font-bold bg-[#f9e4d6] text-[#785a00] rounded-md">A</span>
-                    <span className="text-sm text-[#241a11] font-semibold">Oikea sana</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 text-xs font-bold bg-[#f9e4d6] text-[#785a00] rounded-md">L</span>
-                    <span className="text-sm text-[#241a11] font-semibold">Ei sana</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              className="bg-white rounded-xl p-5 flex gap-4"
-              style={{ boxShadow: "0 4px 24px rgba(47,36,27,0.05)" }}
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#f9e4d6] flex items-center justify-center flex-shrink-0">
-                <Timer className="w-5 h-5 text-[#785a00]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#241a11] mb-1">Kolme sekuntia per sana</h3>
-                <p className="text-sm text-[#755e4d] leading-relaxed">
-                  Jokainen sana näkyy <strong className="text-[#241a11]">enintään kolme sekuntia</strong>.
-                  Jos et ehdi vastata, sana lasketaan vääräksi — luota ensivaikutelmaan ja
-                  vastaa heti.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => navigate("/task/pseudowords")}
-              className="flex items-center justify-center gap-2 bg-[#C69A2B] hover:bg-[#785a00] text-white font-semibold px-8 py-3 rounded-lg transition-colors"
-            >
-              Jatka tehtävään
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => navigate("/consent")}
-              className="px-8 py-3 rounded-lg font-semibold text-[#755e4d] bg-[#f9e4d6] hover:bg-[#f3dfd1] transition-colors"
-            >
-              Takaisin
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
+    <ExerciseReadyScreen
+      part={1}
+      showHomeLink
+      title="Sanantunnistus"
+      subtitle="Todellisten ja epäsanojen erottaminen"
+      steps={STEPS}
+      aside={<ExampleCard />}
+      startLabel="Aloita harjoitus"
+      onStart={() => navigate("/task/pseudowords")}
+    />
   );
 }

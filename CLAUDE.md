@@ -55,8 +55,10 @@ not arbitrary.
 ## Tech stack
 
 - **Vite** + **React 18** + **TypeScript**
-- **Tailwind CSS** — styling uses literal palette values (`bg-[#fff8f5]`),
-  no semantic tokens
+- **Tailwind CSS** — semantic design tokens in `tailwind.config.ts`
+  (`bg-paper`, `text-ink-2`, `bg-gold-wash`, `rounded-sheet-lg`,
+  `shadow-sheet`, `text-body` …). Do not write literal hex values in
+  components; if a colour is missing, it is probably not allowed
 - **React Router v6** (with v7 future flags on)
 - **lucide-react** for icons
 - **Vitest** + Testing Library for tests
@@ -71,10 +73,18 @@ src/
   App.tsx                        — all routes defined here
   pages/                         — one file per page/route
   features/exercises/<name>/     — exercise feature folders
-  components/                    — shared components (ready/end screens, footer, tasks 1–2)
+  components/                    — shared UI: shell.tsx (app bar, battery rail,
+                                   timer pill, time line, docked bar, counter),
+                                   marks.tsx (word toggle, grid word, letter
+                                   tape), Button, LevelChip, primitives
+                                   (Sheet, Label, IconTile, NoteBlock,
+                                   ResourceLink, NumberedStep, SiteFooter),
+                                   ready/end screens, tasks 1–2
   hooks/                         — useCountdown, useScreeningFlow
   lib/                           — flow, levels/scoring, session stores, content for the report
-public/fonts/                    — self-hosted Manrope
+public/fonts/                    — self-hosted Manrope + Atkinson Hyperlegible Next / Mono
+lukiseula-design-handoff/        — the implemented design spec (HANDOFF.md,
+                                   tokens, static reference screens, screenshots)
 ```
 
 ## Exercise architecture
@@ -131,10 +141,20 @@ summary. The report deliberately does not reveal which items were missed
 
 - All UI text is in Finnish; button labels quoted in instructions must match
   the actual button ("Tarkista", "Valmis", "Olen valmis")
-- Design system: "The Elevated Curator" (documented in user memory) — canvas
-  `#fff8f5`, text `#241a11`, gold `#C69A2B` for primary CTAs only, labels
-  `#785a00`, secondary text `#755e4d`. **`#d2c5b0` is for bars and ghost
-  borders only — never for text** (1.6:1 contrast on the canvas).
+- Design system: "The Elevated Curator" (2026-10 refresh). The spec is
+  `lukiseula-design-handoff/HANDOFF.md`; DESIGN_BRIEF.md § 3 summarises it.
+  Rules that bite: gold `#C69A2B` is only for the primary CTA and for what
+  the user has marked — inside an exercise the finish button is brown; gold
+  always carries **ink** text, never white; the only "low time" signal is
+  the timer pill turning brown (no red, no blink); `line`/`line-strong`/
+  `time` are decorative, never text; secondary text is `ink-2`; no italics.
+  Every exercise and ready screen sits in `ExerciseShell` (app bar with the
+  battery rail, `TimeLine`/`ItemLine`, docked bar with `Counter` + button).
+  Marks use `WordToggle` / `GridWord` / `LetterTape` from `marks.tsx` — the
+  highlighter wash + pen line (`.ls-mark`) is the one mark language.
+- Fonts: Manrope (`font-ui`) for headings, labels, buttons, numbers;
+  Atkinson Hyperlegible Next (default body / `font-text`) for everything the
+  user reads; Atkinson Hyperlegible Mono (`font-mono`) for the letter tape.
 - `PageFooter` for page footers, `ExerciseReadyScreen` for instructions,
   `ExerciseEndScreen` for supplementary-exercise results
 - Clickable things are `<button>`s (keyboard reachable), with `aria-pressed`

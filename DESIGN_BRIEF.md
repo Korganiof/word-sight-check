@@ -72,59 +72,70 @@ Hard requirements that follow from this audience:
 
 ---
 
-## 3. Current design system ("The Elevated Curator")
+## 3. Design system ("The Elevated Curator", 2026-10 refresh)
 
-Keep the identity — warm, quiet, editorial — but you have licence to evolve it.
-Current values:
+> **Status:** the refresh this brief asked for has been designed and
+> implemented. The implemented spec — tokens, type, shell, components with
+> states, every screen at 1440 and 390 px, print — lives in
+> `lukiseula-design-handoff/HANDOFF.md`, and the token values in
+> `tailwind.config.ts` / `src/index.css`. The values below summarise it; the
+> handoff is authoritative.
+
+Identity: warm, quiet, editorial — and inside the battery the product reads
+as an *instrument*: one persistent app shell (white app bar with the Osa 1–5
+battery rail and a timer pill, a 4 px segmented time line, a docked action
+bar), one white work sheet per exercise, and one mark language everywhere
+the user acts (pale gold highlighter wash + 3 px pen line).
 
 ### Colour
 
-| Role | Hex | Use |
+| Token | Hex | Use |
 |---|---|---|
-| Canvas | `#fff8f5` | page background (also the iOS overscroll colour) |
-| Card | `#ffffff` | elevated/active cards |
-| Recessed | `#f9ede4` | inset panels, alternating rows |
-| Well | `#f9e4d6` | footer wells, progress track, soft chips |
-| Hero tint | `#fff1e9` / `#ffeadc` | large section backgrounds on Home |
-| Text | `#241a11` | body text — never pure black |
-| Text, secondary | `#755e4d` | hints, counters, captions (5.8:1 on canvas) |
-| Label | `#785a00` | small-caps section labels, tertiary buttons (6.1:1) |
-| Gold | `#C69A2B` | **primary CTAs only**, progress fill, active marks — flat, no gradients |
-| Gold, hover | `#785a00` | |
-| Brown | `#4A3728` | secondary buttons, dark bands |
-| Brown, deep | `#2F241B` | hover for brown; hairline rules |
-| Bar/ghost | `#d2c5b0` | inactive bars and ghost borders **only, never text** |
+| paper | `#FAF6F0` | app canvas (also the iOS overscroll colour) |
+| surface | `#FFFFFF` | work sheets, app bar, docked bar, cards |
+| recessed | `#F5EEE4` | soft keys, letter tape, inset panels, link-row hover |
+| well | `#ECE2D4` | soft-key hover, note blocks, disabled fill |
+| line / line-strong | `#E5D9C9` / `#CDBBA4` | 1 px hairlines, empty segments, keycap edge — **never text** |
+| ink | `#241A11` | all body and heading text |
+| ink-2 | `#64503F` | captions, counters, hints (7.1:1 on paper) |
+| brown / brown-deep | `#4A3728` / `#2F241B` | secondary button, dark band, low-time pill; hover, focus ring |
+| time | `#8C7660` | remaining-time segments only |
+| gold | `#C69A2B` | primary CTA fill (**ink text — never white on gold**), current rail step |
+| gold-ink | `#785A00` | labels, tertiary buttons, the mark underline |
+| gold-wash / gold-tint | `#F2DA93` / `#FAF0D2` | highlighter fill behind marks; hover-before-mark, badges, icon tiles |
 
-Level colours (results): 
-- Sujuu hyvin — `#4f7a3a` on `#e6ebd8`
-- Jonkin verran haasteita — `#C69A2B` on `#f9e4d6`
-- Selviä haasteita — `#a6442a` on `#f1d8ce`
-- Harjoitusta ei tehty — `#755e4d` on `#f0ece3`
-
-Timer "low" colour is currently `#ef4444` (off-palette). Replace.
+Level colours (results): good `#35612A`/`#E3EDD8`, some `#6E5200`/`#F8EBC4`,
+clear `#8A3B22`/`#F6E2D9`, none `#64503F`/`#EFE8DD`. Every text pair ≥ 4.5:1.
+`#d2c5b0` and the red timer `#ef4444` are gone; the last 30 s turn the timer
+pill brown — no red, no blink.
 
 ### Type
 
-- **Manrope** (variable, 200–800). Display: tight tracking (−2 %), line-
-  height 1.05–1.1. Body: 1.6. Labels: 11–12 px, bold, uppercase, +0.12 em
-  tracking, colour `#785a00`.
-- Numbers in tabular figures (timers, scores).
+- **Manrope** 800 for headings, labels, buttons and numbers (tabular).
+- **Atkinson Hyperlegible Next** for everything the user reads or judges
+  letter by letter (body 17/28, reading 20/40, lead 19/32, caption 15/22).
+- **Atkinson Hyperlegible Mono** for the Osa 3 letter tape.
+- All three self-hosted in `public/fonts` (SIL OFL). Body never below 16 px,
+  left-aligned, measure ≤ 70 characters; no italics; all-caps only for
+  two-word labels.
 
 ### Shape & depth rules
 
-- No 1 px borders — use background-colour shifts.
-- No divider lines — whitespace or alternating bands.
-- Shadows only as `#2F241B` at ≤ 5–8 % opacity, 24–64 px blur.
-- Radii: cards 12–24 px, buttons 8–12 px, hero sections 32 px.
-- Primary button: gold fill, white text, no shadow. Secondary: brown fill.
-  Tertiary: no fill, `#785a00` text.
+- 1 px hairlines in `line` are allowed where an edge helps; depth otherwise
+  from paper → surface → recessed → well.
+- Shadows always `#2F241B` at ≤ 8 %: `shadow-sheet`, `shadow-float`, `shadow-up`.
+- Radii: 6 mark · 8–9 chip · 12 grid cell / small button · 14 button ·
+  16–18 tile / hero CTA / answer key · 20–28 sheet · 32 banner · pill.
+- Motion 120 ms colour-only (never size); screens enter with a 180 ms fade +
+  8 px rise; everything 0 ms under `prefers-reduced-motion`.
+- Focus: 3 px brown-deep ring, 2 px offset (gold-wash on brown surfaces).
 
 ### Brand marks
 
-- Favicon: a gold magnifying glass whose lens contains rows of short text
-  "pills" (a page seen through a lens). Rounded square, canvas background.
-- OG card: canvas background, one hero tint card, "LukiSeula" wordmark in
-  `#28180b`, gold accent bar.
+- Logo: 32 px rounded-square mark (gold-tint field, white lens with a gold
+  ring and handle, three brown text pills) + "LukiSeula" in Manrope 800.
+  `src/components/Logo.tsx` and `public/favicon.svg` are the same drawing.
+- OG card: canvas background, "LukiSeula" wordmark, gold accent bar.
 
 ---
 
