@@ -308,6 +308,19 @@ export default function FinalResults() {
               </Sheet>
             </section>
 
+            {/* Method */}
+            <section className="report-method mt-12 flex flex-col gap-5 md:mt-16">
+              <SectionTitle>Menetelmä — mitä osa-alueet mittaavat</SectionTitle>
+              <dl className="m-0 flex flex-col gap-5">
+                {METHOD.map(m => (
+                  <div key={m.title} className="flex max-w-measure flex-col gap-1.5">
+                    <dt className="font-ui text-[17px] font-extrabold leading-6 text-ink">{m.title}</dt>
+                    <dd className="m-0 text-body-sm text-ink-2">{m.text}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+
             {/* Disclaimer */}
             <NoteBlock className="report-note mt-8">
               <p className="m-0 max-w-read">
@@ -340,19 +353,6 @@ export default function FinalResults() {
                   </li>
                 ))}
               </Sheet>
-            </section>
-
-            {/* Method */}
-            <section className="report-method mt-12 flex flex-col gap-5 md:mt-16">
-              <SectionTitle>Menetelmä — mitä osa-alueet mittaavat</SectionTitle>
-              <dl className="m-0 flex flex-col gap-5">
-                {METHOD.map(m => (
-                  <div key={m.title} className="flex max-w-measure flex-col gap-1.5">
-                    <dt className="font-ui text-[17px] font-extrabold leading-6 text-ink">{m.title}</dt>
-                    <dd className="m-0 text-body-sm text-ink-2">{m.text}</dd>
-                  </div>
-                ))}
-              </dl>
             </section>
 
             {/* Actions (phone) */}
