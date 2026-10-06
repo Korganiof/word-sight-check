@@ -12,17 +12,17 @@ const CONDITIONS: Array<{ icon: ReactNode; title: string; text: string }> = [
   {
     icon: <Stethoscope />,
     title: "Tämä EI ole diagnoosi",
-    text: "Tämä työkalu tarjoaa vain alustavaa, suuntaa antavaa tietoa. Virallisen diagnoosin saamiseksi tarvitaan aina ammattilaisen, kuten erikoisopettajan tai psykologin tekemä tutkimus.",
+    text: "Seulonta antaa vain alustavaa, suuntaa antavaa tietoa.",
   },
   {
     icon: <Bot />,
     title: "Harrasteprojekti, rakennettu tekoälyllä",
-    text: "LukiSeula on yksityishenkilön harrasteprojekti, joka on toteutettu tekoälyn avustuksella. Se ei ole kliininen, ammatillinen eikä tieteellisesti validoitu arviointiväline — vaan harjoitusluonteinen kokeilu.",
+    text: "LukiSeula ei ole kliininen eikä tieteellisesti validoitu arviointiväline.",
   },
   {
     icon: <EyeOff />,
     title: "Käyttö on anonyymia",
-    text: "Emme kerää henkilötietoja. Tuloksesi säilyvät vain tämän istunnon ajan, eikä niitä voida yhdistää sinuun henkilökohtaisesti.",
+    text: "Emme kerää henkilötietoja. Tulokset säilyvät vain tämän istunnon ajan.",
   },
 ];
 
@@ -30,12 +30,12 @@ const NOTES: Array<{ icon: ReactNode; title: string; text: string }> = [
   {
     icon: <UserCheck />,
     title: "Suunniteltu vähintään 15-vuotiaille",
-    text: "Tehtävät on mitoitettu nuorille ja aikuisille — noin 9. luokasta ylöspäin. Nuoremmille lapsille lukemisen arviointi kannattaa tehdä koulussa erityisopettajan kanssa, jolla on ikätasolle sopivat välineet.",
+    text: "Tehtävät on mitoitettu nuorille ja aikuisille, noin 9. luokasta ylöspäin.",
   },
   {
     icon: <Info />,
     title: "Hakeudu tarvittaessa tutkimuksiin",
-    text: "Jos kartoituksen tulokset herättävät huolta, suosittelemme ottamaan yhteyttä terveydenhuollon tai oppilaitoksesi asiantuntijoihin lisätutkimuksia varten.",
+    text: "Jos tulokset herättävät huolta, käänny erikoisopettajan, psykologin tai terveydenhuollon ammattilaisen puoleen.",
   },
 ];
 
