@@ -193,7 +193,10 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
       line={<ItemLine current={isWarmup ? -1 : mainIndex} total={mainTotal} />}
       dock={isDesktop ? undefined : answerKeys}
     >
-      <div className="flex flex-col gap-4 md:gap-5">
+      {/* main scrolls and centres this block with margin-block: auto (ExerciseShell
+          `center`); the negative margins turn the shell's 40 / 56 padding into
+          the 16 / 40 that gives the stage its optical lift (HANDOFF § 8.4). */}
+      <div className="flex flex-col gap-4 md:-mb-4 md:-mt-6 md:gap-5">
         <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanantunnistus</h1>
 
         <section
