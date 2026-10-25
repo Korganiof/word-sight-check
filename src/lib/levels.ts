@@ -34,6 +34,15 @@ export const DEFAULT_THRESHOLDS: LevelThresholds = { sujuu: 0.75, jonkin: 0.5 };
  */
 export const TWO_AFC_THRESHOLDS: LevelThresholds = { sujuu: 0.9, jonkin: 0.75 };
 
+/**
+ * Reading comprehension (wrong-word detection) is hard by design: in the NMI
+ * norms a typical 9th-grader finds only ~63–72 % of the misfit words (LY9
+ * mean 33–37 / 52), and the support-need cut-off is 25 / 52 ≈ 48 % (Panula
+ * 2013, tables 12 & 29). "Sujuu" therefore sits at the norm mean (8 / 12)
+ * rather than at 75 %, which would put an average reader in "jonkin".
+ */
+export const READING_COMP_THRESHOLDS: LevelThresholds = { sujuu: 0.65, jonkin: 0.5 };
+
 // All cut-offs are heuristic — nothing here is clinically normed.
 export function scoreToLevel(
   correct: number,

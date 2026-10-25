@@ -42,6 +42,8 @@ not arbitrary.
 - `scoreToLevel(correct, total, thresholds)` → `sujuu` / `jonkin` / `selvia`.
   Default cut-offs 75 % / 50 %. Two-alternative tasks (pseudowords, minimal
   pairs) use `TWO_AFC_THRESHOLDS` (90 % / 75 %) because chance is 50 % there.
+  Reading comprehension uses `READING_COMP_THRESHOLDS` (65 % / 50 %): the
+  NMI norm mean is only ~63–72 % of misfits found, so `sujuu` sits at 8 / 12.
 - `scoreMarking(hits, falseAlarms, targets)` for every "mark the X" task
   (word search, spelling errors, reading comp): hits minus false alarms, out
   of the number of targets. Marking nothing and marking everything both score

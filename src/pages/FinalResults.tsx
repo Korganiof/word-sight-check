@@ -8,7 +8,14 @@ import {
   loadSpellingErrorsResult,
   loadReadingCompResult,
 } from "@/lib/exerciseResults";
-import { TWO_AFC_THRESHOLDS, scoreMarking, scoreToLevel, type Level } from "@/lib/levels";
+import {
+  READING_COMP_THRESHOLDS,
+  TWO_AFC_THRESHOLDS,
+  scoreMarking,
+  scoreToLevel,
+  type Level,
+  type LevelThresholds,
+} from "@/lib/levels";
 import {
   AREA_STATIC,
   DESCRIPTIONS,
@@ -113,8 +120,8 @@ export default function FinalResults() {
   useEffect(() => {
     const trials = loadSession() ?? [];
     const wordSearch = loadWordSearchResult();
-    const levelOf = (r: { correct: number; total: number } | null): Level =>
-      r ? scoreToLevel(r.correct, r.total) : "missing";
+    const levelOf = (r: { correct: number; total: number } | null, thresholds?: LevelThresholds): Level =>
+      r ? scoreToLevel(r.correct, r.total, thresholds) : "missing";
 
     const levels: Record<string, Level> = {
       // Two-alternative task: chance is 50 %, so it gets its own cut-offs.
@@ -125,7 +132,7 @@ export default function FinalResults() {
       ),
       sanarajat: levelOf(loadWordChainsResult()),
       kirjoitusvirheet: levelOf(loadSpellingErrorsResult()),
-      luetunYmmartaminen: levelOf(loadReadingCompResult()),
+      luetunYmmartaminen: levelOf(loadReadingCompResult(), READING_COMP_THRESHOLDS),
     };
 
     setAreas(AREA_STATIC.map(a => ({

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { scoreToLevel, scoreMarking, TWO_AFC_THRESHOLDS } from "../levels";
+import { scoreToLevel, scoreMarking, TWO_AFC_THRESHOLDS, READING_COMP_THRESHOLDS } from "../levels";
 
 describe("scoreToLevel", () => {
   it("returns missing when nothing was attempted", () => {
@@ -21,6 +21,15 @@ describe("scoreToLevel", () => {
     expect(scoreToLevel(22, 30, TWO_AFC_THRESHOLDS)).toBe("selvia");
     // Chance-level performance must not read as "some difficulty".
     expect(scoreToLevel(15, 30, TWO_AFC_THRESHOLDS)).toBe("selvia");
+  });
+});
+
+describe("READING_COMP_THRESHOLDS", () => {
+  it("puts 'sujuu' at the NMI norm mean (8 / 12) and keeps the 50 % flag line", () => {
+    expect(scoreToLevel(8, 12, READING_COMP_THRESHOLDS)).toBe("sujuu");
+    expect(scoreToLevel(7, 12, READING_COMP_THRESHOLDS)).toBe("jonkin");
+    expect(scoreToLevel(6, 12, READING_COMP_THRESHOLDS)).toBe("jonkin");
+    expect(scoreToLevel(5, 12, READING_COMP_THRESHOLDS)).toBe("selvia");
   });
 });
 
