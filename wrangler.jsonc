@@ -3,7 +3,7 @@
 // SPA mode serves index.html for unknown paths, so deep links like /results
 // survive a refresh.
 {
-  "name": "word-sight-check",
+  "name": "lukiseula",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
