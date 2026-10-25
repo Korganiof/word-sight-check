@@ -2,7 +2,7 @@ import { useState } from "react";
 import { WordSearchTask } from "@/components/WordSearchTask";
 import { wordSearchPassage, wordSearchTargets } from "@/lib/wordsearch";
 import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
-import { DEV_FAST } from "@/lib/devConfig";
+import { WORD_SEARCH_DURATION_MS } from "@/lib/battery";
 
 const STEPS = [
   {
@@ -38,7 +38,7 @@ export default function WordSearchTaskPage() {
     <WordSearchTask
       text={wordSearchPassage}
       targets={wordSearchTargets}
-      durationMs={DEV_FAST ? 20_000 : 3 * 60 * 1000}
+      durationMs={WORD_SEARCH_DURATION_MS}
     />
   );
 }

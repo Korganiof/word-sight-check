@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { wordChainItems as allWordChainItems } from "./wordChainItems.fi";
 import { saveWordChainsResult } from "@/lib/exerciseResults";
-import { DEV_FAST } from "@/lib/devConfig";
+import { WORD_CHAIN_DURATION_MS, WORD_CHAIN_ITEM_COUNT } from "@/lib/battery";
 import { shuffleArray } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
@@ -21,8 +21,8 @@ import { Sheet } from "@/components/primitives";
 // has, it moves on by itself after a short grace period (a wrong tap can still
 // be undone). "Seuraava" skips a sentence the reader is unsure about. Like the
 // paper task, no correctness feedback is given.
-const ITEM_COUNT = DEV_FAST ? 2 : 15;
-const TOTAL_TIME_MS = DEV_FAST ? 30_000 : 90_000;
+const ITEM_COUNT = WORD_CHAIN_ITEM_COUNT;
+const TOTAL_TIME_MS = WORD_CHAIN_DURATION_MS;
 const COMMIT_DELAY_MS = 500;
 
 /** Character positions at which a new word starts (excluding position 0). */

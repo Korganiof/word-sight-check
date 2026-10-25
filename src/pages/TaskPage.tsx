@@ -3,9 +3,10 @@ import { PseudoWordTask } from "@/components/PseudoWordTask";
 import { warmupList, realWords, pseudoWords } from "@/lib/pseudowords";
 import { shuffleArray } from "@/lib/utils";
 import { DEV_FAST } from "@/lib/devConfig";
+import { PSEUDO_MAIN_PER_CLASS } from "@/lib/battery";
 
 // 15 real + 15 pseudo per session, so the base rate is always 50 %.
-const MAIN_PER_CLASS = 15;
+const MAIN_PER_CLASS = PSEUDO_MAIN_PER_CLASS;
 
 export default function TaskPage() {
   const items = useMemo(() => {

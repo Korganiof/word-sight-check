@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { spellingErrorItems as allItems } from "./spellingErrorItems.fi";
 import { saveSpellingErrorsResult } from "@/lib/exerciseResults";
 import { DEV_FAST } from "@/lib/devConfig";
+import { SPELLING_DURATION_MS } from "@/lib/battery";
 import { scoreMarking } from "@/lib/levels";
 import { shuffleArray } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -11,7 +12,7 @@ import { GridWord } from "@/components/marks";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/primitives";
 
-const DURATION_MS = DEV_FAST ? 30_000 : 210_000;
+const DURATION_MS = SPELLING_DURATION_MS;
 
 // The 100 words are read in groups: 4 columns × 5 rows on desktop, 2 × 5 on
 // phones, with a wider gap between groups so the eye keeps its place.

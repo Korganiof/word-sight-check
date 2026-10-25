@@ -218,7 +218,7 @@ interface ExerciseShellProps extends AppBarProps {
   /** Show the docked bar on phones only (ready screens dock their CTA there). */
   dockPhoneOnly?: boolean;
   /** Desktop content width class, e.g. `max-w-work`. */
-  width?: "work" | "work-wide" | "narrow" | "shell";
+  width?: "work" | "work-wide" | "narrow" | "column" | "ready" | "shell";
   /** Vertically centre the content in <main> (Osa 1, Osa 3). */
   center?: boolean;
   children: ReactNode;
@@ -228,6 +228,10 @@ const WIDTH: Record<NonNullable<ExerciseShellProps["width"]>, string> = {
   work: "md:max-w-work",
   "work-wide": "md:max-w-work-wide",
   narrow: "md:max-w-[760px]",
+  /** Osa 2: one column with the sticky target panel above the text. */
+  column: "md:max-w-[840px]",
+  /** Consent and the ready screens. */
+  ready: "md:max-w-[1040px]",
   shell: "md:max-w-shell",
 };
 

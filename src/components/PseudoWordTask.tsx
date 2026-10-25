@@ -3,6 +3,7 @@ import type { WordItem } from "@/lib/pseudowords";
 import type { Trial } from "@/lib/metrics";
 import { saveSession } from "@/lib/metrics";
 import { useScreeningFlow } from "@/hooks/useScreeningFlow";
+import { PSEUDO_ITEM_TIMEOUT_MS } from "@/lib/battery";
 import { Badge, ExerciseShell, ItemLine, ItemPill, Keycap } from "@/components/shell";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +14,7 @@ interface PseudoWordTaskProps {
 
 // Per-item limit. A timeout is recorded as a wrong answer — the Start page
 // tells the user this.
-const ITEM_TIMEOUT_MS = 3000;
+const ITEM_TIMEOUT_MS = PSEUDO_ITEM_TIMEOUT_MS;
 const ADVANCE_DELAY_MS = 200;
 
 const DESKTOP_QUERY = "(min-width: 768px)";

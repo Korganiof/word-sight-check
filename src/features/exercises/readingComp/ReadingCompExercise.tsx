@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { readingCompPassages } from "./readingCompItems.fi";
 import { parseParagraph } from "./parse";
 import { saveReadingCompResult } from "@/lib/exerciseResults";
-import { DEV_FAST } from "@/lib/devConfig";
+import { READING_COMP_DURATION_MS } from "@/lib/battery";
 import { scoreMarking } from "@/lib/levels";
 import { splitTrailingPunctuation } from "@/lib/text";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -12,7 +12,7 @@ import { WordToggle, WordProse } from "@/components/marks";
 import { Button } from "@/components/Button";
 import { Sheet, Label } from "@/components/primitives";
 
-const DURATION_MS = DEV_FAST ? 30_000 : 240_000;
+const DURATION_MS = READING_COMP_DURATION_MS;
 
 export function ReadingCompExercise() {
   const goToNext = useScreeningFlow();
