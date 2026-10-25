@@ -11,6 +11,23 @@ import { Sheet } from "@/components/primitives";
 const ITEM_COUNT = DEV_FAST ? 2 : 15;
 const ITEM_DURATION_MS = DEV_FAST ? 2000 : 6000;
 const FEEDBACK_DELAY_MS = 900;
+const DESKTOP_QUERY = "(min-width: 768px)";
+
+function useIsDesktop(): boolean {
+  const [desktop, setDesktop] = useState(() =>
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia(DESKTOP_QUERY).matches
+      : true,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia(DESKTOP_QUERY);
+    const onChange = () => setDesktop(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return desktop;
+}
 
 export function MinimalPairExercise() {
   const items = useMemo(() => shuffleArray(allMinimalPairItems).slice(0, ITEM_COUNT), []);
@@ -19,6 +36,7 @@ export function MinimalPairExercise() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const isDesktop = useIsDesktop();
 
   const currentItem = items[currentIndex];
   const total = items.length;
@@ -64,24 +82,70 @@ export function MinimalPairExercise() {
   }
 
   const options = [currentItem.optionA, currentItem.optionB];
+  const answered = selectedAnswer !== null;
+  // The gap is drawn as an underline; the sentence keeps its own spaces, so
+  // there is a word space on each side and none before punctuation.
+  const [before, after = ""] = currentItem.sentence.split(/_{2,}/);
+
+  // The two keys are rendered once: under the stage (desktop) or in the
+  // docked bar (phones).
+  const answerKeys = (
+    <div className={cn("grid w-full grid-cols-2", isDesktop ? "gap-4" : "gap-3 py-3")}>
+      {options.map((option) => {
+        const isSelected = selectedAnswer === option;
+        return (
+          <button
+            key={option}
+            type="button"
+            onClick={() => handleSelect(option)}
+            disabled={answered}
+            aria-pressed={answered ? isSelected : undefined}
+            className={cn(
+              "ls-t box-border flex items-center justify-center rounded-answer border-2 px-3 font-text font-bold leading-none",
+              isDesktop ? "h-[92px] text-[28px]" : "h-16 text-[22px]",
+              !answered && "border-brown bg-surface text-ink hover:bg-recessed active:bg-brown active:text-white",
+              answered && isSelected && "border-brown bg-brown text-white",
+              answered && !isSelected && "border-well bg-well text-ink-2",
+            )}
+          >
+            {option}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
     <ExerciseShell
       width="narrow"
       center
-      right={<ItemPill label="Lause" current={currentIndex + 1} total={total} />}
+      right={
+        <>
+          <span className="hidden font-ui text-[13px] font-extrabold uppercase leading-none tracking-[0.1em] text-gold-ink md:inline">
+            Lisäharjoitus
+          </span>
+          <ItemPill label="Lause" current={currentIndex + 1} total={total} />
+        </>
+      }
       line={<ItemLine current={currentIndex} total={total} />}
+      dock={isDesktop ? undefined : answerKeys}
     >
-      <div className="flex flex-col gap-6 md:gap-7">
+      <div className="flex flex-col gap-5 md:gap-7 md:pb-6 md:pt-4">
         <h1 className="m-0 font-ui text-h2-sm text-ink md:text-h2">Sanojen pituuden erottaminen</h1>
 
-        <Sheet className="flex flex-col items-center gap-6 px-6 py-8 md:gap-8 md:px-10 md:py-12">
+        <Sheet className="flex min-h-[360px] flex-col items-center justify-center gap-7 px-5 py-8 md:min-h-[320px] md:gap-8 md:px-12 md:py-10">
           <p className="m-0 text-center font-ui text-[17px] font-bold leading-none text-ink-2">
             Valitse lauseeseen sopiva sana
           </p>
 
-          <p className="m-0 max-w-[600px] text-center font-text text-[24px] font-bold leading-[34px] text-ink md:text-[32px] md:leading-[44px]">
-            {currentItem.sentence}
+          <p className="m-0 max-w-[640px] text-center font-text text-[26px] font-semibold leading-[40px] text-ink md:text-[40px] md:leading-[56px]">
+            {before}
+            <span
+              aria-hidden="true"
+              className="inline-block h-[0.9em] w-[110px] translate-y-[0.12em] border-b-[3px] border-line-strong align-baseline md:w-[150px]"
+            />
+            <span className="sr-only">(tyhjä kohta)</span>
+            {after}
           </p>
 
           {/* Per-item countdown: the only continuously moving element here. */}
@@ -91,35 +155,13 @@ export function MinimalPairExercise() {
               className="ml-auto h-full rounded-[3px] bg-time"
               style={{
                 animation: `drain ${ITEM_DURATION_MS}ms linear forwards`,
-                animationPlayState: selectedAnswer !== null ? "paused" : "running",
+                animationPlayState: answered ? "paused" : "running",
               }}
             />
           </div>
         </Sheet>
 
-        <div className="grid grid-cols-2 gap-3 md:gap-4">
-          {options.map((option) => {
-            const answered = selectedAnswer !== null;
-            const isSelected = selectedAnswer === option;
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => handleSelect(option)}
-                disabled={answered}
-                aria-pressed={answered ? isSelected : undefined}
-                className={cn(
-                  "ls-t box-border flex h-16 items-center justify-center rounded-answer border-2 px-3 font-ui text-[18px] font-extrabold leading-none md:h-[92px] md:text-[22px]",
-                  !answered && "border-brown bg-surface text-ink hover:bg-recessed active:bg-brown active:text-white",
-                  answered && isSelected && "border-brown bg-brown text-white",
-                  answered && !isSelected && "border-well bg-well text-ink-2",
-                )}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
+        {isDesktop && answerKeys}
       </div>
     </ExerciseShell>
   );

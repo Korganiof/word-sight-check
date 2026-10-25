@@ -1,5 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import type { ReactNode } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
+  ArrowLeft,
+  ArrowRight,
   BookOpen,
   ChevronRight,
   Layers,
@@ -11,9 +14,19 @@ import {
 } from "lucide-react";
 import { ExerciseShell } from "@/components/shell";
 import { Button } from "@/components/Button";
-import { IconTile, Label, Sheet, SiteFooter } from "@/components/primitives";
+import { IconTile, Sheet, SiteFooter } from "@/components/primitives";
+import { cn } from "@/lib/utils";
 
-const exercises = [
+interface ExerciseRow {
+  icon: ReactNode;
+  title: string;
+  desc: string;
+  route: string;
+  /** "Osa n" caption; the supplementary exercises have none (their group heading says it). */
+  part?: string;
+}
+
+const BATTERY: ExerciseRow[] = [
   {
     icon: <WholeWord />,
     title: "Pseudosanojen tunnistus",
@@ -49,60 +62,94 @@ const exercises = [
     route: "/exercise/reading-comp",
     part: "Osa 5",
   },
+];
+
+const EXTRAS: ExerciseRow[] = [
   {
     icon: <Layers />,
     title: "Sanojen muodostaminen tavuista",
     desc: "Katso tavut ja kirjoita niistä muodostuva sana.",
     route: "/exercise/syllables",
-    part: "Lisäharjoitus",
   },
   {
     icon: <AudioLines />,
     title: "Sanojen pituuden erottaminen",
     desc: "Valitse lauseeseen sopiva sana. Testaa vokaali- ja konsonanttipituuden erottamista.",
     route: "/exercise/minimal-pairs",
-    part: "Lisäharjoitus",
   },
 ];
+
+function Group({ heading, muted, rows }: { heading: string; muted?: boolean; rows: ExerciseRow[] }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h2
+        className={cn(
+          "m-0 font-ui text-[15px] font-extrabold leading-5 tracking-[-0.005em]",
+          muted ? "text-ink-2" : "text-gold-ink",
+        )}
+      >
+        {heading}
+      </h2>
+      <Sheet as="ul" className="m-0 flex list-none flex-col overflow-hidden p-0">
+        {rows.map((ex, i) => (
+          <li key={ex.route} className={i > 0 ? "border-t border-line" : undefined}>
+            <Link
+              to={ex.route}
+              className="ls-t grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-[18px] py-4 text-ink no-underline hover:bg-recessed hover:text-ink md:gap-[18px] md:px-6 md:py-[18px]"
+            >
+              <IconTile icon={ex.icon} size={44} muted={muted} className="md:hidden" />
+              <IconTile icon={ex.icon} size={48} muted={muted} className="hidden md:inline-flex" />
+              <span className="flex min-w-0 flex-col">
+                {ex.part && <span className="text-[14px] leading-5 text-ink-2">{ex.part}</span>}
+                <span className="font-ui text-[19px] font-extrabold leading-[26px] tracking-[-0.015em] text-ink">
+                  {ex.title}
+                </span>
+                <span className="text-[16px] leading-6 text-ink-2">{ex.desc}</span>
+              </span>
+              <ChevronRight className="h-[22px] w-[22px] text-gold-ink" strokeWidth={2} aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </Sheet>
+    </section>
+  );
+}
 
 export default function ExerciseList() {
   const navigate = useNavigate();
 
   return (
-    <ExerciseShell logoLink width="shell">
-      <div className="mx-auto flex max-w-[800px] flex-col md:py-6">
-        <Label>Yksittäiset harjoitukset</Label>
-        <h1 className="mb-3 mt-3 font-ui text-title-sm text-ink md:text-title">Harjoitukset</h1>
-        <p className="mb-8 max-w-[600px] text-body text-ink-2 md:mb-10 md:text-lead">
+    <ExerciseShell
+      logoLink
+      width="narrow"
+      right={
+        <Link
+          to="/"
+          className="ls-t inline-flex h-10 items-center gap-2 rounded-key px-3 font-ui text-[15px] font-bold text-gold-ink hover:bg-gold-tint hover:text-gold-ink-deep"
+        >
+          <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2.2} aria-hidden="true" />
+          Etusivulle
+        </Link>
+      }
+    >
+      <div className="flex flex-col md:pb-4 md:pt-4">
+        <h1 className="m-0 font-ui text-h1-sm text-ink md:text-h1">Harjoitukset</h1>
+        <p className="m-0 mt-2.5 max-w-[620px] text-[17px] leading-[26px] text-ink-2 md:text-[19px] md:leading-[30px]">
           Voit tehdä harjoitukset yksitellen tai aloittaa koko seulonnan alusta.
           Tulokset tallentuvat istunnon ajaksi.
         </p>
 
-        <Sheet as="ul" className="m-0 mb-8 flex list-none flex-col overflow-hidden p-0 md:mb-10">
-          {exercises.map((ex, i) => (
-            <li key={ex.route} className={i > 0 ? "border-t border-line" : undefined}>
-              <button
-                type="button"
-                onClick={() => navigate(ex.route)}
-                className="ls-t flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-recessed md:gap-[18px] md:px-7 md:py-5"
-              >
-                <IconTile icon={ex.icon} size={48} />
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <Label as="span" muted>{ex.part}</Label>
-                  <span className="font-ui text-[18px] font-extrabold leading-[26px] tracking-[-0.01em] text-ink">
-                    {ex.title}
-                  </span>
-                  <span className="text-body-sm text-ink-2">{ex.desc}</span>
-                </span>
-                <ChevronRight className="h-[22px] w-[22px] flex-shrink-0 text-gold-ink" strokeWidth={2} aria-hidden="true" />
-              </button>
-            </li>
-          ))}
-        </Sheet>
+        <div className="mt-8 flex flex-col gap-7 md:mt-9">
+          <Group heading="Seulonnan osat" rows={BATTERY} />
+          <Group heading="Lisäharjoitukset" muted rows={EXTRAS} />
+        </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button onClick={() => navigate("/consent")}>Aloita koko seulonta</Button>
-          <Button variant="outline" onClick={() => navigate("/results")}>
+        <div className="mt-8 flex flex-col gap-3 md:mt-10 md:flex-row">
+          <Button onClick={() => navigate("/consent")} className="w-full md:w-auto">
+            Aloita koko seulonta
+            <ArrowRight aria-hidden="true" />
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/results")} className="w-full md:w-auto">
             Katso tulokset
           </Button>
         </div>
