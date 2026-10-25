@@ -50,7 +50,6 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const advanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const realBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const currentItem = items[currentIndex];
   const warmupTotal = Math.max(0, warmupCount);
@@ -109,7 +108,6 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
     clearTimers();
     startRef.current = performance.now();
     setTimeLeft(ITEM_TIMEOUT_MS);
-    realBtnRef.current?.focus();
 
     intervalRef.current = setInterval(() => {
       setTimeLeft(Math.max(0, ITEM_TIMEOUT_MS - (performance.now() - startRef.current)));
@@ -148,7 +146,6 @@ export function PseudoWordTask({ items, warmupCount = 0 }: PseudoWordTaskProps) 
   const answerKeys = (
     <div className={cn("flex w-full", isDesktop ? "gap-4" : "gap-3")}>
       <button
-        ref={realBtnRef}
         type="button"
         disabled={isProcessing}
         onClick={() => handleAnswer(true, false)}
