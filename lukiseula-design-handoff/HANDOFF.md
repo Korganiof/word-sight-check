@@ -2,6 +2,8 @@
 
 This document, the token files and the static screen renders in this folder are the complete spec for restyling the LukiSeula React + Tailwind app. It assumes the brief in `DESIGN_BRIEF.md` (the repo's own design brief) and never changes what the exercises measure, their timers, item counts or the Finnish copy, except where section 11 lists text to verify.
 
+**v2 (October 2026).** Redraws Consent and all five ready screens, fixes three layout bugs (Osa 1 and Osa 3 centring, the Osa 2 target list) and specifies the screens v1 left out. `CHANGES.md` lists every changed file; §6.7 holds the layout rules behind the changes.
+
 How the folder fits together:
 
 | Path | What it is | Use it for |
@@ -12,6 +14,8 @@ How the folder fits together:
 | `screens/static/*.html` | Each screen as plain HTML with every value inline | The reference markup to translate into components. Open in a browser to inspect |
 | `screens/source/*.dc.html` | The same screens as interactive design-canvas components | Only for behaviour details (marking, auto-advance, warm-up gating) — the template syntax is not meant to be ported |
 | `screenshots/*.png` | 1× renders of every screen | Compare the running app against these at 1440 and 390 px |
+| `screenshots/1440x716/*.png` | Consent and the five ready screens at 1440 × 716 | The window they must fit without scrolling |
+| `CHANGES.md` | What changed since v1 | The work list when the app already has v1 |
 
 Screen files are named `<Screen>-<width>`: `Osa3-1440.html` is the Osa 3 exercise at 1440 × 900, `Osa3-390.html` the same at 390 × 844. `Main` is Home at 1440; `Home-390` is Home at 390. Routes are mapped in section 8.
 
@@ -82,8 +86,8 @@ The `latin` subset covers ä and ö. The static HTML files link Google Fonts pur
 | Style | Face | 1440 | 390 | Notes |
 |---|---|---|---|---|
 | display | Manrope 800 | 84 / 84, −0.04em | 50 / 52 | Home H1 only; "seulonta" sits on a gold-wash box |
-| title | Manrope 800 | 56 / 60, −0.035em | 34 / 40 | Ready-screen titles; Results uses 64 / 68 on desktop, 40 / 44 on phone |
-| h1 | Manrope 800 | 48 / 54, −0.03em | 32 / 38 | Consent; exercise titles use 32 / 38 (1440) and 24 / 30 (390) |
+| title | Manrope 800 | 64 / 68, −0.035em | 40 / 44 | Results title only |
+| h1 | Manrope 800 | 48 / 54, −0.03em | 32 / 38 | Consent, ready screens, exercises list, 404; exercise titles use 32 / 38 (1440) and 24 / 30 (390) |
 | h2 | Manrope 800 | 32 / 38, −0.025em | 24 / 30 | Section titles (Results sections use 24 / 30 on desktop) |
 | h3 | Manrope 800 | 22 / 28, −0.02em | 19 / 25 | Row titles, card titles (Results detail rows use 24 / 30) |
 | lead | Atkinson Next 400 | 19 / 32 | 17 / 28 | Hero lede, Consent lede |
@@ -133,13 +137,26 @@ Low-time state (last 30 s, replaces the old red): the pill turns brown with whit
 
 ### 6.5 Work area and docked bar
 
-Between the bars sits one scrollable `main`. Desktop content columns: 960 px (Osa 3, Osa 4), 1080 px (Osa 2 and Osa 5, as a 340 px aside + the sheet, gap 48), 760 px (Osa 1). The exercise title (Manrope 800 32 / 38) and the one-paragraph instruction (17 / 28, max-width 540) sit above or beside the sheet, never inside it. Phones use a single column with 16 px gutters, title 24 / 30, instruction 16 / 26.
+Between the bars sits one scrollable `main`. Desktop content columns: 960 px (Osa 3, Osa 4), 840 px (Osa 2: one column, the sticky target panel above the sheet), 1080 px (Osa 5, as a 340 px aside + the sheet, gap 48), 760 px (Osa 1). Consent and the ready screens use 1040 px. The docked bar's inner row always takes the width of the screen's content column, so its button lines up with the content's right edge. The exercise title (Manrope 800 32 / 38) and the one-paragraph instruction (17 / 28, max-width 540) sit above or beside the sheet, never inside it. Phones use a single column with 16 px gutters, title 24 / 30, instruction 16 / 26.
 
-Docked bar: 84 px tall on desktop, min 76 px on phones; white, `border-top: 1px solid line`, `shadow-up`. Left: the live counter (6.6). Right: the finish-early button — always the brown secondary ("Olen valmis" / "Valmis", 56 × 220 on desktop, 52 px on phones) so that gold inside an exercise only ever means "marked by you". Osa 3 shows the tertiary "Seuraava →" and the Enter keycap hint instead; Osa 1 puts the two answer keys here on phones.
+Docked bar: 84 px tall on desktop, min 76 px on phones; white, `border-top: 1px solid line`, `shadow-up`. Left: the live counter (6.6). Right: the finish-early button — always the brown secondary ("Olen valmis" / "Valmis", 56 × 220 on desktop, 52 px on phones) so that gold inside an exercise only ever means "marked by you". Osa 3 shows the tertiary "Seuraava →" and the Enter keycap hint instead; Osa 1 puts the two answer keys here on phones. On Consent and the ready screens the bar carries the step's primary action instead: the part's facts or a gate hint on the left, the gold primary on the right (§6.7).
 
 ### 6.6 Counter
 
 A 40 px circle in gold-wash with the pen line (`inset 0 -3px 0 gold-ink`) and the Lucide `highlighter` icon in gold-ink-deep, then the number in Manrope 800 26 (24 on phones, tabular) and the unit in Atkinson 16 ink-2: `12 merkittyä`, `3 valittua`, `2 / 4 sanarajaa merkitty`. Wrap it in `aria-live="polite"`.
+
+### 6.7 Layout rules (v2)
+
+These rules come out of the v1 ready screens, where the start button ended up alone at the top of an empty column and the instructions fell below the fold on a 1440 × 716 window. Check every new or changed screen against them.
+
+1. **One main action, in the docked bar.** A step's primary button (Aloita harjoitus, Jatka tehtävään, Olen valmis, Valmis) lives in the docked bar, right-aligned to the content column. It is never placed alone in a column beside or above the content.
+2. **Terminal screens put the button under the content.** Screens with no bar (404, the supplementary end screen) place their one button directly below the last line of content.
+3. **Ready screens and Consent fit 1440 × 716.** That window leaves 568 px between the 64 px app bar and the 84 px docked bar. Every ready screen fits without scrolling. On Consent the checkbox sits above the fold, and only the advisory notes need a scroll. If longer app copy makes a screen taller, tighten the spacing (main padding, step gap) first. Never move the button out of the bar.
+4. **Centre inside a scroller with `margin: auto 0`.** To centre a block vertically in a scrolling `main`, give the block `margin-block: auto` and leave the parent at `flex-direction: column`. Never put `justify-content: center` on the scrolling parent: once the content is taller than the parent, its top is cut off and cannot be scrolled to. v1 had this bug on Osa 1 and Osa 3.
+5. **No orphaned columns.** Use two columns only when both have content at the top; otherwise use one column. A title that belongs to the whole screen spans both columns, and both columns start on the same line under it.
+6. **No label that repeats the title.** The app bar already shows `OSA n / 5`, so screens don't repeat it as a label above the title.
+7. **Gate hints sit with the gated button.** While a primary button is disabled, the reason sits in the same bar: on the left on desktop, above the button row on phones. It disappears when the gate opens.
+8. **Don't let a title squeeze.** A title that shares a row with other text gets `flex-shrink: 0` when it has to stay on one line. Font builds differ by a few pixels, and v1's Osa 3 title sat 4 px from wrapping.
 
 ## 7. Components and states
 
@@ -182,11 +199,11 @@ Bar: three segments 34 × 8, gap 4, radius 4, filled 3 / 2 / 1 / 0 in the level 
 
 ### 7.7 Pills, badges, tiles, cards
 
-Target chip (Osa 2): 32 px (28 on phones), padding 0 11, radius 9, recessed, Manrope 800 13 / 12 uppercase +0.05em ink. Badge (`SEULONTATYÖKALU · YLI 15-VUOTIAILLE`, `HARJOITTELU`): 28 px pill, gold-tint, label style. Icon tile: 48 px (44 / 40 / 36 variants), radius 14–16, gold-tint with a 22 px gold-ink Lucide icon; the muted variant is well with a brown icon. Sheet: white, 1 px line, radius 24–28 (20–22 on phones), `shadow-sheet`. Note block (Huomio): well fill, radius 28, padding 32, label in brown with the `info` icon. Support-need block: white, `2px solid brown`, radius 28, a 44 px brown tile with the `signpost` icon. Resource link row: full-row `<a target="_blank" rel="noopener">`, padding 20 28, title Manrope 800 18 / 26, description 16 / 26 ink-2, `arrow-up-right` 22 px in gold-ink at the right; hover recessed; rows separated by hairlines inside one sheet. Numbered step: 40 px circle (gold-tint with a gold-ink Manrope 800 17 number on Results; white with a 1 px line border on Ready screens) and text starting 5 px below its top. Checkbox: 26 × 26, `accent-color: brown`, 2 px control border when unchecked, 14 px gap to its label.
+Fact pill (ready-screen docked bar): 36 px, padding 0 14 0 12, radius pill, recessed, Manrope 700 15 tabular ink with a 16 px icon (`timer`, `list`); render the pills as a `<ul aria-label="Tehtävän tiedot">`. Target chip (Osa 2): 32 px (28 on phones), padding 0 11, radius 9, recessed, Manrope 800 13 / 12 uppercase +0.05em ink. Badge (`SEULONTATYÖKALU · YLI 15-VUOTIAILLE`, `HARJOITTELU`): 28 px pill, gold-tint, label style. Icon tile: 48 px (44 / 40 / 36 variants), radius 14–16, gold-tint with a 22 px gold-ink Lucide icon; the muted variant is well with a brown icon. Sheet: white, 1 px line, radius 24–28 (20–22 on phones), `shadow-sheet`. Note block (Huomio): well fill, radius 28, padding 32, label in brown with the `info` icon. Support-need block: white, `2px solid brown`, radius 28, a 44 px brown tile with the `signpost` icon. Resource link row: full-row `<a target="_blank" rel="noopener">`, padding 20 28, title Manrope 800 18 / 26, description 16 / 26 ink-2, `arrow-up-right` 22 px in gold-ink at the right; hover recessed; rows separated by hairlines inside one sheet. Numbered step: 40 px circle (gold-tint with a gold-ink Manrope 800 17 number on Results; white with a 1 px line border on Ready screens) and text starting 5 px below its top. Checkbox: 26 × 26, `accent-color: brown`, 2 px control border when unchecked, 14 px gap to its label.
 
 ### 7.8 Icons
 
-Lucide, stroke 2 (2.2 for 18–20 px icons), `aria-hidden="true"` unless the icon is the only content of a control, in which case the control gets an `aria-label`. Used: arrow-right, arrow-left, arrow-up-right, check, timer, clock, info, circle-check, lock, eye-off, user-check, gift, bot, stethoscope, whole-word, text-search, separator-vertical, spell-check, book-open, highlighter, download, signpost, corner-down-left. Never emoji.
+Lucide, stroke 2 (2.2 for 18–20 px icons), `aria-hidden="true"` unless the icon is the only content of a control, in which case the control gets an `aria-label`. Used: arrow-right, arrow-left, arrow-up-right, check, timer, clock, info, circle-check, lock, eye-off, user-check, gift, bot, stethoscope, whole-word, text-search, separator-vertical, spell-check, book-open, highlighter, download, signpost, corner-down-left; v2 adds list, chevron-right, corner-down-right, puzzle and ruler. Never emoji.
 
 ## 8. Screens
 
@@ -196,16 +213,23 @@ Lucide, stroke 2 (2.2 for 18–20 px icons), `aria-hidden="true"` unless the ico
 | `/consent` | `Consent-1440.html`, `Consent-390.html` | §8.2 |
 | `/start` (ready screen for Osa 1) | `Ready-Osa1-1440.html`, `Ready-Osa1-390.html` | §8.3 |
 | `/task/pseudowords` | `Osa1-*.html` | §8.4 |
+| `/task/word-search`, ready state | `Ready-Osa2-*.html` | §8.3 |
 | `/task/word-search` | `Osa2-*.html` | §8.5 |
+| `/exercise/word-chains`, ready state | `Ready-Osa3-*.html` | §8.3 |
 | `/exercise/word-chains` | `Osa3-*.html` | §8.6 |
+| `/exercise/spelling-errors`, ready state | `Ready-Osa4-*.html` | §8.3 |
 | `/exercise/spelling-errors` | `Osa4-*.html` | §8.7 |
 | `/exercise/reading-comp` ready screen | `Ready-Osa5-*.html` | §8.3 (with the warm-up) |
 | `/exercise/reading-comp` | `Osa5-*.html` | §8.8 |
 | `/results` | `Results-1440.html`, `Results-390.html` | §8.9 |
 | `/results` print stylesheet | `Report-A4-1..3.html` | §9 |
-| `/exercises`, `/exercise/syllables`, `/exercise/minimal-pairs`, end screen, 404 | not designed yet | §8.10 |
+| `/exercises` | `Exercises-1440.html`, `Exercises-390.html` | §8.10 |
+| `/exercise/syllables` | `Extra-Syllables-*.html` | §8.11 |
+| `/exercise/minimal-pairs` | `Extra-Pairs-*.html` | §8.12 |
+| supplementary end screen | `Extra-End-*.html` | §8.13 |
+| 404 (any unknown route) | `NotFound-1440.html`, `NotFound-390.html` | §8.14 |
 
-Ready screens for Osa 2–4 were not drawn; they follow the Osa 1 ready screen exactly (section 8.3) with their own copy from the brief and no example card.
+All five ready screens are drawn and share one layout (§8.3). `screenshots/1440x716/` shows them and Consent at the window size they must fit.
 
 ### 8.1 Home
 
@@ -215,23 +239,35 @@ Phone: nav 64 px with a 44 px CTA; hero in one column with the CTA full width, t
 
 ### 8.2 Consent
 
-Desktop 1160 px: a 680 px column with H1 48 / 54, lede 19 / 32, then the hierarchy the brief asked for: "Ehdot, jotka hyväksyt" (small gold-ink heading, Manrope 800 15) over one sheet with the three cards that the checkbox actually asserts (EI diagnoosi · harrasteprojekti · anonyymi; 48 px gold-tint tiles, Manrope 800 19 titles, 17 / 28 text, hairlines between), then "Hyvä tietää" in ink-2 with the two advisory notes as lighter rows (40 px well tiles with brown icons, 17 title, 16 / 26 ink-2 text). Right: a 400 px sticky card (top 24) with the 26 px checkbox and the full statement (bold words as in the brief), a hairline, the primary "Jatka tehtävään →" (disabled until checked) and the tertiary "Peruuta". Phone: same order in one column, the checkbox card last in the scroll, with Peruuta and the gated CTA in the docked bar.
+Desktop: one 1040 px column, centred in `main` with `margin: auto 0`. Title 48 / 54, lede 19 / 32 at max 720. Then the hierarchy the brief asked for. First, "Ehdot, jotka hyväksyt" (small gold-ink heading, Manrope 800 15) over the three terms that the checkbox asserts: EI diagnoosi, harrasteprojekti, anonyymi. They sit as three cards in a row (gap 16; padding 20 22 22, radius 20), each with a 40 px gold-tint tile beside a Manrope 800 18 / 24 title and 17 / 28 text. 16 px under the cards comes the checkbox sheet (padding 20 24): the 26 px checkbox and the full statement, with the bold words as in the brief. Then, 36 px lower, "Hyvä tietää" in ink-2, with the two advisory notes side by side (40 px well tiles with brown icons, 17 px title, 16 / 26 ink-2 text). The docked bar carries the action. On the right: the tertiary "Peruuta" and the primary "Jatka tehtävään →", which stays disabled until the box is checked. On the left, while the box is unchecked: the `info` hint "Hyväksy ensin ehdot, niin voit jatkaa." At 1440 × 716 the three terms and the checkbox are above the fold; only the notes need a scroll. Phone: the same order in one column. The terms are one sheet with hairline rows, then the checkbox sheet, then the notes. The hint sits above Peruuta and the gated CTA in the docked bar.
 
 ### 8.3 Ready screens
 
-Desktop 1120 px as two 520 px columns. Left: label (`OSA 1 / 5 — SANANTUNNISTUS`), title 56 / 60, subtitle 20 / 30 ink-2, then 2–4 numbered steps (40 px white circles with a hairline border and a gold-ink number; Manrope 800 19 headings; 17 / 28 text). Right: an example card for Osa 1 (recessed stage with "Onko tämä oikea sana?", the word "talo" at 52 px, a draining hairline, and the two answer keys with A / L keycaps) and under it the full-width primary "Aloita harjoitus →" at 64 px, radius 18. Step 2 of Osa 1 shows the two keycaps inline (A = Oikea sana, L = Ei sana) instead of spelling them out in prose. Osa 5's right column is the interactive warm-up: "Kokeile ensin" label, the instruction line, two practice sentences in recessed boxes (18 px radius) built from the word toggle. Tapping a fitting word shows an `info` hint in ink-2 ("Tämä sana sopii lauseeseen…"); tapping the misfit marks it gold-wash and shows the green `circle-check` line "Juuri näin. …" with the intended word. "Aloita harjoitus" stays disabled, with the line "Ratkaise ensin molemmat harjoituslauseet, niin voit aloittaa." under it, until both are solved. Phone: one column, title 34 / 40, the CTA docked.
+One layout for all five parts. Desktop column 1040 px, centred vertically in `main` with `margin: auto 0` (main still scrolls if it ever has to).
+
+- **Title block.** Title (Manrope 800 48 / 54, one line) and subtitle (19 / 30 ink-2, 8 px below) span the full width. There is no `OSA n / 5` label; the app bar already shows it.
+- **Steps.** 24 px under the title block sits a grid: 580 px of steps and a 420 px example card, gap 40, both top-aligned. There are 2–4 numbered steps. Each has a 30 px gold-tint circle with a gold-ink Manrope 800 15 number; a 2 px `line`-coloured connector joins the circles. Headings are Manrope 800 19 / 26, with the 17 / 28 text 4 px below and 20 px between steps.
+- **Example card.** White, padding 24, radius 24, label `ESIMERKKI`. It is a `role="img"` picture with a Finnish `aria-label`, not a control. What it shows per part:
+  - **Osa 1:** a recessed stage with "Onko tämä oikea sana?", "talo" at 44 / 52 and a draining hairline, then the two answer keys with A / L keycaps. Step 2 shows the two keycaps inline (A = Oikea sana, L = Ei sana).
+  - **Osa 2:** two target chips (SATAMAAN, LOKIT), a hairline, and a 19 / 36 sentence with "satamaan" marked.
+  - **Osa 3:** the letter tape "kissaistuumatolla" (21 × 60 cells, Mono 600 30) with boundaries after "kissa" and "istuu", then `corner-down-right` + "kissa istuu matolla".
+  - **Osa 4:** a 2 × 2 grid of word cells (kukka, lusika, hiiri, lintu) with "lusika" marked.
+  - **Osa 5:** the interactive warm-up in place of the picture, labelled `KOKEILE ENSIN`: the instruction line and the two practice sentences in recessed boxes (radius 16), built from the word toggle. Tapping a fitting word shows the `info` hint in ink-2; tapping the misfit marks it and shows the green `circle-check` line "Juuri näin. …".
+- **Docked bar** (84 px, inner row 1040). Left: the part's facts as pills (§7.7), for example `1,5 min` and `15 lausetta`. Right: the primary "Aloita harjoitus →" (56 px). On Osa 5, until both warm-up sentences are solved, the left side shows "Ratkaise ensin molemmat harjoituslauseet, niin voit aloittaa." instead of the pills, and the button is disabled. When a sentence is solved, scroll its feedback line into view with `scrollIntoView({ block: 'nearest' })`; on a 716 px window the second line can land under the bar.
+- **Fit.** Every ready screen fits 1440 × 716 without scrolling. Osa 3 and Osa 5 are the tallest, with about 25 px to spare. Keep the app's own step copy, and if it runs longer, tighten the gaps rather than letting the screen scroll.
+- **Phone.** One column: title 32 / 38, subtitle 17 / 26, the steps (28 px circles, 18 / 24 headings), then the example card (padding 20; the Osa 3 tape at 18 × 52). The docked bar has a full-width 56 px "Aloita harjoitus →"; on Osa 5 the gate hint sits above the disabled button. Osa 1 keeps "← Etusivulle" in the app bar.
 
 ### 8.4 Osa 1 — Sanantunnistus
 
-Shell with the item pill and the 30-segment item strip. Centre: title, a 760 × 340 white stage (radius 28) with "Onko tämä oikea sana?" in Manrope 700 17 ink-2, the word at Atkinson 700 84 / 92, and the 3-second bar (360 × 6, well track, `time` fill draining right to left — it is the only continuously moving element in the product, and it is a thin hairline, not a countdown number). Under the stage the two answer keys side by side, 92 px tall, with keycaps. Phone: the stage fills the main area (word 46 / 54, bar 220 px), the two 64 px answer keys sit in the docked bar without keycaps.
+Shell with the item pill and the 30-segment item strip. Centre: title, a 760 × 340 white stage (radius 28) with "Onko tämä oikea sana?" in Manrope 700 17 ink-2, the word at Atkinson 700 84 / 92, and the 3-second bar (360 × 6, well track, `time` fill draining right to left — it is the only continuously moving element in the product, and it is a thin hairline, not a countdown number). Under the stage the two answer keys side by side, 92 px tall, with keycaps. Phone: the stage fills the main area (word 46 / 54, bar 220 px), the two 64 px answer keys sit in the docked bar without keycaps. v2: `main` is the scroll container, and the 760 px block is centred in it with `margin: auto 0` (padding 16 0 40 keeps the optical lift) rather than `justify-content: center`.
 
 ### 8.5 Osa 2 — Sanojen etsiminen tekstistä
 
-Desktop: 340 px aside (title, instruction, then a card "TAVOITESANAT / Klikkaa ne tekstistä." with the 12 uppercase chips) + the text sheet (padding 36 48 40, reading style 20 / 40, paragraphs 18 px apart) which scrolls inside `main`. Counter `n valittua`; brown "Olen valmis". Phone: title and instruction, then the target panel becomes a sticky white strip at the top of the scroll area (full-bleed, hairlines above and below, chips 28 px) so targets stay visible while the text scrolls beneath it; the sheet uses 19 / 40 with 44 px tap rows.
+Desktop (v2): one 840 px column. At the top, the title (32 / 38) and the instruction (17 / 28). Below them, the target panel is a sticky strip: `position: sticky; top: 0; z-index: 3` inside the scrolling `main`. It is a white card (radius 20, padding 16 20 18) with "TAVOITESANAT" and "Klikkaa ne tekstistä." on one line and the 12 uppercase chips in two rows. The card sits on a paper-coloured band (12 px above, 16 px below, 24 px wider than the column on each side) that hides the text as it scrolls under. The text sheet follows (padding 36 48 40, reading style 20 / 40, paragraphs 18 px apart). The whole column scrolls inside `main` and the targets stay in view, as the ready screen says: "Näet lyhyen tekstin ja sen yläpuolella listan sanoista". The docked bar's inner row is 840: counter `n valittua`, brown "Olen valmis". Phone (unchanged): title and instruction, then the target panel as a sticky white strip at the top of the scroll area (full-bleed, hairlines above and below, chips 28 px). The sheet uses 19 / 40 with 44 px tap rows.
 
 ### 8.6 Osa 3 — Sanaketjujen erottaminen
 
-Desktop: title left, instruction right (max 520 px), then a 960 px sheet (radius 28, padding 28 32 8) holding the sentence header and the tape, the whole block vertically centred in `main`. Docked bar: `2 / 4 sanarajaa merkitty`, the Enter keycap with "siirtää seuraavaan lauseeseen.", and "Seuraava →". Two progress indicators: sentences (the 15-segment rail in the sheet) and time (the line under the app bar). Phone: tape cells 25 × 88 wrapped into rows (7.5); the counter shortens to number + unit; "Seuraava →" stays in the docked bar.
+Desktop: title left, instruction right (max 520 px), then a 960 px sheet (radius 28, padding 28 32 8) holding the sentence header and the tape. The whole block is centred vertically in `main` with `margin: auto 0`; `main` scrolls. v2 also gives the title `flex-shrink: 0` so it never wraps beside the instruction. Docked bar: `2 / 4 sanarajaa merkitty`, the Enter keycap with "siirtää seuraavaan lauseeseen.", and "Seuraava →". Two progress indicators: sentences (the 15-segment rail in the sheet) and time (the line under the app bar). Phone: tape cells 25 × 88 wrapped into rows (7.5); the counter shortens to number + unit; "Seuraava →" stays in the docked bar.
 
 ### 8.7 Osa 4 — Etsi kirjoitusvirheet
 
@@ -247,9 +283,72 @@ Desktop 1160 px as a 296 px sticky rail (top 24; "RAPORTTI" label, date in Manro
 
 Phone: label with the date, title 40 / 44, the meta list as a three-up row, then the same blocks in one column (summary at padding 24; the two split columns stacked; detail rows stacked with chip and bar on one line; steps; links; method) and the two buttons at the end, before the footer.
 
-### 8.10 Not designed yet
+### 8.10 Exercises list (`/exercises`)
 
-Exercises list (`/exercises`), 404, the two supplementary exercises and their end screen. Build them from the parts above: the list as link rows in one sheet (icon tile, `OSA n` / `LISÄHARJOITUS` caption, title, one line, `chevron-right`); the 404 as a ready-screen layout with the label `VIRHE 404`, a title and one primary button; the syllable and minimal-pair exercises in the exercise shell with the Osa 1 stage and answer keys; the end screen as a results-style sheet with `OIKEIN 11 / 15` in Manrope 800 and a level chip.
+Desktop: a 760 px column, top-aligned (padding 56 0 72), with "← Etusivulle" in the app bar.
+
+- **Head.** "Harjoitukset" at 48 / 54, then the lede "Valitse harjoitus, jonka haluat tehdä." at 19 / 30 ink-2.
+- **Groups.** Two groups, 36 and 28 px apart. Each is a small heading (gold-ink "Seulonnan osat", ink-2 "Lisäharjoitukset") over one sheet of link rows with hairlines between.
+- **Rows.** Grid `auto 1fr auto`, padding 18 24:
+  - a 48 px tile: gold-tint for the five parts, well with a brown icon for the two extras;
+  - the caption `Osa n` (14 / 20 ink-2, parts only);
+  - the title in Manrope 800 19 / 26;
+  - one line of description (16 / 24 ink-2);
+  - `chevron-right` in gold-ink.
+
+  Each row is one `<a>` (hover: recessed row background) and opens that part's ready screen or the supplementary exercise.
+- **Action.** Under the groups, the primary "Aloita koko seulonta →" goes to Consent.
+- **Phone.** The same with 16 px gutters: title 32 / 38, 44 px tiles, rows padding 16 18, the button full width.
+
+### 8.11 Supplementary exercise: syllables (`/exercise/syllables`)
+
+The exercise shell, with three changes:
+
+- "LISÄHARJOITUS" (label style) sits in the centre of the app bar instead of the battery rail.
+- The item pill `Tehtävä 4 / 12` sits on the right.
+- A 12-segment item strip runs under the bar: done items gold, the current one brown, as in Osa 1.
+
+The logo is not a link. On desktop a 760 px block is centred in `main`: the title at 32 / 38, then a 340 px white stage (radius 28) with three states.
+
+1. **Syllable.** The caption `Tavu 2 / 3` (Manrope 700 16 ink-2), the syllable in Atkinson 700 112 / 120, and a 3-segment rail (done brown, current gold). Syllables advance on their own at the app's existing pace; wrap them in `aria-live="polite"`.
+2. **Answer.** A `<label for>` "Kirjoita koko sana", then a 72 px text input: Atkinson 600 34, centred, 2 px brown border, radius 16, `autocomplete="off" autocapitalize="none" spellcheck="false"`. Focus it on entry. It has no placeholder, because the label already says it. Beside it sits the brown "Vastaa" button (72 px); Enter submits too.
+3. **Feedback.** The input becomes read-only with a `line-strong` border. Under it appears either `circle-check` + "Oikein." in good-green Manrope 800 18, or `info` + "Sana oli ”aurinko”." in ink. The button beside the input becomes "Seuraava →". If the app moves on by itself after feedback, keep its timing and drop that button.
+
+Phone: the stage fills the main area (syllable 84 / 92, input 64 px / 30). "Vastaa" and "Seuraava →" sit full width in the docked bar.
+
+### 8.12 Supplementary exercise: minimal pairs (`/exercise/minimal-pairs`)
+
+Same shell, with the pill `Tehtävä 5 / 15` and a 15-segment strip. On desktop, the title sits above a 320 px stage. The stage holds:
+
+- the question "Kumpi sana sopii lauseeseen?" (Manrope 700 17 ink-2);
+- the sentence in Atkinson 600 40 / 56, with the gap drawn as a 150 px `line-strong` underline (a word space on each side, none before punctuation);
+- the 6-second hairline (360 × 6, `time` on `well`), as in Osa 1.
+
+Under the stage, the two answer keys sit side by side: 92 px tall, white, 2 px brown border, radius 18, Atkinson 700 28. Picking a word moves to the next item at once; there is no feedback per item. Phone: the stage fills `main` (sentence 26 / 40, gap 110 px, hairline 220), and the two 64 px keys sit in the docked bar.
+
+### 8.13 Supplementary end screen
+
+No docked bar. A 720 px block is centred in `main`:
+
+- the label "HARJOITUS VALMIS";
+- the exercise title at 44 / 50 on one line;
+- a sheet (padding 28 32) with the label "OIKEIN" over `11 / 15` in Manrope 800 64 tabular, and the level chip on the right;
+- the line "Lisäharjoitukset eivät vaikuta seulonnan raporttiin." (17 / 28 ink-2);
+- the primary "← Takaisin harjoituksiin" directly under that line, which goes to `/exercises`.
+
+The logo links home. Phone: one column, title 30 / 36, the number at 52 with the chip under it, the button full width.
+
+### 8.14 404
+
+No docked bar. A 560 px block is centred in `main`:
+
+- the 112 px empty-lens illustration (the logo motif with blank text lines, on a gold-tint field);
+- the label "VIRHE 404";
+- "Sivua ei löytynyt" at 48 / 54;
+- the line "Osoite on ehkä kirjoitettu väärin, tai sivu on siirretty." (19 / 32 ink-2);
+- the primary "Etusivulle" right under it.
+
+Phone: a 96 px illustration, title 32 / 38, the button full width.
 
 ## 9. Print stylesheet for Results
 
@@ -257,7 +356,7 @@ The three `Report-A4-*.html` files show the target: A4 (794 × 1123 CSS px at 96
 
 ## 10. Accessibility and behaviour checklist
 
-Every control is a real `<button>`, `<a href>` or `<input>` + `<label>`; toggles carry `aria-pressed`; counters are `aria-live="polite"`; the timer is `role="timer"`; icon-only controls have `aria-label`; the two hero previews are `role="img"` with Finnish labels; `<html lang="fi">`. Focus is always visible: 3 px brown-deep outline with 2 px offset (gold-wash on brown). Keyboard: A / L answer in Osa 1, Enter advances in Osa 3, Tab reaches every word and letter. Tap targets ≥ 44 px on phones (word rows 44, grid cells 52, tape cells 88 tall, keys 52–64). Transitions follow section 5 and are disabled under reduced motion. No feedback during battery exercises (right / wrong is never shown; the warm-up is the only place with feedback). Transitions between exercises are a 180 ms fade; the hand-off itself stays automatic with no pause and no back navigation, as in the brief.
+Every control is a real `<button>`, `<a href>` or `<input>` + `<label>`; toggles carry `aria-pressed`; counters are `aria-live="polite"`; the timer is `role="timer"`; icon-only controls have `aria-label`; the two hero previews are `role="img"` with Finnish labels; `<html lang="fi">`. Focus is always visible: 3 px brown-deep outline with 2 px offset (gold-wash on brown). Keyboard: A / L answer in Osa 1, Enter advances in Osa 3, Tab reaches every word and letter. Tap targets ≥ 44 px on phones (word rows 44, grid cells 52, tape cells 88 tall, keys 52–64). Transitions follow section 5 and are disabled under reduced motion. No feedback during battery exercises: right and wrong are never shown in Osa 1–5. Only the warm-up and the two supplementary exercises give feedback. The syllable answer field is a labelled `<input>` (Enter submits), and its feedback line is `aria-live="polite"`. Transitions between exercises are a 180 ms fade; the hand-off itself stays automatic with no pause and no back navigation, as in the brief.
 
 ## 11. Copy to verify before shipping
 
@@ -271,6 +370,18 @@ Sample content that is not real test material: the Osa 2 passage opening and its
 
 Reordered: on Results, "Mitä voit tehdä seuraavaksi" now comes before "Menetelmä". Restore the original order if the methodology should come first.
 
+Added in v2, written by the designer. Wherever the app already has its own string for one of these, keep the app's:
+
+- **Ready screens:** the subtitles for Osa 2 ("Lukunopeus ja hahmottaminen") and Osa 4 ("Virheellisten sanojen löytäminen sanalistasta"); Osa 4 step 1 ("Näet listan sanoja. Osassa sanoista on kirjoitusvirhe."); the facts pills (3 s per sana · 30 sanaa, 3 min · 12 sanaa, 1,5 min · 15 lausetta, 3,5 min · 100 sanaa, 4 min · 12 vaihdettua sanaa); the example contents for Osa 2 and Osa 4.
+- **Consent:** the gate hint "Hyväksy ensin ehdot, niin voit jatkaa."
+- **Exercises list:** the lede, the two group headings and the seven row descriptions.
+- **Supplementary exercises:** "Tavu n / 3", "Kirjoita koko sana", "Vastaa", "Seuraava", "Oikein.", "Sana oli ”…”.", "Kumpi sana sopii lauseeseen?", "Harjoitus valmis", "Oikein" and "Takaisin harjoituksiin".
+- **End screen:** the line "Lisäharjoitukset eivät vaikuta seulonnan raporttiin." Check that it is true.
+- **404:** the label "Virhe 404".
+- **Sample content, not real test material:** the minimal-pair sentences and pairs other than katto / kato, and the syllable item "au-rin-ko".
+
 ## 12. Suggested build order
+
+If the app already has v1, skip this order and follow `CHANGES.md` with the prompt in `README.md`.
 
 Tokens and fonts first (section 3–5), then the shell and the components in `Components.html` (sections 6–7), then the five exercise screens using the static files as reference and keeping all existing exercise logic, then Results with its print stylesheet, then Home, then Consent and the ready screens, then the undesigned screens from section 8.10. After each screen, run the app at 390 and 1440 px and compare against `screenshots/`. Finish with an automated contrast and focus check (every text colour must be one of the pairs in section 3) and a keyboard run through the whole battery.
