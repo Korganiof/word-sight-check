@@ -194,6 +194,11 @@ npx vitest run    # run tests
 
 ## Deployment
 
-Static SPA. `public/_redirects` (Netlify / Cloudflare Pages) and `vercel.json`
-(Vercel) provide the `index.html` fallback that client-side routing needs.
+Static SPA on **Cloudflare Workers** (static assets, no Worker script): Git
+pushes to `main` build with `npm run build` and deploy with
+`npx wrangler deploy`, configured by `wrangler.jsonc` (Worker name `lukutaju`
+— must match the dashboard). Its `not_found_handling: single-page-application`
+is the `index.html` fallback client-side routing needs. Do **not** add a
+`public/_redirects` with `/* /index.html 200` — Workers rejects it as an
+infinite loop and the deploy fails. `vercel.json` is only for Vercel.
 Before launch: make `og:image` in `index.html` absolute and add `og:url`.

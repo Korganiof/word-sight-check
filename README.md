@@ -42,7 +42,7 @@ npx vitest run    # tests
 
 ## Deploying
 
-Static SPA — any static host works. Client-side routing needs a fallback to
-`index.html`: `public/_redirects` covers Netlify / Cloudflare Pages and
-`vercel.json` covers Vercel. Before launch, make the `og:image` URL in
+Static SPA, deployed on Cloudflare Workers via `wrangler.jsonc` (its
+single-page-application mode is the `index.html` fallback client-side routing
+needs). `vercel.json` covers Vercel if the host ever changes. Before launch, make the `og:image` URL in
 `index.html` absolute and add `og:url`.
