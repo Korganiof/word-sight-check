@@ -264,7 +264,7 @@ export default function Home() {
             {/* Keep this in sync with what the app actually does — it must be
                 revisited if analytics (e.g. PostHog) are ever added. */}
             <p className="m-0 max-w-[440px] text-body">
-              LukiSeula ei kerää henkilötietoja, ei käytä evästeitä eikä lähetä tuloksia
+              Lukutaju ei kerää henkilötietoja, ei käytä evästeitä eikä lähetä tuloksia
               minnekään. Sivusto ei lataa mitään kolmansien osapuolten palveluista. Vastauksesi
               ja tuloksesi säilyvät vain selaimesi istuntomuistissa ja katoavat, kun suljet
               välilehden. Jos haluat tuloksen talteen, tallenna raportti PDF-tiedostoksi
@@ -311,7 +311,7 @@ export default function Home() {
                 .
               </p>
               <p className="m-0">
-                LukiSeula on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella. Ei
+                Lukutaju on yksityishenkilön harrasteprojekti, rakennettu tekoälyn avustuksella. Ei
                 kliininen eikä ammatillinen työkalu — tulokset ovat vain suuntaa antavia.
               </p>
             </div>

@@ -189,7 +189,7 @@ export default function FinalResults() {
 
       {/* Print-only masthead (the app bar is hidden in print). */}
       <div className="report-print-head hidden">
-        <span className="report-print-wordmark">LukiSeula</span>
+        <span className="report-print-wordmark">Lukutaju</span>
         <span>Raportti · {dateStr}</span>
       </div>
 
@@ -298,7 +298,7 @@ export default function FinalResults() {
                     (Holopainen ym. 2004) ohjaavaa raja-arvoa, jota myös Panulan (2013) väitöstutkimus käyttää.
                   </p>
                   <p className="m-0 text-caption leading-6 text-ink-2">
-                    LukiSeulan katkaisupiste on heuristinen, ei kliinisesti normeerattu. Tuloksia ei tule tulkita
+                    Lukutajun katkaisupiste on heuristinen, ei kliinisesti normeerattu. Tuloksia ei tule tulkita
                     diagnoosina — ammattilaisen arvio tuo selkeyttä.
                   </p>
                 </div>
@@ -333,7 +333,7 @@ export default function FinalResults() {
               <p className="m-0 max-w-read">
                 <strong>Tämä seulonta ei diagnosoi lukihäiriötä.</strong> Tulokset ovat vain suuntaa antavia. Jos ne
                 herättävät huolta, käänny erikoisopettajan, psykologin tai terveydenhuollon ammattilaisen puoleen.
-                LukiSeula on yksityishenkilön tekoälyn avustuksella rakentama harrasteprojekti — ei kliininen eikä
+                Lukutaju on yksityishenkilön tekoälyn avustuksella rakentama harrasteprojekti — ei kliininen eikä
                 tieteellisesti validoitu arviointiväline.
               </p>
             </NoteBlock>
@@ -370,7 +370,7 @@ export default function FinalResults() {
 
       <footer className="report-credit border-t border-line">
         <div className="mx-auto flex w-full flex-col gap-2 px-gutter py-7 text-caption leading-6 text-ink-2 md:max-w-[1224px] md:flex-row md:justify-between md:px-8">
-          <span>LukiSeula · Harrasteprojekti</span>
+          <span>Lukutaju · Harrasteprojekti</span>
           <span>Perustuu suomalaiseen lukivaikeustutkimukseen — Panula, 2013, Helsingin yliopisto.</span>
         </div>
       </footer>

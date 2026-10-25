@@ -42,14 +42,14 @@ export function Logo({ link = true, markOnly = false, className }: LogoProps) {
           markOnly && "sr-only md:not-sr-only",
         )}
       >
-        LukiSeula
+        Lukutaju
       </span>
     </>
   );
   const classes = cn("inline-flex items-center gap-2.5 rounded-key no-underline text-ink", className);
   if (link) {
     return (
-      <Link to="/" className={classes} aria-label="LukiSeula — etusivulle">
+      <Link to="/" className={classes} aria-label="Lukutaju — etusivulle">
         {inner}
       </Link>
     );

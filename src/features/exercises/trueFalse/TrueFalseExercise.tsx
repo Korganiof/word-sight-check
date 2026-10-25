@@ -70,7 +70,7 @@ export function TrueFalseExercise() {
   return (
     <div className="min-h-screen bg-[#fff8f5] font-sans flex flex-col">
       <nav className="px-6 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold text-[#241a11] tracking-tight">LukiSeula</span>
+        <span className="text-lg font-bold text-[#241a11] tracking-tight">Lukutaju</span>
       </nav>
 
       <div className="px-6 pb-2 max-w-2xl mx-auto w-full">

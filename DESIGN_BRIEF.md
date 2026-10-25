@@ -1,4 +1,4 @@
-# LukiSeula — design brief for a UI/UX refresh
+# Lukutaju — design brief for a UI/UX refresh
 
 This is a self-contained handoff for redesigning the app's look and feel. It
 describes what the app is, who uses it, every screen, the current design
@@ -12,7 +12,7 @@ readability is the product, not a nice-to-have.
 
 ## 1. What the app is
 
-**LukiSeula** ("reading screen") is a free, anonymous, Finnish-language
+**Lukutaju** ("reading screen") is a free, anonymous, Finnish-language
 dyslexia *screening* tool for people aged 15+ (roughly 9th grade up through
 adults). It runs a 10–15 minute battery of five timed reading exercises in the
 browser and ends with a report that says, per skill area, whether things went
@@ -77,7 +77,7 @@ Hard requirements that follow from this audience:
 > **Status:** the refresh this brief asked for has been designed and
 > implemented. The implemented spec — tokens, type, shell, components with
 > states, every screen at 1440 and 390 px, print — lives in
-> `lukiseula-design-handoff/HANDOFF.md`, and the token values in
+> `design-handoff/HANDOFF.md`, and the token values in
 > `tailwind.config.ts` / `src/index.css`. The values below summarise it; the
 > handoff is authoritative.
 
@@ -133,9 +133,9 @@ pill brown — no red, no blink.
 ### Brand marks
 
 - Logo: 32 px rounded-square mark (gold-tint field, white lens with a gold
-  ring and handle, three brown text pills) + "LukiSeula" in Manrope 800.
+  ring and handle, three brown text pills) + "Lukutaju" in Manrope 800.
   `src/components/Logo.tsx` and `public/favicon.svg` are the same drawing.
-- OG card: canvas background, "LukiSeula" wordmark, gold accent bar.
+- OG card: canvas background, "Lukutaju" wordmark, gold accent bar.
 
 ---
 
@@ -185,7 +185,7 @@ Ilmainen). The 15+ audience must be obvious without scrolling.
 
 Copy (final):
 
-- Nav: **LukiSeula** · Etusivu · Mitä seulonta mittaa? · Lisätietoa ja tukea ·
+- Nav: **Lukutaju** · Etusivu · Mitä seulonta mittaa? · Lisätietoa ja tukea ·
   [Aloita seulonta]
 - Badge: `SEULONTATYÖKALU · YLI 15-VUOTIAILLE`
 - H1: **Lukihäiriön seulonta**
@@ -215,16 +215,16 @@ Copy (final):
   tuloksistasi osa-alueittain sekä vinkkejä siitä, mistä hakea lisätietoa tai
   tukea. [ALOITA NYT]
 - Credit: Perustuu suomalaiseen lukivaikeustutkimukseen — *Panula, 2013,
-  Helsingin yliopisto.* / LukiSeula on yksityishenkilön harrasteprojekti,
+  Helsingin yliopisto.* / Lukutaju on yksityishenkilön harrasteprojekti,
   rakennettu tekoälyn avustuksella. Ei kliininen eikä ammatillinen työkalu.
-- **Tietosuoja**: LukiSeula ei kerää henkilötietoja, ei käytä evästeitä eikä
+- **Tietosuoja**: Lukutaju ei kerää henkilötietoja, ei käytä evästeitä eikä
   lähetä tuloksia minnekään. Sivusto ei lataa mitään kolmansien osapuolten
   palveluista. Vastauksesi ja tuloksesi säilyvät vain selaimesi
   istuntomuistissa ja katoavat, kun suljet välilehden.
 - **Lisätietoa ja tukea**: Lukimat.fi · Erilaisten oppijain liitto · Niilo
   Mäki Instituutti · Kuntoutussäätiö — oppimisen tuki (each with a one-line
   description, opens in a new tab).
-- Footer: LukiSeula · Tietosuoja · © {year} LukiSeula · Harrasteprojekti
+- Footer: Lukutaju · Tietosuoja · © {year} Lukutaju · Harrasteprojekti
 
 ### 5.2 Consent `/consent`
 
@@ -270,7 +270,7 @@ Every exercise shares one frame:
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│ LukiSeula                              AIKAA JÄLJELLÄ │   ← nav; timer right (m:ss, tabular)
+│ Lukutaju                              AIKAA JÄLJELLÄ │   ← nav; timer right (m:ss, tabular)
 │                                              2:41     │
 ├──────────────────────────────────────────────────────┤
 │ OSA 4 — ETSI KIRJOITUSVIRHEET            12 merkittyä │   ← step label + live counter
@@ -360,7 +360,7 @@ A printable, dossier-style report — the emotional centre of the product. It
 must read calmly whether the news is good or not. Currently:
 
 ```
-LukiSeula                                   RAPORTTI · 13.9.2026
+Lukutaju                                   RAPORTTI · 13.9.2026
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SEULONNAN TULOKSET
 Lukutaidon

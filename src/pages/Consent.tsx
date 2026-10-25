@@ -17,7 +17,7 @@ const CONDITIONS: Array<{ icon: ReactNode; title: string; text: string }> = [
   {
     icon: <Bot />,
     title: "Harrasteprojekti, rakennettu tekoälyllä",
-    text: "LukiSeula ei ole kliininen eikä tieteellisesti validoitu arviointiväline.",
+    text: "Lukutaju ei ole kliininen eikä tieteellisesti validoitu arviointiväline.",
   },
   {
     icon: <EyeOff />,

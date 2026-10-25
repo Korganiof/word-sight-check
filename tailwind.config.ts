@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-// Design tokens from the UI-refresh handoff (lukiseula-design-handoff/tokens).
+// Design tokens from the UI-refresh handoff (design-handoff/tokens).
 // Colour names are semantic: every text/background pair used in the app must
 // be one of the pairs listed in HANDOFF.md § 3, which all pass WCAG AA.
 // `line`, `line-strong`, `control` and `time` are decorative — never text.

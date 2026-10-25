@@ -1,4 +1,4 @@
-# LukiSeula
+# Lukutaju
 
 A Finnish dyslexia screening tool for 15+ year-olds and adults, built with
 React. Presents a five-part battery of timed reading exercises and produces a

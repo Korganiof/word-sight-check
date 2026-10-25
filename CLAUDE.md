@@ -2,7 +2,7 @@
 
 ## What this project is
 
-LukiSeula — a Finnish dyslexia screening tool for **15+ year-olds and adults**.
+Lukutaju — a Finnish dyslexia screening tool for **15+ year-olds and adults**.
 It presents a short battery of reading exercises and produces a risk summary.
 All UI text and exercise content is in Finnish.
 
@@ -85,7 +85,7 @@ src/
   hooks/                         — useCountdown, useScreeningFlow
   lib/                           — flow, levels/scoring, session stores, content for the report
 public/fonts/                    — self-hosted Manrope + Atkinson Hyperlegible Next / Mono
-lukiseula-design-handoff/        — the implemented design spec (HANDOFF.md,
+design-handoff/        — the implemented design spec (HANDOFF.md,
                                    tokens, static reference screens, screenshots)
 ```
 
@@ -144,7 +144,7 @@ summary. The report deliberately does not reveal which items were missed
 - All UI text is in Finnish; button labels quoted in instructions must match
   the actual button ("Tarkista", "Valmis", "Olen valmis")
 - Design system: "The Elevated Curator" (2026-10 refresh). The spec is
-  `lukiseula-design-handoff/HANDOFF.md`; DESIGN_BRIEF.md § 3 summarises it.
+  `design-handoff/HANDOFF.md`; DESIGN_BRIEF.md § 3 summarises it.
   Rules that bite: gold `#C69A2B` is only for the primary CTA and for what
   the user has marked — inside an exercise the finish button is brown; gold
   always carries **ink** text, never white; the only "low time" signal is

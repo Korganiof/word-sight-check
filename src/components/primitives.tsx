@@ -167,11 +167,11 @@ export function SiteFooter({ className }: { className?: string }) {
   return (
     <footer className={cn("border-t border-line print:hidden", className)}>
       <div className="mx-auto flex w-full max-w-home flex-col items-start gap-3 px-gutter py-8 text-caption text-ink-2 md:flex-row md:items-center md:justify-between md:px-8">
-        <span className="font-ui text-[16px] font-extrabold tracking-[-0.02em] text-ink">LukiSeula</span>
+        <span className="font-ui text-[16px] font-extrabold tracking-[-0.02em] text-ink">Lukutaju</span>
         <a href="/#tietosuoja" className="text-gold-ink hover:text-gold-ink-deep">
           Tietosuoja
         </a>
-        <span>© {new Date().getFullYear()} LukiSeula · Harrasteprojekti</span>
+        <span>© {new Date().getFullYear()} Lukutaju · Harrasteprojekti</span>
       </div>
     </footer>
   );
