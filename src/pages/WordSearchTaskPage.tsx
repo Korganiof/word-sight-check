@@ -2,6 +2,7 @@ import { useState } from "react";
 import { WordSearchTask } from "@/components/WordSearchTask";
 import { wordSearchPassage, wordSearchTargets } from "@/lib/wordsearch";
 import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
+import { WordSearchExample } from "@/components/ReadyExamples";
 import { WORD_SEARCH_DURATION_MS } from "@/lib/battery";
 
 const STEPS = [
@@ -29,6 +30,8 @@ export default function WordSearchTaskPage() {
         title="Sanojen etsiminen tekstistä"
         subtitle="Löydätkö piilossa olevat sanat?"
         steps={STEPS}
+        aside={<WordSearchExample />}
+        facts={{ timeMs: WORD_SEARCH_DURATION_MS, count: wordSearchTargets.length, unit: "sanaa" }}
         onStart={() => setReady(true)}
       />
     );

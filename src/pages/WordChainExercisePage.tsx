@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { WordChainExercise } from "@/features/exercises/wordChains/WordChainExercise";
 import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
+import { WordChainExample } from "@/components/ReadyExamples";
+import { WORD_CHAIN_DURATION_MS, WORD_CHAIN_ITEM_COUNT } from "@/lib/battery";
 
 const STEPS = [
   {
@@ -31,6 +33,8 @@ export default function WordChainExercisePage() {
         title="Sanaketjujen erottaminen"
         subtitle="Missä kohtaa yksi sana loppuu ja toinen alkaa?"
         steps={STEPS}
+        aside={<WordChainExample />}
+        facts={{ timeMs: WORD_CHAIN_DURATION_MS, count: WORD_CHAIN_ITEM_COUNT, unit: "lausetta" }}
         onStart={() => setReady(true)}
       />
     );

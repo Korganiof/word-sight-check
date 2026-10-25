@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { SpellingErrorsExercise } from "@/features/exercises/spellingErrors/SpellingErrorsExercise";
 import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
+import { SpellingErrorsExample } from "@/components/ReadyExamples";
+import { spellingErrorItems } from "@/features/exercises/spellingErrors/spellingErrorItems.fi";
+import { SPELLING_DURATION_MS } from "@/lib/battery";
+import { DEV_FAST } from "@/lib/devConfig";
+
+// Same item count the exercise uses (it slices to 12 under DEV_FAST).
+const ITEM_COUNT = DEV_FAST ? Math.min(12, spellingErrorItems.length) : spellingErrorItems.length;
 
 const STEPS = [
   {
@@ -27,6 +34,8 @@ export default function SpellingErrorsExercisePage() {
         title="Etsi kirjoitusvirheet"
         subtitle="Huomaatko, missä sanoissa on kirjoitusvirhe?"
         steps={STEPS}
+        aside={<SpellingErrorsExample />}
+        facts={{ timeMs: SPELLING_DURATION_MS, count: ITEM_COUNT, unit: "sanaa" }}
         onStart={() => setReady(true)}
       />
     );

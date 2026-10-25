@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { ReadingCompExercise } from "@/features/exercises/readingComp/ReadingCompExercise";
 import { ReadingCompDemo } from "@/features/exercises/readingComp/ReadingCompDemo";
-import { readingCompPractice } from "@/features/exercises/readingComp/readingCompItems.fi";
 import { ExerciseReadyScreen } from "@/components/ExerciseReadyScreen";
+import { readingCompPassages, readingCompPractice } from "@/features/exercises/readingComp/readingCompItems.fi";
+import { parseParagraph } from "@/features/exercises/readingComp/parse";
+import { READING_COMP_DURATION_MS } from "@/lib/battery";
+
+// The number of swapped words in the passage the exercise shows.
+const SWAPPED = readingCompPassages[0].paragraphs
+  .flatMap((text, i) => parseParagraph(text, i))
+  .filter(t => t.kind === "word" && t.isError).length;
 
 const STEPS = [
   {
@@ -30,6 +37,7 @@ export default function ReadingCompExercisePage() {
         title="Luetun ymmärtäminen"
         subtitle="Löydätkö tekstin väärät sanat?"
         steps={STEPS}
+        facts={{ timeMs: READING_COMP_DURATION_MS, count: SWAPPED, unit: "vaihdettua sanaa" }}
         aside={<ReadingCompDemo sentences={readingCompPractice} onSolvedChange={setSolved} />}
         canStart={solved >= readingCompPractice.length}
         startHint="Ratkaise ensin molemmat harjoituslauseet, niin voit aloittaa."
