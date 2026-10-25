@@ -14,12 +14,14 @@
     <meta property="og:description" content="Ilmainen ja anonyymi lukihäiriön seulonta yli 15-vuotiaille nuorille ja aikuisille. Noin 10–15 minuutin testi antaa viitteitä lukemiseen liittyvistä haasteista." />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fi_FI" />
-    <!-- TODO before launch: make og:image absolute (https://<domain>/og-image.png) and add og:url — most crawlers ignore relative image URLs. -->
-    <meta property="og:image" content="/og-image.png" />
+    <!-- Absolute URLs: crawlers ignore relative ones. Switch the domain here when lukutaju.fi is connected.
+         The card is rendered from scripts/brand/og-card.html (scripts/brand/render.sh). -->
+    <meta property="og:url" content="https://lukutaju.joonas-e72.workers.dev/" />
+    <meta property="og:image" content="https://lukutaju.joonas-e72.workers.dev/og-lukutaju.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/og-image.png" />
+    <meta name="twitter:image" content="https://lukutaju.joonas-e72.workers.dev/og-lukutaju.png" />
     <meta name="twitter:title" content="Lukutaju — Lukihäiriön seulonta" />
     <meta name="twitter:description" content="Ilmainen ja anonyymi lukihäiriön seulontatyökalu suomeksi." />
   </head>
