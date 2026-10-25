@@ -201,4 +201,16 @@ pushes to `main` build with `npm run build` and deploy with
 is the `index.html` fallback client-side routing needs. Do **not** add a
 `public/_redirects` with `/* /index.html 200` — Workers rejects it as an
 infinite loop and the deploy fails. `vercel.json` is only for Vercel.
-Before launch: make `og:image` in `index.html` absolute and add `og:url`.
+
+**SEO / prerender.** `npm run build` also server-renders Home into
+`dist/index.html` (`src/entry-server.tsx` + `scripts/prerender.mjs`), because
+most AI crawlers don't run JavaScript; `main.tsx` hydrates it on `/` and
+starts clean on other routes (an inline guard in `index.html` hides the Home
+markup there until the app renders). Home must therefore render without
+browser-only APIs (`window`, `sessionStorage`, `matchMedia`) during render —
+use effects for those. The site address lives only in `.env`
+(`VITE_SITE_URL`): it feeds the canonical link, share tags and JSON-LD in
+`index.html`, and the generated `sitemap.xml` / `robots.txt` (only Home is
+indexable). Change it there when lukutaju.fi is connected. The FAQ on Home and
+its FAQPage JSON-LD both come from `src/lib/faq.ts`. Share card and touch icon:
+`scripts/brand/` (`render.sh`, needs local Chrome).

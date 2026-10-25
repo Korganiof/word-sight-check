@@ -20,6 +20,7 @@ import { Badge } from "@/components/shell";
 import { IconTile, Label, ResourceLink, Sheet, SiteFooter } from "@/components/primitives";
 import { LevelBar, LevelChip } from "@/components/LevelChip";
 import { cn } from "@/lib/utils";
+import { FAQ, faqJsonLd } from "@/lib/faq";
 
 const CONTAINER = "mx-auto w-full max-w-home px-gutter md:px-8";
 
@@ -252,6 +253,26 @@ export default function Home() {
               </ul>
             </div>
           </div>
+        </section>
+
+        {/* ─── Usein kysyttyä (also emitted as FAQPage JSON-LD) ─── */}
+        <section id="usein-kysyttya" className={cn(CONTAINER, "flex scroll-mt-6 flex-col gap-6 pt-[72px] md:gap-10 md:pt-32")}>
+          <h2 className="m-0 font-ui text-h1-sm text-ink md:text-h1">Usein kysyttyä</h2>
+          <Sheet className="m-0 flex flex-col overflow-hidden p-0">
+            {FAQ.map((f, i) => (
+              <div
+                key={f.question}
+                className={cn(
+                  "flex flex-col gap-2 px-5 py-6 md:grid md:grid-cols-[380px_minmax(0,1fr)] md:gap-x-7 md:px-9 md:py-7",
+                  i > 0 && "border-t border-line",
+                )}
+              >
+                <h3 className="m-0 font-ui text-h3-sm text-ink md:text-h3">{f.question}</h3>
+                <p className="m-0 max-w-[620px] text-body-sm md:text-body">{f.answer}</p>
+              </div>
+            ))}
+          </Sheet>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqJsonLd() }} />
         </section>
 
         {/* ─── Tietosuoja + Lisätietoa ─── */}

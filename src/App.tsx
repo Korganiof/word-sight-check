@@ -12,13 +12,14 @@ import ReadingCompExercisePage from "./pages/ReadingCompExercisePage";
 import SpellingErrorsExercisePage from "./pages/SpellingErrorsExercisePage";
 import FinalResults from "./pages/FinalResults";
 import NotFound from "./pages/NotFound";
+import { ROUTER_FUTURE } from "./lib/router";
 
 // The sentence-chain, true/false and syllable-boundary scaffolds in
 // src/features/exercises are intentionally NOT routed: their passages need a
 // provenance check before anything ships them. Re-add a <Route> here to
 // bring one back.
-const App = () => (
-  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+/** The route table, shared by the browser app and the build-time prerender. */
+export const AppRoutes = () => (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/excercises" element={<Navigate to="/exercises" replace />} />
@@ -35,6 +36,11 @@ const App = () => (
       <Route path="/results" element={<FinalResults />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+);
+
+const App = () => (
+  <BrowserRouter future={ROUTER_FUTURE}>
+    <AppRoutes />
   </BrowserRouter>
 );
 

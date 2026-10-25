@@ -4,26 +4,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#FAF6F0" />
-    <title>Lukutaju — Lukihäiriön seulonta</title>
-    <meta name="description" content="Ilmainen ja anonyymi lukihäiriön seulonta yli 15-vuotiaille nuorille ja aikuisille. Noin 10–15 minuutin testi antaa viitteitä lukemiseen liittyvistä haasteista." />
+    <title>Lukihäiriö testi netissä – ilmainen ja anonyymi | Lukutaju</title>
+    <meta name="description" content="Ilmainen ja anonyymi lukihäiriötesti yli 15-vuotiaille nuorille ja aikuisille. Viisi lyhyttä lukutehtävää, noin 10–15 minuuttia. Suuntaa antava seulonta, ei diagnoosi." />
     <meta name="author" content="Lukutaju" />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <meta property="og:title" content="Lukutaju — Lukihäiriön seulonta" />
-    <meta property="og:description" content="Ilmainen ja anonyymi lukihäiriön seulonta yli 15-vuotiaille nuorille ja aikuisille. Noin 10–15 minuutin testi antaa viitteitä lukemiseen liittyvistä haasteista." />
+    <!-- Absolute URLs (crawlers ignore relative ones) come from VITE_SITE_URL in .env.
+         The card is rendered from scripts/brand/og-card.html (scripts/brand/render.sh). -->
+    <meta property="og:title" content="Lukutaju — ilmainen lukihäiriötesti yli 15-vuotiaille" />
+    <meta property="og:description" content="Viisi lyhyttä lukutehtävää, noin 10–15 minuuttia. Ilmainen ja anonyymi, suuntaa antava seulonta – ei diagnoosi." />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fi_FI" />
-    <!-- Absolute URLs: crawlers ignore relative ones. Switch the domain here when lukutaju.fi is connected.
-         The card is rendered from scripts/brand/og-card.html (scripts/brand/render.sh). -->
-    <meta property="og:url" content="https://lukutaju.joonas-e72.workers.dev/" />
-    <meta property="og:image" content="https://lukutaju.joonas-e72.workers.dev/og-lukutaju.png" />
+    <meta property="og:site_name" content="Lukutaju" />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-lukutaju.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Lukutaju – lukihäiriön seulonta yli 15-vuotiaille" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://lukutaju.joonas-e72.workers.dev/og-lukutaju.png" />
-    <meta name="twitter:title" content="Lukutaju — Lukihäiriön seulonta" />
-    <meta name="twitter:description" content="Ilmainen ja anonyymi lukihäiriön seulontatyökalu suomeksi." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-lukutaju.png" />
+    <meta name="twitter:title" content="Lukutaju — ilmainen lukihäiriötesti yli 15-vuotiaille" />
+    <meta name="twitter:description" content="Viisi lyhyttä lukutehtävää, noin 10–15 minuuttia. Ilmainen ja anonyymi – ei diagnoosi." />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Lukutaju",
+        "url": "%VITE_SITE_URL%/",
+        "description": "Ilmainen ja anonyymi suuntaa antava lukihäiriön seulonta yli 15-vuotiaille nuorille ja aikuisille. Viisi lyhyttä lukutehtävää suomalaisen lukivaikeustutkimuksen pohjalta. Ei diagnoosi.",
+        "inLanguage": "fi",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "audience": { "@type": "PeopleAudience", "suggestedMinAge": 15 }
+      }
+    </script>
+    <!-- The prerendered markup in #root is Home. On other routes (the SPA
+         fallback serves this same file) hide it until the app has replaced it. -->
+    <script>if (location.pathname !== "/") document.documentElement.setAttribute("data-spa", "");</script>
+    <style>html[data-spa] #root { visibility: hidden; }</style>
   </head>
 
   <body>
