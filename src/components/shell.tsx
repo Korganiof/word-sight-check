@@ -193,9 +193,11 @@ interface AppBarProps {
   /** Logo links home only outside the battery (Consent, Osa 1 ready screen, Results). */
   logoLink?: boolean;
   right?: ReactNode;
+  /** Centre label (desktop) for screens outside the battery, e.g. "Lisäharjoitus". */
+  centerLabel?: string;
 }
 
-export function AppBar({ part, logoLink = false, right }: AppBarProps) {
+export function AppBar({ part, logoLink = false, right, centerLabel }: AppBarProps) {
   return (
     <header className="grid h-appbar-sm flex-shrink-0 grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-line bg-surface px-gutter md:h-appbar md:grid-cols-[1fr_auto_1fr] md:px-8 print:hidden">
       <div className="flex items-center gap-3">
@@ -204,6 +206,11 @@ export function AppBar({ part, logoLink = false, right }: AppBarProps) {
       </div>
       <div className="hidden items-center justify-center md:flex">
         {part !== undefined && <BatteryRail part={part} />}
+        {part === undefined && centerLabel && (
+          <span className="font-ui text-[13px] font-extrabold uppercase leading-none tracking-[0.1em] text-gold-ink">
+            {centerLabel}
+          </span>
+        )}
       </div>
       <div className="flex items-center justify-end gap-3">{right}</div>
     </header>
@@ -243,6 +250,7 @@ export function ExerciseShell({
   part,
   logoLink,
   right,
+  centerLabel,
   line,
   dock,
   dockPhoneOnly = false,
@@ -252,7 +260,7 @@ export function ExerciseShell({
 }: ExerciseShellProps) {
   return (
     <div className="flex h-screen h-[100dvh] flex-col bg-paper text-ink">
-      <AppBar part={part} logoLink={logoLink} right={right} />
+      <AppBar part={part} logoLink={logoLink} right={right} centerLabel={centerLabel} />
       {line}
       <main className={cn("ls-enter min-h-0 flex-1 overflow-y-auto", center && "flex flex-col")}>
         <div

@@ -133,11 +133,9 @@ export function SyllableExercise() {
     <ExerciseShell
       width="narrow"
       center
+      centerLabel="Lisäharjoitus"
       right={
         <>
-          <span className="hidden font-ui text-[13px] font-extrabold uppercase leading-none tracking-[0.1em] text-gold-ink md:inline">
-            Lisäharjoitus
-          </span>
           {/* One text node so the label reads as a unit ("Sana 3 / 12"). */}
           <div className="flex h-9 items-center rounded-pill bg-recessed px-3.5 font-ui text-[15px] font-bold leading-none text-ink tabular-nums md:h-10 md:px-4 md:text-[16px]">
             {`Sana ${currentIndex + 1} / ${items.length}`}

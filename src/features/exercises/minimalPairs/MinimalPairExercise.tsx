@@ -119,11 +119,9 @@ export function MinimalPairExercise() {
     <ExerciseShell
       width="narrow"
       center
+      centerLabel="Lisäharjoitus"
       right={
         <>
-          <span className="hidden font-ui text-[13px] font-extrabold uppercase leading-none tracking-[0.1em] text-gold-ink md:inline">
-            Lisäharjoitus
-          </span>
           <ItemPill label="Lause" current={currentIndex + 1} total={total} />
         </>
       }
